@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  connection: local
+  #gather_facts: false
+  become: true
+  vars:
+    dockerapp__image: nginx
+    docker__package_dependencies:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "cron"
+      - "gnupg2"
+      - "software-properties-common"
+      - "python-docker"
+  tasks:
+    - import_role:
+        name: andrewrothstein.python
+    - import_role:
+        name: nickjj.docker
+    - name: Make the base image available locally
+      docker_image:
+        name: '{{ dockerapp__image }}'
+    - name: Create app container
+      docker_container:
+        image: '{{ dockerapp__image }}'
+        name: 'web'
+        restart: 'always'
