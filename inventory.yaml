@@ -1,0 +1,10 @@
+all:
+  vars:
+    ansible_connection: ssh
+    dockerapp__image: my-app-container
+local:
+  hosts:
+    localhost:
+  vars:
+    ansible_connection: local
+    dockerapp__image: nginx

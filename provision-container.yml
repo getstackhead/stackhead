@@ -1,10 +1,7 @@
 ---
-- hosts: localhost
-  connection: local
-  #gather_facts: false
+- hosts: local
   become: true
   vars:
-    dockerapp__image: nginx
     docker__package_dependencies:
       - "apt-transport-https"
       - "ca-certificates"
@@ -20,8 +17,9 @@
     - name: Make the base image available locally
       docker_image:
         name: '{{ dockerapp__image }}'
+        source: pull
     - name: Create app container
       docker_container:
         image: '{{ dockerapp__image }}'
         name: 'web'
-        restart: 'always'
+        restart: 1
