@@ -1,0 +1,18 @@
+version: '3'
+services:
+{% for key, value in dockerapp__services.items() %}
+  {{ key }}:
+    container_name: {{ dockerapp__project_name }}-{{ key }}
+    image: {{ value.image }}
+    restart: always
+{% if value.expose_port is defined %}
+    ports:
+      - {{ dockerapp__free_port }}:{{ value.expose_port }}
+{% endif %}
+{% if value.volumes is defined %}
+    volumes:
+{% for volume in value.volumes %}
+      - {{ volume }}
+{% endfor %}
+{% endif %}
+{% endfor %}

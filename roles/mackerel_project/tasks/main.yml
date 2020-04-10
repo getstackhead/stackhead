@@ -1,0 +1,64 @@
+---
+- name: Extract application information
+  include_vars:
+      file: "{{ mackerel__config_folder }}/{{ project_name }}.yaml"
+      name: app_config
+  delegate_to: 127.0.0.1
+
+- name: "Load deployed configuration"
+  shell: "cat {{ mackerel__remote_config_folder }}/{{ project_name }}.yaml"
+  register: data
+  ignore_errors: yes
+
+- name: "Set facts from project file"
+  set_fact:
+    project_file: "{{ data.stdout | from_yaml }}"
+    active_domain: "{{ project_file.domain | default('') }}"
+
+- name: Get current Docker port
+  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
+  when: item.value.expose_port is defined
+  with_dict: "{{ project_file.docker.services }}"
+  ignore_errors: yes
+  register: used_port
+
+- set_fact:
+    bind_port: "{{ item.stdout | replace('0.0.0.0:','') | default(0) }}"
+  when: item.changed
+  with_items: "{{ used_port.results }}"
+
+- name: "Gather occupied tcp v4 ports | Used Docker port is {{ bind_port }}"
+  shell: netstat -nlt4 | grep -oP '(?<=0.0.0.0:)(\d+)'
+  register: used_ports
+  when: bind_port | int == 0
+
+- name: Set bind_port as first available port
+  vars:
+    # use range 12000-13000 for Docker applications
+    allowed_ports: "{{ range(12000, 13000 + 1) | list }}"
+  set_fact:
+    bind_port: "{{ allowed_ports | difference(used_ports.stdout_lines | map('int') | list) | first | default(0) }}"
+  when: used_ports is not skipped
+  failed_when: bind_port | int == 0
+
+- name: "Update Docker containers"
+  include_role:
+    name: project_dockerapp
+  vars:
+    dockerapp__project_name: "{{ project_name }}"
+    dockerapp__services: "{{ app_config.docker.services }}"
+    dockerapp__free_port: "{{ bind_port }}"
+  when: app_config.docker != project_file.docker
+  register: docker_result
+
+- name: "Update Nginx containers"
+  include_role:
+    name: config_nginx_docker
+  vars:
+    nginx_vhosts:
+      - server_name: "{{ app_config.domain }}"
+        use_https: 1
+        proxy_pass_port: "{{ bind_port }}"
+        state: present
+        filename: "{{ app_config.domain }}.conf"
+  when: docker_result is succeeded or app_config.domain != active_domain

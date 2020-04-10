@@ -1,0 +1,47 @@
+{% if item.use_https %}
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{ item.server_name }};
+
+    location / {
+        return 301 https://{{ item.server_name }}$request_uri;
+    }
+}
+{% endif %}
+
+server {
+{% if item.use_https %}
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    gzip off;
+{% else %}
+    listen 80;
+    listen [::]:80;
+{% endif %}
+
+    include /etc/nginx/h5bp/basic.conf;
+
+{% if item.server_name is defined %}
+    server_name {{ item.server_name }};
+{% endif %}
+
+{% if item.use_https %}
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/{{ item.server_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ item.server_name }}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ item.server_name }}/chain.pem;
+    include /etc/nginx/h5bp/ssl/policy_modern.conf;
+    client_max_body_size 10G;
+{% endif %}
+
+    location / {
+      proxy_pass http://localhost:{{ item.proxy_pass_port }};
+      proxy_redirect off;
+      proxy_set_header X-Scheme $scheme;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      add_header Strict-Transport-Security 'max-age=15552000; includeSubDomains' always;
+    }
+}

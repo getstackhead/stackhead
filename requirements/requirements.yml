@@ -1,0 +1,8 @@
+- name: nickjj.docker
+  version: 1.9.2
+- name: andrewrothstein.python
+  version: v1.0.14
+- name: geerlingguy.nginx
+  version: 2.7.0
+- name: geerlingguy.certbot
+  version: 3.0.3

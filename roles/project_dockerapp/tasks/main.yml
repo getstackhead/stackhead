@@ -1,0 +1,26 @@
+- name: "DOCKER || Check if project directory exists | Project: {{ dockerapp__project_name }}"
+  stat:
+    path: "{{ dockerapp__project_src }}"
+  register: project_folder
+
+- name: "DOCKER || Create project directory if not exists | Project: {{ dockerapp__project_name }}"
+  file:
+    path: "{{ dockerapp__project_src }}"
+    state: directory
+  when: project_folder.stat.exists == false
+
+- name: "DOCKER || Tear down existing services | Project: {{ dockerapp__project_name }}"
+  docker_compose:
+    project_src: "{{ dockerapp__project_src }}"
+    state: absent
+  ignore_errors: yes
+
+- name: "DOCKER || Generate docker-compose file | Project: {{ dockerapp__project_name }}"
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ dockerapp__project_src }}/docker-compose.yml"
+    force: true
+
+- name: "DOCKER || Create and start services | Project: {{ dockerapp__project_name }}"
+  docker_compose:
+    project_src: "{{ dockerapp__project_src }}"

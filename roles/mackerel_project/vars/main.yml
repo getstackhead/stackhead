@@ -1,0 +1,3 @@
+---
+mackerel__config_folder: "{{ playbook_dir }}/mackerel"
+mackerel__remote_config_folder: "/mackerel/config/applications"

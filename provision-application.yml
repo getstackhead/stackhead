@@ -1,0 +1,8 @@
+---
+- hosts: all
+  tasks:
+    - include_role:
+        name: mackerel_project
+      loop_control:
+        loop_var: project_name
+      with_items: "{{ mackerel.applications }}"
