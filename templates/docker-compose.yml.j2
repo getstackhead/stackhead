@@ -15,4 +15,10 @@ services:
       - {{ volume }}
 {% endfor %}
 {% endif %}
+{% if value.environment is defined %}
+    environment:
+{% for envName, envVal in value.environment.items() %}
+      {{ envName }}: {{ envVal }}
+{% endfor %}
+{% endif %}
 {% endfor %}
