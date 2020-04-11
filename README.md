@@ -15,12 +15,12 @@ For remote deployment, run workflow with `-i inventories/remote.yaml`.
 
 ```
 ansible-galaxy install -r requirements/requirements.yml
-ansible-playbook provision-application.yml -i inventories/local.yaml -K
+ansible-playbook provision-server.yml -i inventories/local.yaml -K
 ```
 
 ## Remote deployment
 
 ```
 ansible-galaxy install -r requirements/requirements.yml
-ansible-playbook provision-application.yml -i inventories/remote.yaml
+ansible-playbook provision-server.yml -i inventories/remote.yaml
 ```

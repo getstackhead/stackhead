@@ -1,5 +1,13 @@
 ---
 - hosts: all
+  vars:
+    nginx_conf_template: "{{ playbook_dir }}/templates/nginx.conf.j2"
+    nginx_vhosts: []
+  pre_tasks:
+    - name: Deploy additional h5bp Nginx files
+      copy:
+        src: "{{ playbook_dir }}/vendor/server-configs-nginx/h5bp"
+        dest: /etc/nginx
   roles:
     - application_docker
-    - application_nginx
+    - geerlingguy.nginx
