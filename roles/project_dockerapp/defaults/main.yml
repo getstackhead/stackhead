@@ -1,5 +1,4 @@
 ---
 vars:
   dockerapp__project_name:
-  dockerapp__free_port: 0
   dockerapp__services: []

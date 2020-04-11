@@ -15,27 +15,6 @@
     deployed_project: "{{ data.stdout | from_yaml }}"
     active_domain: "{{ deployed_project.domain | default('') }}"
 
-- name: "Mackerel::Project || Update Docker containers"
-  include_role:
-    name: project_dockerapp
-  vars:
-    dockerapp__project_name: "{{ project_name }}"
-    dockerapp__services: "{{ app_config.docker.services }}"
-  when: app_config.docker != deployed_project.docker| default({})
-  register: docker_result
-
-- name: "Mackerel::Project || Get current Docker port"
-  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
-  when: item.value.expose_port is defined
-  with_dict: "{{ app_config.docker.services }}"
-  ignore_errors: yes
-  register: used_port
-
-- set_fact:
-    docker_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
-  when: item.changed == true
-  with_items: "{{ used_port.results }}"
-
 - name: "Mackerel::Project || Create SSL certificate"
   include_role:
     name: geerlingguy.certbot
@@ -49,30 +28,29 @@
         domains:
           - "{{ app_config.domain }}"
 
-- name: "Mackerel::Project || Update Nginx containers"
-  include_role:
-    name: config_nginx_docker
+- name: "Mackerel::Project || Apply Docker configuration"
+  import_role:
+    name: project_dockerapp
   vars:
+    dockerapp__project_name: "{{ project_name }}"
+    dockerapp__services: "{{ app_config.docker.services }}"
+  when: app_config.docker is defined and app_config.docker != deployed_project.docker| default({})
+
+- name: "Mackerel::Project || Update Nginx reverse proxy configuration"
+  include_role:
+    name: config_nginx
+  vars:
+    nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.reverse-proxy.j2"
     nginx_vhosts:
       - server_name: "{{ app_config.domain }}"
         use_https: 1
         proxy_pass_port: "{{ docker_port }}"
         state: present
         filename: "{{ app_config.domain }}.conf"
-  when: docker_result is succeeded or app_config.domain != active_domain
+  when: docker_port is defined
+  register: docker_nginx_restart
+# todo: update nginx config - when: docker_nginx_restart is skipped and app_config.domain != active_domain
 
-- name: "Mackerel::Project || Check if project directory exists | Project: {{ dockerapp__project_name }}"
-  stat:
-    path: "{{ mackerel__remote_config_folder }}"
-  register: project_folder
-
-- name: "Mackerel::Project || Create project directory if not exists | Project: {{ dockerapp__project_name }}"
-  file:
-    path: "{{ mackerel__remote_config_folder }}"
-    state: directory
-  when: project_folder.stat.exists == false
-
-- name: "Mackerel::Project || Update deployed configuration"
-  copy:
-    src: "{{ mackerel__local_config_file }}"
-    dest: "{{ mackerel__remote_config_file }}"
+- name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
+  import_tasks: "roles/mackerel_project/tasks/deploy-project-configuration.yml"
+  when: docker_port is defined

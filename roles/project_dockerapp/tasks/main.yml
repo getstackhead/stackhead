@@ -24,3 +24,15 @@
 - name: "Mackerel::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
   docker_compose:
     project_src: "{{ dockerapp__project_src }}"
+
+- name: "Mackerel::Docker || Get current Docker port"
+  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
+  when: item.value.expose_port is defined
+  with_dict: "{{ dockerapp__services }}"
+  ignore_errors: yes
+  register: used_port
+
+- set_fact:
+    docker_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
+  when: item.changed == true
+  with_items: "{{ used_port.results }}"
