@@ -1,0 +1,7 @@
+---
+webapp__project_name:
+webapp__remote_path: "/var/www/{{ webapp__project_name }}"
+webapp__public_path: "htdocs"
+webapp__default_content: true
+webapp__default_page: "templates/webapp-default.html.j2"
+webapp__remote_public_fullpath: "{{ webapp__remote_path }}/{{ webapp__public_path }}"

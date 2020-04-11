@@ -1,56 +1,13 @@
 ---
-- name: "Mackerel::Project || Extract application information"
-  include_vars:
-      file: "{{ mackerel__local_config_file }}"
-      name: app_config
-  delegate_to: 127.0.0.1
+- import_tasks: "roles/mackerel_project/tasks/projectconfig-load.yml"
 
-- name: "Mackerel::Project || Load deployed configuration"
-  shell: "cat {{ mackerel__remote_config_file }}"
-  register: data
-  ignore_errors: yes
+#-  import_tasks: "roles/mackerel_project/tasks/generate-ssl-certificate.yml"
 
-- name: "Mackerel::Project || Set facts from project file"
-  set_fact:
-    deployed_project: "{{ data.stdout | from_yaml }}"
-    active_domain: "{{ deployed_project.domain | default('') }}"
-
-- name: "Mackerel::Project || Create SSL certificate"
-  include_role:
-    name: geerlingguy.certbot
-  vars:
-    certbot_create_if_missing: true
-    certbot_create_method: standalone
-    certbot_create_standalone_stop_services:
-      - nginx
-    certbot_certs:
-      - email: certificate@saitho.me
-        domains:
-          - "{{ app_config.domain }}"
-
-- name: "Mackerel::Project || Apply Docker configuration"
-  import_role:
-    name: project_dockerapp
-  vars:
-    dockerapp__project_name: "{{ project_name }}"
-    dockerapp__services: "{{ app_config.docker.services }}"
-  when: app_config.docker is defined and app_config.docker != deployed_project.docker| default({})
-
-- name: "Mackerel::Project || Update Nginx reverse proxy configuration"
-  include_role:
-    name: config_nginx
-  vars:
-    nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.reverse-proxy.j2"
-    nginx_vhosts:
-      - server_name: "{{ app_config.domain }}"
-        use_https: 1
-        proxy_pass_port: "{{ docker_port }}"
-        state: present
-        filename: "{{ app_config.domain }}.conf"
-  when: docker_port is defined
-  register: docker_nginx_restart
-# todo: update nginx config - when: docker_nginx_restart is skipped and app_config.domain != active_domain
+-  import_tasks: "roles/mackerel_project/tasks/setup-webapp.yml"
+#-  import_tasks: "roles/mackerel_project/tasks/setup-dockerapp.yml"
 
 - name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
-  import_tasks: "roles/mackerel_project/tasks/deploy-project-configuration.yml"
-  when: docker_port is defined
+  import_tasks: "roles/mackerel_project/tasks/projectconfig-deploy.yml"
+  # currently not checking if Docker steps succeeded as we cant "register" the result due to import_role
+  # import_role is required because include_role does not pass the facts set in Docker role
+  when: docker_changed or web_changed

@@ -1,0 +1,13 @@
+{% extends "nginx-vhost.j2" %}
+
+{% block location %}
+    root {{ item.root_path }};
+{% if nginx_use_php is defined %}
+    index index.php index.html index.htm;
+    location ~ \.php$ {
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+    }
+{% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+- name: "Mackerel::Webapp || Check if app directory exists | Project: {{ webapp__project_name }}"
+  stat:
+    path: "{{ webapp__remote_public_fullpath }}"
+  register: app_folder
+
+- name: "Mackerel::Webapp || Create app directory if not exists | Project: {{ webapp__project_name }}"
+  file:
+    path: "{{ webapp__remote_public_fullpath }}"
+    state: directory
+  when: app_folder.stat.exists == false
+
+- name: "Mackerel::Webapp || Setup default content | Project: {{ webapp__project_name }}"
+  template:
+    src: "{{ webapp__default_page }}"
+    dest: "{{ webapp__remote_public_fullpath }}/index.html"
+    force: true
+  when: webapp__default_content == true
+
+- set_fact:
+    webapp_root_path: "{{ webapp__remote_public_fullpath }}"

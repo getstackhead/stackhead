@@ -1,2 +1,0 @@
----
-dockerapp__project_src: "/mackerel/docker-compose/{{ dockerapp__project_name }}"

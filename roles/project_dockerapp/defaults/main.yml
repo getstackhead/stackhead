@@ -2,3 +2,4 @@
 vars:
   dockerapp__project_name:
   dockerapp__services: []
+  dockerapp__file_changed: false

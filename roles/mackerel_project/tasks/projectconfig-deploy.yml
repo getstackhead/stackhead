@@ -8,6 +8,6 @@
     state: directory
   when: project_folder.stat.exists == false
 
-- copy:
+- synchronize:
     src: "{{ mackerel__local_config_file }}"
     dest: "{{ mackerel__remote_config_file }}"

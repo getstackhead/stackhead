@@ -2,6 +2,7 @@
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
   ignore_errors: yes
+
 - name: Add managed vhost config files.
   template:
       src: "{{ nginx_vhost_template }}"

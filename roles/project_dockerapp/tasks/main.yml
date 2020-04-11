@@ -1,38 +1,42 @@
-- name: "Mackerel::Docker || Check if project directory exists | Project: {{ dockerapp__project_name }}"
-  stat:
-    path: "{{ dockerapp__project_src }}"
-  register: project_folder
+- block:
+  - name: "Mackerel::Docker || Check if project directory exists | Project: {{ dockerapp__project_name }}"
+    stat:
+      path: "{{ dockerapp__project_src }}"
+    register: project_folder
+  - name: "Mackerel::Docker || Create project directory if not exists | Project: {{ dockerapp__project_name }}"
+    file:
+      path: "{{ dockerapp__project_src }}"
+      state: directory
+    when: project_folder.stat.exists == false
 
-- name: "Mackerel::Docker || Create project directory if not exists | Project: {{ dockerapp__project_name }}"
-  file:
-    path: "{{ dockerapp__project_src }}"
-    state: directory
-  when: project_folder.stat.exists == false
+- block:
+  - name: "Mackerel::Docker || Tear down existing services | Project: {{ dockerapp__project_name }}"
+    docker_compose:
+      project_src: "{{ dockerapp__project_src }}"
+      state: absent
+    ignore_errors: yes
 
-- name: "Mackerel::Docker || Tear down existing services | Project: {{ dockerapp__project_name }}"
-  docker_compose:
-    project_src: "{{ dockerapp__project_src }}"
-    state: absent
-  ignore_errors: yes
+  - name: "Mackerel::Docker || Generate docker-compose file | Project: {{ dockerapp__project_name }}"
+    template:
+      src: "templates/docker-compose.yml.j2"
+      dest: "{{ dockerapp__project_src }}/docker-compose.yml"
+      force: true
 
-- name: "Mackerel::Docker || Generate docker-compose file | Project: {{ dockerapp__project_name }}"
-  template:
-    src: "templates/docker-compose.yml.j2"
-    dest: "{{ dockerapp__project_src }}/docker-compose.yml"
-    force: true
+  - name: "Mackerel::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
+    docker_compose:
+      project_src: "{{ dockerapp__project_src }}"
+  when: dockerapp__file_changed == true
 
-- name: "Mackerel::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
-  docker_compose:
-    project_src: "{{ dockerapp__project_src }}"
+# Always fetch port - required for Nginx config update when domain changed
+- block:
+  - name: "Mackerel::Docker || Get current Docker port"
+    shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
+    when: item.value.expose_port is defined
+    with_dict: "{{ dockerapp__services }}"
+    ignore_errors: yes
+    register: used_port
 
-- name: "Mackerel::Docker || Get current Docker port"
-  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
-  when: item.value.expose_port is defined
-  with_dict: "{{ dockerapp__services }}"
-  ignore_errors: yes
-  register: used_port
-
-- set_fact:
-    docker_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
-  when: item.changed == true
-  with_items: "{{ used_port.results }}"
+  - set_fact:
+      docker_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
+    when: item.changed == true
+    with_items: "{{ used_port.results }}"

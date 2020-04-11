@@ -1,0 +1,30 @@
+---
+- name: "Mackerel::Project || Extract application information"
+  include_vars:
+    file: "{{ mackerel__local_config_file }}"
+    name: app_config
+  delegate_to: 127.0.0.1
+
+- name: "Mackerel::Project || Load deployed configuration"
+  shell: "cat {{ mackerel__remote_config_file }}"
+  register: data
+  ignore_errors: yes
+
+- name: "Mackerel::Project || Set facts from project file"
+  set_fact:
+    deployed_project: "{{ data.stdout | from_yaml }}"
+    active_domain: "{{ deployed_project.domain | default('') }}"
+    docker_changed: "{{ app_config.docker is defined and app_config.docker != deployed_project.docker| default({}) }}"
+    web_changed: "{{ app_config.web is defined and app_config.web != deployed_project.web| default({}) }}"
+    web_php_enabled: "{{ app_config.web.capabilities.php is defined }}"
+    php_version: "{{ app_config.web.capabilities.php.version }}"
+    remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
+    # Note: web_changed and docker_changed will not detect if an application was switched from Docker to web and vice versa!
+
+- name: "Mackerel::Project || Check if PHP version matches"
+  assert:
+    that:
+      - remote_php_version is not none
+      - php_version is version(remote_php_version| regex_replace('(\.\d+)$', ''), operator='==')
+    fail_msg: "App requires PHP {{ php_version }} which the target server does not provide. Version on target server: {{ remote_php_version | default('none') }}"
+  when: web_php_enabled == true

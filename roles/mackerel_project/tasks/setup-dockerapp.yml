@@ -1,0 +1,22 @@
+---
+- name: "Mackerel::Project || Setup Docker app"
+  import_role:
+    name: project_dockerapp
+  vars:
+    dockerapp__project_name: "{{ project_name }}"
+    dockerapp__services: "{{ app_config.docker.services }}"
+    dockerapp__file_changed: "{{ docker_changed }}"
+  when: app_config.docker is defined
+
+- name: "Mackerel::Project || Update Nginx reverse proxy configuration"
+  include_role:
+    name: config_nginx
+  vars:
+    nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.reverse-proxy.j2"
+    nginx_vhosts:
+      - server_name: "{{ app_config.domain }}"
+        use_https: 1
+        proxy_pass_port: "{{ docker_port }}"
+        state: present
+        filename: "{{ app_config.domain }}.conf"
+  when: docker_port is defined
