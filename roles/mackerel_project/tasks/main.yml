@@ -1,45 +1,19 @@
 ---
 - name: "Mackerel::Project || Extract application information"
   include_vars:
-      file: "{{ mackerel__config_folder }}/{{ project_name }}.yaml"
+      file: "{{ mackerel__local_config_file }}"
       name: app_config
   delegate_to: 127.0.0.1
 
 - name: "Mackerel::Project || Load deployed configuration"
-  shell: "cat {{ mackerel__remote_config_folder }}/{{ project_name }}.yaml"
+  shell: "cat {{ mackerel__remote_config_file }}"
   register: data
   ignore_errors: yes
 
 - name: "Mackerel::Project || Set facts from project file"
   set_fact:
-    project_file: "{{ data.stdout | from_yaml }}"
-    active_domain: "{{ project_file.domain | default('') }}"
-
-- name: "Mackerel::Project || Get current Docker port"
-  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
-  when: item.value.expose_port is defined
-  with_dict: "{{ project_file.docker.services }}"
-  ignore_errors: yes
-  register: used_port
-
-- set_fact:
-    bind_port: "{{ item.stdout | replace('0.0.0.0:','') | default(0) }}"
-  when: item.changed
-  with_items: "{{ used_port.results }}"
-
-- name: "Mackerel::Project || Gather occupied tcp v4 ports | Used Docker port is {{ bind_port }}"
-  shell: netstat -nlt4 | grep -oP '(?<=0.0.0.0:)(\d+)'
-  register: used_ports
-  when: bind_port | int == 0
-
-- name: "Mackerel::Project || Set bind_port as first available port"
-  vars:
-    # use range 12000-13000 for Docker applications
-    allowed_ports: "{{ range(12000, 13000 + 1) | list }}"
-  set_fact:
-    bind_port: "{{ allowed_ports | difference(used_ports.stdout_lines | map('int') | list) | first | default(0) }}"
-  when: used_ports is not skipped
-  failed_when: bind_port | int == 0
+    deployed_project: "{{ data.stdout | from_yaml }}"
+    active_domain: "{{ deployed_project.domain | default('') }}"
 
 - name: "Mackerel::Project || Update Docker containers"
   include_role:
@@ -47,9 +21,33 @@
   vars:
     dockerapp__project_name: "{{ project_name }}"
     dockerapp__services: "{{ app_config.docker.services }}"
-    dockerapp__free_port: "{{ bind_port }}"
-  when: app_config.docker != project_file.docker
+  when: app_config.docker != deployed_project.docker| default({})
   register: docker_result
+
+- name: "Mackerel::Project || Get current Docker port"
+  shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
+  when: item.value.expose_port is defined
+  with_dict: "{{ app_config.docker.services }}"
+  ignore_errors: yes
+  register: used_port
+
+- set_fact:
+    docker_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
+  when: item.changed == true
+  with_items: "{{ used_port.results }}"
+
+- name: "Mackerel::Project || Create SSL certificate"
+  include_role:
+    name: geerlingguy.certbot
+  vars:
+    certbot_create_if_missing: true
+    certbot_create_method: standalone
+    certbot_create_standalone_stop_services:
+      - nginx
+    certbot_certs:
+      - email: certificate@saitho.me
+        domains:
+          - "{{ app_config.domain }}"
 
 - name: "Mackerel::Project || Update Nginx containers"
   include_role:
@@ -58,7 +56,23 @@
     nginx_vhosts:
       - server_name: "{{ app_config.domain }}"
         use_https: 1
-        proxy_pass_port: "{{ bind_port }}"
+        proxy_pass_port: "{{ docker_port }}"
         state: present
         filename: "{{ app_config.domain }}.conf"
   when: docker_result is succeeded or app_config.domain != active_domain
+
+- name: "Mackerel::Project || Check if project directory exists | Project: {{ dockerapp__project_name }}"
+  stat:
+    path: "{{ mackerel__remote_config_folder }}"
+  register: project_folder
+
+- name: "Mackerel::Project || Create project directory if not exists | Project: {{ dockerapp__project_name }}"
+  file:
+    path: "{{ mackerel__remote_config_folder }}"
+    state: directory
+  when: project_folder.stat.exists == false
+
+- name: "Mackerel::Project || Update deployed configuration"
+  copy:
+    src: "{{ mackerel__local_config_file }}"
+    dest: "{{ mackerel__remote_config_file }}"
