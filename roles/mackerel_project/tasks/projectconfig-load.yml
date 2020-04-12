@@ -1,4 +1,7 @@
 ---
+- setup:
+    filter: ansible_local
+
 - name: "Mackerel::Project || Extract application information"
   include_vars:
     file: "{{ mackerel__local_config_file }}"

@@ -9,6 +9,13 @@
       synchronize:
         src: "{{ playbook_dir }}/vendor/server-configs-nginx/h5bp"
         dest: /etc/nginx
+    - name: Setup custom facts
+      synchronize:
+        src: "{{ playbook_dir }}/facts/"
+        dest: /etc/ansible/facts.d/
+        perms: false
+        rsync_opts:
+          - "--chmod=F755"
   roles:
     - application_docker
     - geerlingguy.nginx
