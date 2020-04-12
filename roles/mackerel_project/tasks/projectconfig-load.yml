@@ -1,9 +1,6 @@
 ---
 - import_tasks: "roles/mackerel_setup/tasks/facts-load.yml"
 
-- setup:
-    filter: ansible_local
-
 - name: "Mackerel::Project || Extract application information"
   include_vars:
     file: "{{ mackerel__local_config_file }}"
