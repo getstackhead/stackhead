@@ -1,4 +1,14 @@
 ---
+- block:
+    - name: Check if facts directory exists
+      stat:
+        path: "/etc/ansible/facts.d/"
+      register: facts_folder
+    - name: Create facts directory if not exists
+      file:
+        path: "/etc/ansible/facts.d/"
+        state: directory
+      when: facts_folder.stat.exists == false
 - name: Setup custom facts
   synchronize:
     src: "{{ playbook_dir }}/facts/"

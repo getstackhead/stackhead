@@ -1,3 +1,4 @@
+---
 - block:
   - name: "Mackerel::Docker || Check if project directory exists | Project: {{ dockerapp__project_name }}"
     stat:

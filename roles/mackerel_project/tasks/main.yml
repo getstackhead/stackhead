@@ -4,10 +4,10 @@
 - import_tasks: "roles/mackerel_project/tasks/generate-ssl-certificate.yml"
 
 - block:
-    - import_tasks: "roles/mackerel_project/tasks/setup-webapp.yml"
-      when: app_config.deployment.type == 'web'
-    - import_tasks: "roles/mackerel_project/tasks/setup-dockerapp.yml"
-      when: app_config.deployment.type == 'docker'
-    - name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
-      import_tasks: "roles/mackerel_project/tasks/projectconfig-deploy.yml"
-    when: settings_changed
+  - import_tasks: "roles/mackerel_project/tasks/setup-webapp.yml"
+    when: app_config.deployment.type == 'web'
+  - import_tasks: "roles/mackerel_project/tasks/setup-dockerapp.yml"
+    when: app_config.deployment.type == 'docker'
+  - name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
+    import_tasks: "roles/mackerel_project/tasks/projectconfig-deploy.yml"
+  when: settings_changed

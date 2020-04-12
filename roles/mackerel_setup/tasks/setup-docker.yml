@@ -13,14 +13,15 @@
       - "cron"
       - "gnupg2"
       - "software-properties-common"
-      - "python-docker"
+      - "python-docker" # added to default values
 - name: Make sure docker pip package is up to date
   pip:
     name: docker
     extra_args: --upgrade
-- name: Install Wheel (required for docker-compose)
+- name: Install required packages for docker-compose
   pip:
-    name: wheel
+    name: "{{ item }}"
+  with_items: ['wheel', 'setuptools']
 - name: Install docker-compose
   pip:
     name: docker-compose
