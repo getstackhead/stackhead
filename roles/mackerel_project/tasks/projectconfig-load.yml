@@ -16,12 +16,12 @@
   set_fact:
     deployed_project: "{{ data.stdout | from_yaml }}"
     active_domain: "{{ deployed_project.domain | default('') }}"
-    docker_changed: "{{ app_config.docker is defined and app_config.docker != deployed_project.docker| default({}) }}"
-    web_changed: "{{ app_config.web is defined and app_config.web != deployed_project.web| default({}) }}"
-    web_php_enabled: "{{ app_config.web.capabilities.php is defined }}"
-    php_version: "{{ app_config.web.capabilities.php.version }}"
+    deployment_type: "{{ app_config.deployment.type }}"
+    settings_changed: "{{ app_config.deployment.settings != deployed_project.deployment.settings| default({}) }}"
+    web_php_enabled: "{{ app_config.deployment.settings.capabilities.php is defined }}"
+    php_version: "{{ app_config.deployment.settings.capabilities.php.version }}"
     remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
-    # Note: web_changed and docker_changed will not detect if an application was switched from Docker to web and vice versa!
+    # Note: settings_changed will not detect if an application was switched from Docker to web and vice versa!
 
 - name: "Mackerel::Project || Check if PHP version matches"
   assert:

@@ -17,15 +17,17 @@ The example above consists of two services (app and db).
 ```yaml
 ---
 domain: example.com
-docker:
-  services:
-    app:
-      image: nginxdemos/hello:latest
-      expose_port: 80 # only once per services section!
-    db:
-      image: mariadb:10.5
-      environment:
-        MYSQL_ROOT_PASSWORD: example
+deployment:
+  type: docker
+  settings:
+    services:
+      app:
+        image: nginxdemos/hello:latest
+        expose_port: 80 # only once per services section!
+      db:
+        image: mariadb:10.5
+        environment:
+          MYSQL_ROOT_PASSWORD: example
 ```
 
 ### image (required)
@@ -54,34 +56,39 @@ Web-based applications are basic applications that live on the target machine an
 ```yaml
 ---
 domain: example.com
-web:
+deployment:
+  type: web
 ```
 
 ### Serve location
 
 Per default files are served from the `htdocs` folder inside the `/var/www/[projectname]/` directory.
-If you want to serve files from a different folder inside that directory, use the setting `web.public_path` as below.
+If you want to serve files from a different folder inside that directory, use `deployment.settings.public_path` as below.
 
 ```yaml
 ---
 domain: example.com
-web:
-  public_path: public
+deployment:
+  type: web
+  settings:
+    public_path: public
 ```
 
 ### Capabilities
 
 If your application requires other software or runtime environments,
-define capabilities using `web.capabilities` to make sure the application
+define capabilities using `deployment.settings.capabilities` to make sure the application
 is only deployed to targets that meet the requirements.
 
 ```yaml
 ---
 domain: example.com
-web:
-  capabilities:
-    php:
-      version: 7.3
+deployment:
+  type: web
+  settings:
+    capabilities:
+      php:
+        version: 7.3
 ```
 
 Please also have a look at the [complete list of available capabilities](../Features/Capabilities.md).

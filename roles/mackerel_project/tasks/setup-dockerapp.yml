@@ -4,9 +4,9 @@
     name: project_dockerapp
   vars:
     dockerapp__project_name: "{{ project_name }}"
-    dockerapp__services: "{{ app_config.docker.services }}"
-    dockerapp__file_changed: "{{ docker_changed }}"
-  when: app_config.docker is defined
+    dockerapp__services: "{{ app_config.deployment.settings.services }}"
+    dockerapp__file_changed: "{{ settings_changed }}"
+  when: app_config.deployment.type == 'docker'
 
 - name: "Mackerel::Project || Update Nginx reverse proxy configuration"
   include_role:
@@ -20,3 +20,5 @@
         state: present
         filename: "{{ app_config.domain }}.conf"
   when: docker_port is defined
+  # currently not checking if Docker steps succeeded as we cant "register" the result due to import_role
+  # import_role is required because include_role does not pass the facts set in Docker role

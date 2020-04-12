@@ -4,8 +4,7 @@
     name: project_webapp
   vars:
     webapp__project_name: "{{ project_name }}"
-    webapp__public_path: "{{ app_config.web.public_path }}"
-  when: app_config.web is defined and web_changed
+    webapp__public_path: "{{ app_config.deployment.settings.public_path }}"
 
 - name: "Mackerel::Project || Update Nginx vhost configuration"
   include_role:
@@ -19,4 +18,3 @@
         state: present
         filename: "{{ app_config.domain }}.conf"
         root_path: "{{ webapp_root_path }}"
-  when: web_changed

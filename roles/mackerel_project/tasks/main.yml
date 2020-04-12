@@ -1,13 +1,13 @@
 ---
 - import_tasks: "roles/mackerel_project/tasks/projectconfig-load.yml"
 
-#-  import_tasks: "roles/mackerel_project/tasks/generate-ssl-certificate.yml"
+- import_tasks: "roles/mackerel_project/tasks/generate-ssl-certificate.yml"
 
--  import_tasks: "roles/mackerel_project/tasks/setup-webapp.yml"
-#-  import_tasks: "roles/mackerel_project/tasks/setup-dockerapp.yml"
-
-- name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
-  import_tasks: "roles/mackerel_project/tasks/projectconfig-deploy.yml"
-  # currently not checking if Docker steps succeeded as we cant "register" the result due to import_role
-  # import_role is required because include_role does not pass the facts set in Docker role
-  when: docker_changed or web_changed
+- block:
+    - import_tasks: "roles/mackerel_project/tasks/setup-webapp.yml"
+      when: app_config.deployment.type == 'web'
+    - import_tasks: "roles/mackerel_project/tasks/setup-dockerapp.yml"
+      when: app_config.deployment.type == 'docker'
+    - name: "Mackerel::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"
+      import_tasks: "roles/mackerel_project/tasks/projectconfig-deploy.yml"
+    when: settings_changed

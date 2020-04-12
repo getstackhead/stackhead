@@ -71,9 +71,11 @@ Example project definition:
 ```yaml
 ---
 domain: example.com
-web:
-  public_path: public
-  capabilities: # requires target system with PHP 7.3
-    php:
-      version: 7.3
+deployment:
+  type: web
+  settings:
+      public_path: public
+      capabilities: # requires target system with PHP 7.3
+        php:
+          version: 7.3
 ```

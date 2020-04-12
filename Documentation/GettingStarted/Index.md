@@ -2,6 +2,12 @@
 
 This guide will explain how to **provision** a server for usage with Mackerel and **deploy** a basic Docker-based application.
 
+You will require:
+
+* Ansible locally installed
+* a top level domain
+* a webserver with SSH root access
+
 ## Creating a project defintion
 
 Create a new project definitions file at `./mackerel/example_app.yml` and the following content:
@@ -9,16 +15,20 @@ Create a new project definitions file at `./mackerel/example_app.yml` and the fo
 ```yaml
 ---
 domain: example.com
-docker:
-  services:
-    app:
-      image: nginxdemos/hello:latest
-      expose_port: 80
+deployment:
+  type: docker
+  settings:
+    services:
+      app:
+        image: nginxdemos/hello:latest
+        expose_port: 80
 ```
 
 This defines that a new Docker container shall be created with the `nginxdemos/hello:latest` image.
 When `example.com` is opened, the request shall be redirected (proxied) to the container's port 80, which is where the
 image's internal web server runs.
+
+Make sure to replace _example.com_ with your own domain.
 
 ## Provisioning the server
 

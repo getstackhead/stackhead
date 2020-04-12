@@ -23,8 +23,10 @@ all:
 
 ```yaml
 ---
-web:
-  capabilities:
-    php:
-      version: 7.3
+deployment:
+  type: web
+  settings:
+    capabilities:
+      php:
+        version: 7.3
 ```
