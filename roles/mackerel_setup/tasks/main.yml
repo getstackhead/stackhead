@@ -1,0 +1,41 @@
+---
+- debug:
+    msg: "{{ mackerel }}"
+- name: Validate server configuration file
+  assert:
+    that:
+      - mackerel.capabilities.php is not defined or (mackerel.capabilities.php is defined and mackerel.capabilities.php is defined)
+- name: Deploy additional h5bp Nginx files
+  synchronize:
+    src: "{{ playbook_dir }}/vendor/server-configs-nginx/h5bp"
+    dest: /etc/nginx
+- name: Setup custom facts
+  synchronize:
+    src: "{{ playbook_dir }}/facts/"
+    dest: /etc/ansible/facts.d/
+    perms: false
+    rsync_opts:
+      - "--chmod=F755"
+- name: Setup Docker
+  include_role:
+    name: application_docker
+- name: Setup Nginx
+  vars:
+    nginx_conf_template: "{{ playbook_dir }}/templates/nginx.conf.j2"
+    nginx_vhosts: []
+  include_role:
+    name: geerlingguy.nginx
+
+- block:
+    - include_role:
+        name: geerlingguy.php-versions
+    - include_role:
+        name: geerlingguy.php
+  vars:
+    php_enable_php_fpm: true
+    php_enable_webserver: false
+    php_version: "{{ mackerel.capabilities.php.version }}"
+  when: mackerel.capabilities.php is defined
+- name: "Write Mackerel version"
+  debug:
+    msg: "test"

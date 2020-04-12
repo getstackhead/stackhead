@@ -1,33 +1,5 @@
 ---
 - hosts: all
   become: true
-  vars:
-    nginx_conf_template: "{{ playbook_dir }}/templates/nginx.conf.j2"
-    nginx_vhosts: []
-  pre_tasks:
-    - name: Deploy additional h5bp Nginx files
-      synchronize:
-        src: "{{ playbook_dir }}/vendor/server-configs-nginx/h5bp"
-        dest: /etc/nginx
-    - name: Setup custom facts
-      synchronize:
-        src: "{{ playbook_dir }}/facts/"
-        dest: /etc/ansible/facts.d/
-        perms: false
-        rsync_opts:
-          - "--chmod=F755"
   roles:
-    - application_docker
-    - geerlingguy.nginx
-  tasks:
-    - block:
-      - include_role:
-          name: geerlingguy.php-versions
-      - include_role:
-          name: geerlingguy.php
-      vars:
-        php_enable_php_fpm: true
-        php_enable_webserver: false
-        __php_version: 7.3 # default PHP version to use if application did not provide one
-        php_version: "{% if mackerel.capabilities.php.version is defined %}{{ mackerel.capabilities.php.version }}{% else %}{{ __php_version }}{% endif %}"
-      when: mackerel.capabilities.php is defined
+    - mackerel_setup
