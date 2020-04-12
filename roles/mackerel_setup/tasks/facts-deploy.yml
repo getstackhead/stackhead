@@ -1,0 +1,8 @@
+---
+- name: Setup custom facts
+  synchronize:
+    src: "{{ playbook_dir }}/facts/"
+    dest: /etc/ansible/facts.d/
+    perms: false
+    rsync_opts:
+      - "--chmod=F755"

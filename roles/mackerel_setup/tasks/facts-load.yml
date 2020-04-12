@@ -1,0 +1,3 @@
+---
+- setup:
+    filter: ansible_local

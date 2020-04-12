@@ -1,4 +1,6 @@
 ---
+- import_tasks: "roles/mackerel_setup/tasks/facts-load.yml"
+
 - setup:
     filter: ansible_local
 

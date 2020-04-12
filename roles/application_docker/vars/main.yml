@@ -1,8 +1,0 @@
----
-docker__package_dependencies:
-  - "apt-transport-https"
-  - "ca-certificates"
-  - "cron"
-  - "gnupg2"
-  - "software-properties-common"
-  - "python-docker"

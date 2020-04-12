@@ -6,6 +6,14 @@
     name: andrewrothstein.python
 - import_role:
     name: nickjj.docker
+  vars:
+    docker__package_dependencies:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "cron"
+      - "gnupg2"
+      - "software-properties-common"
+      - "python-docker"
 - name: Make sure docker pip package is up to date
   pip:
     name: docker
