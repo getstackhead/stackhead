@@ -1,6 +1,7 @@
 # Project definitions
 
-Project definitions are stored at `./mackerel/[projectname].yml` (subject to change).
+Project definitions are stored at `./mackerel/[projectname].yml` (per default).
+However that can be overwritten by setting the `mackerel__remote_config_folder` in inventory file.
 Each file consists of a **domain** and an **application configuration**.
 
 There are two application types: docker and web. Only one application type is allowed.
