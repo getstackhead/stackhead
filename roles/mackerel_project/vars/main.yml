@@ -1,5 +1,5 @@
 ---
 mackerel__config_folder: "{{ playbook_dir }}/mackerel"
-mackerel__remote_config_folder: "/mackerel/config/applications"
-mackerel__local_config_file: "{{ mackerel__config_folder }}/{{ project_name }}.yaml"
-mackerel__remote_config_file: "{{ mackerel__remote_config_folder }}/{{ project_name }}.yml"
+mackerel__remote_config_folder: "/mackerel/projects/{{ project_name }}"
+mackerel__local_config_file: "{{ mackerel__config_folder }}/{{ project_name }}.yml"
+mackerel__remote_config_file: "{{ mackerel__remote_config_folder }}/project.yml"
