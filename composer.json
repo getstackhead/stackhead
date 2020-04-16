@@ -1,0 +1,13 @@
+{
+    "name": "mackerelserver/deployment",
+    "description": "Setup your application on a domain automatically",
+    "type": "library",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Mario Lubenka",
+            "email": "mario.lubenka@googlemail.com"
+        }
+    ],
+    "require": {}
+}
