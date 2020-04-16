@@ -1,2 +1,0 @@
----
-dockerapp__project_src: "{{ mackerel__remote_config_folder }}"

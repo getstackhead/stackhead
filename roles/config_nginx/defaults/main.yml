@@ -1,0 +1,2 @@
+---
+nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.j2"

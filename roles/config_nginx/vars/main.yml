@@ -2,4 +2,3 @@
 # OS-specific variables see other yml files in this directory
 root_group: root
 nginx_vhost_path: /etc/nginx/sites-enabled
-nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.j2"
