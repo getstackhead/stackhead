@@ -1,14 +1,14 @@
 # Documentation
 
-## [Concepts](Documentation/Concepts.md)
+## [Concepts](Concepts.md)
 
 Concepts used by Mackerel.
 
-## [Getting started](Documentation/GettingStarted.md)
+## [Getting started](GettingStarted.md)
 
 Learn how to set up your application on your server with Mackerel.
 
-## [Project definition](Documentation/ProjectDefinition.md)
+## [Project definition](ProjectDefinition.md)
 
 Available settings for project definitions.
 
