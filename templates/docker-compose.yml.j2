@@ -15,6 +15,12 @@ services:
       - {{ volume }}
 {% endfor %}
 {% endif %}
+{% if value.volumes is defined %}
+    links:
+{% for link in value.links %}
+      - {{ link }}
+{% endfor %}
+{% endif %}
 {% if value.environment is defined %}
     environment:
 {% for envName, envVal in value.environment.items() %}
