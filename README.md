@@ -11,5 +11,5 @@ Make sure to install Ansible dependencies via:
 ansible-galaxy install -r requirements/requirements.yml
 ```
 
-Please checkout the [Documentation/Index.md](documentation) and
-the [Getting started guide](Documentation/GettingStarted/Index.md) for more information on usage.
+Please checkout the [documentation](Documentation/Index.md) and
+the [Getting started guide](Documentation/GettingStarted.md) for more information on usage.

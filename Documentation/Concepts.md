@@ -9,7 +9,7 @@ The information about a project is stored in the **project definition** file.
 
 While we recommend running your application in a Docker container,
 you can also set it up to run directly on the target system.
-Please have a look at the [project definition documentation](../Configuration/Project.md) for more information.
+Please have a look at the [project definition documentation](../ProjectDefinition.md) for more information.
 
 ## Provision & Deploy
 
@@ -21,14 +21,14 @@ Server **provisioning** and project **deployment**.
 Any system you want to use Mackerel on has to be **provisioned** first.
 This will install all required software packages and services onto the target system.
 
-Find out how to provision your server in the [Getting started guide](../GettingStarted/Index.md).
+Find out how to provision your server in the [Getting started guide](../GettingStarted.md).
 
 ### Project deployment
 
 Getting your own application on the provisioned server is called **deployment**.
 This will setup the required web server configurations, SSL certificates and application for your project.
 
-Find out how to deploy to your provisioned server in the [Getting started guide](../GettingStarted/Index.md).
+Find out how to deploy to your provisioned server in the [Getting started guide](../GettingStarted.md).
 
 ## Capabilities
 
