@@ -35,10 +35,9 @@
 # Always fetch port - required for Nginx config update when domain changed
 - block:
   - name: "Mackerel::Docker || Get current Docker port"
-    shell: "docker port {{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
+    shell: "docker port mackerel-{{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
     when: item.value.expose_port is defined
     with_dict: "{{ dockerapp__services }}"
-    ignore_errors: yes
     register: used_port
 
   - set_fact:
