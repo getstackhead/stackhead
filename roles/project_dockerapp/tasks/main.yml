@@ -16,6 +16,8 @@
       project_src: "{{ dockerapp__project_src }}"
       state: absent
     ignore_errors: yes
+    vars:
+      ansible_python_interpreter: "/usr/bin/env python-docker"
 
   - name: "Mackerel::Docker || Generate docker-compose file | Project: {{ dockerapp__project_name }}"
     template:
@@ -26,6 +28,8 @@
   - name: "Mackerel::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
     docker_compose:
       project_src: "{{ dockerapp__project_src }}"
+    vars:
+      ansible_python_interpreter: "/usr/bin/env python-docker"
   when: dockerapp__file_changed == true
 
 # Always fetch port - required for Nginx config update when domain changed

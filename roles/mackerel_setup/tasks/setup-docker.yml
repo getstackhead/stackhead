@@ -6,22 +6,3 @@
     name: andrewrothstein.python
 - import_role:
     name: nickjj.docker
-  vars:
-    docker__package_dependencies:
-      - "apt-transport-https"
-      - "ca-certificates"
-      - "cron"
-      - "gnupg2"
-      - "software-properties-common"
-      - "python-docker" # added to default values
-- name: Make sure docker pip package is up to date
-  pip:
-    name: docker
-    extra_args: --upgrade
-- name: Install required packages for docker-compose
-  pip:
-    name: "{{ item }}"
-  with_items: ['wheel', 'setuptools']
-- name: Install docker-compose
-  pip:
-    name: docker-compose
