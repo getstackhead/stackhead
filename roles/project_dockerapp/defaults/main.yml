@@ -2,4 +2,4 @@
 dockerapp__project_name:
 dockerapp__services: []
 dockerapp__file_changed: false
-dockerapp__project_src: "{{ mackerel__remote_config_folder }}"
+dockerapp__project_src: "{{ stackhead__remote_config_folder }}"

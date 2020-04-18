@@ -1,6 +1,6 @@
 # Concepts
 
-This page describes the concepts used by Mackerel.
+This page describes the concepts used by StackHead.
 
 ## Projects
 
@@ -13,12 +13,12 @@ Please have a look at the [project definition documentation](../ProjectDefinitio
 
 ## Provision & Deploy
 
-When using Mackerel you'll come upon two words:
+When using StackHead you'll come upon two words:
 Server **provisioning** and project **deployment**.
 
 ### Server provisioning
 
-Any system you want to use Mackerel on has to be **provisioned** first.
+Any system you want to use StackHead on has to be **provisioned** first.
 This will install all required software packages and services onto the target system.
 
 Find out how to provision your server in the [Getting started guide](../GettingStarted.md).
@@ -39,7 +39,7 @@ Please also have a look at the [complete list of available capabilities](../Feat
 
 ### Server
 
-Server capabilities are defined in Ansible inventory inside `mackerel.capabilities` of a host definition.
+Server capabilities are defined in Ansible inventory inside `stackhead.capabilities` of a host definition.
 They state what software is additionally installed on the target system during provisioning.
 
 Example inventory:
@@ -52,7 +52,7 @@ all:
   hosts:
     hetzner1:
       ansible_host: 116.203.211.171
-      mackerel:
+      stackhead:
         applications:
           - example_com
         capabilities: # installs PHP 7.3

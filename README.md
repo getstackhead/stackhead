@@ -1,4 +1,4 @@
-# Mackerel deployment
+# StackHead deployment
 
 Open source web server management powered by Ansible
 

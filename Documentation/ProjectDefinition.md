@@ -1,7 +1,7 @@
 # Project definitions
 
-Project definitions are stored at `./mackerel/[projectname].yml` (per default).
-However that can be overwritten by setting the `mackerel__remote_config_folder` in inventory file.
+Project definitions are stored at `./stackhead/[projectname].yml` (per default).
+However that can be overwritten by setting the `stackhead__remote_config_folder` in inventory file.
 Each file consists of a **domain** and an **application configuration**.
 
 There are two application types: docker and web. Only one application type is allowed.
@@ -9,7 +9,7 @@ There are two application types: docker and web. Only one application type is al
 ## Application Type: docker (recommended)
 
 Docker-based applications are applications that run in one or multiple Docker containers.
-The definition is pretty similar to docker-compose. In fact Mackerel uses docker-compose to spin up the containers.
+The definition is pretty similar to docker-compose. In fact StackHead uses docker-compose to spin up the containers.
 
 **Note:** Not all container options from docker-compose files are supported right now.
 

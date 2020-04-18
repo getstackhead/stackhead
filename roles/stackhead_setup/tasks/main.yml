@@ -1,0 +1,17 @@
+---
+- import_tasks: "roles/stackhead_setup/tasks/facts-load.yml"
+  ignore_errors: yes
+
+- name: Validate server configuration file
+  assert:
+    that:
+      - stackhead.capabilities.php is not defined or (stackhead.capabilities.php is defined and stackhead.capabilities.php is defined)
+
+- import_tasks: "roles/stackhead_setup/tasks/facts-deploy.yml"
+
+- import_tasks: "roles/stackhead_setup/tasks/setup-nginx.yml"
+
+- import_tasks: "roles/stackhead_setup/tasks/setup-docker.yml"
+
+- import_tasks: "roles/stackhead_setup/tasks/setup-php.yml"
+  when: stackhead.capabilities.php is defined

@@ -13,7 +13,7 @@ Capabilities can be inside **web-based** project definitions to ensure that the 
 all:
   hosts:
     example:
-      mackerel:
+      stackhead:
         capabilities:
           php:
             version: 7.3

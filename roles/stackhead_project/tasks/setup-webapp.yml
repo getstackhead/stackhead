@@ -1,12 +1,12 @@
 ---
-- name: "Mackerel::Project || Setup webapp"
+- name: "StackHead::Project || Setup webapp"
   import_role:
     name: project_webapp
   vars:
     webapp__project_name: "{{ project_name }}"
     webapp__public_path: "{{ app_config.deployment.settings.public_path }}"
 
-- name: "Mackerel::Project || Update Nginx vhost configuration"
+- name: "StackHead::Project || Update Nginx vhost configuration"
   include_role:
     name: config_nginx
   vars:

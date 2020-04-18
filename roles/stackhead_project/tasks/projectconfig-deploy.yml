@@ -1,0 +1,13 @@
+---
+- stat:
+    path: "{{ stackhead__remote_config_folder }}"
+  register: project_folder
+
+- file:
+    path: "{{ stackhead__remote_config_folder }}"
+    state: directory
+  when: project_folder.stat.exists == false
+
+- synchronize:
+    src: "{{ stackhead__local_config_file }}"
+    dest: "{{ stackhead__remote_config_file }}"

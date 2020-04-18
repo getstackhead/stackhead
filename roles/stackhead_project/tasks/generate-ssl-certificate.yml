@@ -1,5 +1,5 @@
 ---
-- name: "Mackerel::Project || Create SSL certificate"
+- name: "StackHead::Project || Create SSL certificate"
   include_role:
     name: geerlingguy.certbot
   vars:

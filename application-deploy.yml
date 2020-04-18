@@ -3,7 +3,7 @@
   become: true
   tasks:
     - include_role:
-        name: mackerel_project
+        name: stackhead_project
       loop_control:
         loop_var: project_name
-      with_items: "{{ mackerel.applications }}"
+      with_items: "{{ stackhead.applications }}"

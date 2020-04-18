@@ -1,6 +1,6 @@
 # Getting started
 
-This guide will explain how to **provision** a server for usage with Mackerel and **deploy** a basic Docker-based application.
+This guide will explain how to **provision** a server for usage with StackHead and **deploy** a basic Docker-based application.
 
 You will require:
 
@@ -10,7 +10,7 @@ You will require:
 
 ## Creating a project defintion
 
-Create a new project definitions file at `./mackerel/example_app.yml` and the following content:
+Create a new project definitions file at `./stackhead/example_app.yml` and the following content:
 
 ```yaml
 ---
@@ -47,7 +47,7 @@ all:
   hosts:
     myhost:
       ansible_host: 123.456.789.10
-      mackerel:
+      stackhead:
         applications:
           - example_app
 ```
@@ -57,7 +57,7 @@ Make sure to replace the `123.456.789.10` with your own server IP.
 Operations on the target server are done with `ssh` and the `root` user.
 Make sure you have a SSH certificate and added the private key on your server.
 
-Looking at the `mackerel.applications` section we specified the name of our application "example_app" we created earlier.
+Looking at the `stackhead.applications` section we specified the name of our application "example_app" we created earlier.
 This means our application will be deployed to that IP.
 
 ### Server provisioning

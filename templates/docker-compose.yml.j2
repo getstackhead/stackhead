@@ -2,7 +2,7 @@ version: '3'
 services:
 {% for key, value in dockerapp__services.items() %}
   {{ key }}:
-    container_name: mackerel-{{ dockerapp__project_name }}-{{ key }}
+    container_name: stackhead-{{ dockerapp__project_name }}-{{ key }}
     image: {{ value.image }}
     restart: always
 {% if value.expose_port is defined %}

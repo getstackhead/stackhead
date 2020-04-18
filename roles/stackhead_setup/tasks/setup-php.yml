@@ -2,7 +2,7 @@
 - include_role:
     name: geerlingguy.php-versions
   vars:
-    php_version: "{{ mackerel.capabilities.php.version }}"
+    php_version: "{{ stackhead.capabilities.php.version }}"
 - include_role:
     name: geerlingguy.php
   vars:

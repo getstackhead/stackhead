@@ -1,10 +1,10 @@
 {
-  "name": "@mackerelserver/deployment",
+  "name": "@getstackhead/deployment",
   "version": "1.0.0",
   "description": "Setup your application on a domain automatically",
   "repository": {
     "type": "git",
-    "url": "git@github.com:mackerelserver/deployment.git"
+    "url": "git@github.com:getstackhead/deployment.git"
   },
   "author": "Mario Lubenka",
   "license": "GPL-2.0-or-later",

@@ -1,5 +1,5 @@
 ---
-- name: "Mackerel::Project || Setup Docker app"
+- name: "StackHead::Project || Setup Docker app"
   import_role:
     name: project_dockerapp
   vars:
@@ -8,7 +8,7 @@
     dockerapp__file_changed: "{{ settings_changed }}"
   when: app_config.deployment.type == 'docker'
 
-- name: "Mackerel::Project || Update Nginx reverse proxy configuration"
+- name: "StackHead::Project || Update Nginx reverse proxy configuration"
   include_role:
     name: config_nginx
   vars:

@@ -1,5 +1,5 @@
 {
-    "name": "mackerelserver/deployment",
+    "name": "getstackhead/deployment",
     "description": "Setup your application on a domain automatically",
     "type": "library",
     "license": "GPL-2.0+",
