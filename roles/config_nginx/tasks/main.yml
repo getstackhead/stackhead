@@ -15,7 +15,7 @@
   with_items: "{{ nginx_vhosts }}"
   notify: reload nginx
   tags:
-      - skip_ansible_lint
+      - template
 - name: Remove managed vhost config files.
   file:
       path: "{{ nginx_vhost_path }}/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
@@ -23,5 +23,3 @@
   when: item.state|default('present') == 'absent'
   with_items: "{{ nginx_vhosts }}"
   notify: reload nginx
-  tags:
-      - skip_ansible_lint

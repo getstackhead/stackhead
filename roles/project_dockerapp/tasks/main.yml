@@ -24,6 +24,8 @@
       src: "templates/docker-compose.yml.j2"
       dest: "{{ dockerapp__project_src }}/docker-compose.yml"
       force: true
+    tags:
+      - template
 
   - name: "StackHead::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
     docker_compose:
