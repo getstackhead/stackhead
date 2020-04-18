@@ -1,5 +1,6 @@
 ---
 dockerapp__project_name:
+dockerapp__expose: []
 dockerapp__services: []
 dockerapp__file_changed: false
 dockerapp__project_src: "{{ stackhead__remote_config_folder }}"

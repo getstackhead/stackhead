@@ -18,10 +18,12 @@ domain: example.com
 deployment:
   type: docker
   settings:
+    expose:
+      service: app
+      port: 80
     services:
       app:
         image: nginxdemos/hello:latest
-        expose_port: 80
 ```
 
 This defines that a new Docker container shall be created with the `nginxdemos/hello:latest` image.

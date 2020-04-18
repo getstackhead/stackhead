@@ -35,8 +35,8 @@
 # Always fetch port - required for Nginx config update when domain changed
 - block:
   - name: "StackHead::Docker || Get current Docker port"
-    shell: "docker port stackhead-{{ project_name }}-{{ item.key }} {{ item.value.expose_port }}"
-    when: item.value.expose_port is defined
+    shell: "docker port stackhead-{{ project_name }}-{{ item.key }} {{ dockerapp__expose.port }}"
+    when: dockerapp__expose is defined and item.key == dockerapp__expose.service
     with_dict: "{{ dockerapp__services }}"
     register: used_port
 

@@ -13,7 +13,7 @@ The definition is pretty similar to docker-compose. In fact StackHead uses docke
 
 **Note:** Not all container options from docker-compose files are supported right now.
 
-The example above consists of two services (app and db).
+The example below consists of two services (app and db).
 
 ```yaml
 ---
@@ -21,32 +21,34 @@ domain: example.com
 deployment:
   type: docker
   settings:
+    expose:
+      port: 80
+      service: app
     services:
       app:
         image: nginxdemos/hello:latest
-        expose_port: 80 # only once per services section!
       db:
         image: mariadb:10.5
         environment:
           MYSQL_ROOT_PASSWORD: example
 ```
+### expose
 
-### image (required)
-
-See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/#image)
-
-### expose_port
-
-The Nginx webserver will proxy all web traffic to the service with `expose_port` setting, which is the container-internal port.
-Note that among all services only one is allowed to have `expose_port`!
+The Nginx webserver will proxy all web traffic to the service and port specified in `expose` setting.
 
 In the example above, Nginx will proxy web requests to the "app" container's port 80.
 
-### volumes
+### services
+
+#### image (required)
+
+See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/#image)
+
+#### volumes
 
 See [docker-compose documentation on volumes](https://docs.docker.com/compose/compose-file/#volumes).
 
-### environment
+#### environment
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/#environment).
 

@@ -4,6 +4,7 @@
     name: project_dockerapp
   vars:
     dockerapp__project_name: "{{ project_name }}"
+    dockerapp__expose: "{{ app_config.deployment.settings.expose }}"
     dockerapp__services: "{{ app_config.deployment.settings.services }}"
     dockerapp__file_changed: "{{ settings_changed }}"
   when: app_config.deployment.type == 'docker'
