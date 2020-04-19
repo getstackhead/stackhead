@@ -52,6 +52,10 @@ See [docker-compose documentation on volumes](https://docs.docker.com/compose/co
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/#environment).
 
+#### links
+
+See [docker-compose documentation on links](https://docs.docker.com/compose/compose-file/#links).
+
 ## Application Type: web
 
 Web-based applications are basic applications that live on the target machine and are served by the Nginx webserver.
