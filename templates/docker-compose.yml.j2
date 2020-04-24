@@ -5,6 +5,9 @@ services:
     container_name: stackhead-{{ dockerapp__project_name }}-{{ key }}
     image: {{ value.image }}
     restart: always
+{% if value.user is defined %}
+    user: {{ value.user }}
+{% endif %}
 {% if dockerapp__expose is defined and dockerapp__expose.service == key %}
     ports:
       - {{ dockerapp__expose.port }}
