@@ -40,13 +40,72 @@ In the example above, Nginx will proxy web requests to the "app" container's por
 
 ### services
 
+The following configuration options are available inside a service definition:
+
 #### image (required)
 
 See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
 
 #### volumes
 
-See [docker-compose documentation on volumes](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes).
+StackHead saves mounted data in the project directory at project or service level. You can also define a custom location on the server.
+
+| Configuration | Description | Allowed values |
+| ------------- | ----------- | -------------- |
+| type<br>(required) | Determines the data storage location | "global", "local" or "custom" |
+|                 | **global**: Data storage location is located at `/stackhead/projects/[project_name]/docker_data/global/` | |
+|                 | **local**: Data storage location is located at `/stackhead/projects/[project_name]/docker_data/services/[service_name]/` | |
+|                 |  **custom**: No data storage location. You have to set it yourself using the _src_ setting below (absolute path!). | |
+| src <br>(required for type=custom)            | Relative path inside data storage location that should be mounted.<br><br>Note: When type=custom this is has to be an absolute path! | any string |
+| dest            | Absolute path inside the Docker container where the mount should be applied | any string |
+| mode            | Defines if the volume should be read-write (rw) or readonly (ro) | "rw" (default) or "ro"|
+
+
+Below you can see a comparison of the project definition (left) and the equivalent docker-compose definition:
+
+<table>
+<tr>
+<th>Project definition (example_project.yml)</th>
+<th>Docker-Compose equivalent</th>
+</tr>
+<tr>
+<td>
+
+```yaml
+services:
+  nginx:
+    # ...
+    volumes:
+      - type: global
+        src: assets
+        dest: /var/www/public/assets
+      - type: local
+        src: log
+        dest: /var/www/public/log
+      - type: custom
+        src: /etc/secrets.txt
+        dest: /var/www/secrets.txt
+        mode: ro
+```
+
+</td>
+<td>
+
+```yaml
+services:
+  nginx:
+    # ...
+    volumes:
+      - /stackhead/projects/example_project/docker_data/global/assets:/var/www/public/assets:rw
+      - /stackhead/projects/example_project/docker_data/services/nginx/log:/var/www/public/log:rw
+      - /etc/secrets.txt:/var/www/secrets.txt:ro
+```
+
+</td>
+</tr>
+</table>
+
+
 
 #### volumes_from
 

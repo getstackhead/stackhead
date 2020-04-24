@@ -20,16 +20,26 @@
       ansible_python_interpreter: "/usr/bin/env python-docker"
 
   - name: "StackHead::Docker || Generate docker-compose file | Project: {{ dockerapp__project_name }}"
-    template:
-      src: "templates/docker-compose.yml.j2"
-      dest: "{{ dockerapp__project_src }}/docker-compose.yml"
-      force: true
-    tags:
-      - template
+    block:
+      - template:
+          src: "templates/docker-compose.base.yml.j2"
+          dest: "{{ dockerapp__project_src }}/docker-compose.base.yml"
+          force: true
+        tags:
+          - template
+      - template:
+          src: "templates/docker-compose.volumes.yml.j2"
+          dest: "{{ dockerapp__project_src }}/docker-compose.volumes.yml"
+          force: true
+        tags:
+          - template
 
   - name: "StackHead::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
     docker_compose:
       project_src: "{{ dockerapp__project_src }}"
+      files:
+        - docker-compose.base.yml
+        - docker-compose.volumes.yml
     vars:
       ansible_python_interpreter: "/usr/bin/env python-docker"
   when: dockerapp__file_changed == true
