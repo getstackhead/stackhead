@@ -1,3 +1,4 @@
 ---
-STACKHEAD__UID=1412
-STACKHEAD__GID=1412
+STACKHEAD__UID: 1412
+STACKHEAD__GID: 1412
+stackhead__root_folder: "/stackhead"

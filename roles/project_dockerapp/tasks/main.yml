@@ -34,6 +34,31 @@
         tags:
           - template
 
+  - name: "StackHead::Docker || Build src folder list || Project: {{ dockerapp__project_name }}"
+    block:
+      - set_fact:
+          foo: "{{foo|default([]) + ['{{ dockerapp__project_src }}/docker_data/services/{{ item.0.value.key }}/{{ item.1.src|default()|dirname }}'] }}"
+        when: item.1.type == 'local'
+        with_subelements:
+          - "{{ dockerapp__services }}"
+          - volumes
+      - set_fact:
+          foo: "{{foo|default([]) + ['{{ dockerapp__project_src }}/docker_data/global/{{ item.1.src|default()|dirname }}'] }}"
+        when: item.1.type == 'global'
+        with_subelements:
+          - "{{ dockerapp__services }}"
+          - volumes
+      - set_fact:
+          foo: "{{foo|default([]) + ['{{ item.1.src|dirname }}'] }}"
+        when: item.1.type == 'custom'
+        with_subelements:
+          - "{{ dockerapp__services }}"
+          - volumes
+
+  - name: debug
+    debug: msg={{ item }}
+    with_items: foo
+
   - name: "StackHead::Docker || Create and start services | Project: {{ dockerapp__project_name }}"
     docker_compose:
       project_src: "{{ dockerapp__project_src }}"

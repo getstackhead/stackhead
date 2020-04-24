@@ -1,3 +1,4 @@
 ---
 - name: reload nginx
-  service: name=nginx state=reloaded
+  # reload by shell command as stackhead user is non-root
+  command: sudo systemctl reload nginx # needs to be run with sudo

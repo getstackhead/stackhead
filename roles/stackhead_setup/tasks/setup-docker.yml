@@ -6,3 +6,5 @@
     name: andrewrothstein.python
 - import_role:
     name: nickjj.docker
+  vars:
+    docker__users: ["{{ ansible_env.SUDO_USER | d('root') }}", "stackhead"]
