@@ -48,6 +48,10 @@ See [docker-compose documentation on image](https://docs.docker.com/compose/comp
 
 See [docker-compose documentation on volumes](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes).
 
+#### volumes_from
+
+See [docker-compose documentation on volumes_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
+
 #### environment
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/compose-file-v2/#environment).
