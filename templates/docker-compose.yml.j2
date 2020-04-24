@@ -18,6 +18,12 @@ services:
       - {{ volume }}
 {% endfor %}
 {% endif %}
+{% if value.volumes_from is defined %}
+    volumes_from:
+{% for service in value.volumes_from %}
+      - {{ service }}
+{% endfor %}
+{% endif %}
 {% if value.volumes is defined %}
     links:
 {% for link in value.links %}
