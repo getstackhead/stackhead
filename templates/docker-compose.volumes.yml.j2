@@ -1,41 +1,40 @@
 services:
-{%- for key, value in dockerapp__services.items() %}
-  {%- if value.volumes is defined %}
-    {{ key }}:
-      volumes:
-      {%- for volume in value.volumes %}
-        {-% if volume.type == "custom" %}
-        - {{ volume.src }}:{{ volume.dest }}{% if volume.mode is defined %}:{{ volume.mode }}{{% endif %}}
-        {-% endif %}
-        {%- set sanitizedSrc = volume.src | regex_replace('[^\w]', '_') %}
-        - {{ volume.type }}{% if volume.type == "local" %}-{{ key }}{% endif %}-{{ sanitizedSrc }}:{{ volume.dest }}{% if volume.mode is defined %}:{{ volume.mode }}{{% endif %}}
-        {-% else %}
-      {%- endfor %}
+{%- for key, value in dockerapp__services.items() if value.volumes is defined %}
+  {{ key }}:
+    volumes:
+    {%- for volume in value.volumes %}
+      {%- if volume.type == "custom" %}
+        - {{ volume.src }}:{{ volume.dest }}{% if volume.mode is defined %}:{{ volume.mode }}{% endif %}
+      {%- else %}
+      {%- set sanitizedSrc = volume.src | regex_replace('[^\w]', '_') %}
+        - {{ volume.type }}{% if volume.type == "local" %}-{{ key }}{% endif %}-{{ sanitizedSrc }}:{{ volume.dest }}{% if volume.mode is defined %}:{{ volume.mode }}{% endif %}
       {%- endif %}
-  {%- if value.volumes_from is defined %}
+    {%- endfor %}
+    {%- if value.volumes_from is defined %}
       volumes_from:
       {%- for service in value.volumes_from %}
         - {{ service }}
       {%- endfor %}
-  {%- endif %}
+    {%- endif %}
 {%- endfor %}
 
 volumes:
 {%- set globalVolumeKeys = [] %}
-{%- for key, value in dockerapp__services.items() %}
+{%- for key, value in dockerapp__services.items() if value.volumes is defined %}
   {%- for volume in value.volumes %}
-    {%- set sanitizedSrc = volume.src | regex_replace('[^\w]', '_') %}
+    {%- set src = volume.src|default('') %}
+    {%- set sanitizedSrc = src | regex_replace('[^\w]', '_') %}
     {%- if volume.type == "local" %}
     local-{{ key }}-{{ sanitizedSrc }}:
       driver_opts:
           type: none
-          device: {{ dockerapp__project_src }}/docker_data/services/{{ key }}/{{ volume.src }}
+          device: {{ dockerapp__data_location_services|format(key, src) }}
           o: bind
     {%- elif volume.type == "global" and sanitizedSrc not in globalVolumeKeys %}
     global-{{ sanitizedSrc }}:
       driver_opts:
           type: none
-          device: {{ dockerapp__project_src }}/docker_data/global/{{ volume.src|default('') }}
+          device: {{ dockerapp__data_location_global|format(src) }}
           o: bind
     {%- set _ = globalVolumeKeys.append( sanitizedSrc ) %}
     {%- endif %}

@@ -10,7 +10,7 @@
     name: stackhead
     comment: StackHead system user
     uid: "{{ STACKHEAD__UID }}"
-    group: stackhead
+    groups: stackhead,www-data
     create_home: no
     state: present
 - name: Create StackHead root folder

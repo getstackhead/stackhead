@@ -6,6 +6,9 @@
 - file:
     path: "{{ stackhead__remote_config_folder }}"
     state: directory
+    owner: stackhead
+    group: stackhead
+    recurse: yes
   when: project_folder.stat.exists == false
 
 - synchronize:
