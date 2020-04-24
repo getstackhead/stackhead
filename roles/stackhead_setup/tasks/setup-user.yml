@@ -1,0 +1,36 @@
+---
+- name: Add stackhead group
+  group:
+    name: stackhead
+    gid: "{{ STACKHEAD__GID }}"
+    system: yes
+    state: present
+- name: Add stackhead user
+  user:
+    name: stackhead
+    comment: StackHead system user
+    uid: "{{ STACKHEAD__UID }}"
+    group: stackhead
+    create_home: no
+    state: present
+- name: Create StackHead root folder
+  file:
+    path: "{{ stackhead__root_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
+- name: Generate stackhead sudoers permissions file
+  blockinfile:
+    path: '/etc/sudoers.d/stackhead'
+    block: |
+      %stackhead ALL= NOPASSWD: /bin/systemctl reload nginx
+    mode: 0440
+    create: yes
+    state: present
+    validate: 'visudo -cf %s'
+- name: Set includedir in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "#includedir /etc/sudoers.d"
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
