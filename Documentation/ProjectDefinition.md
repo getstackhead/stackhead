@@ -52,6 +52,10 @@ See [docker-compose documentation on volumes](https://docs.docker.com/compose/co
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/compose-file-v2/#environment).
 
+#### user
+
+See [docker-compose documentation on user](https://docs.docker.com/compose/compose-file/compose-file-v2/#user).
+
 #### links
 
 See [docker-compose documentation on links](https://docs.docker.com/compose/compose-file/#links).
