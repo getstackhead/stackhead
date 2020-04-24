@@ -11,7 +11,7 @@ There are two application types: docker and web. Only one application type is al
 Docker-based applications are applications that run in one or multiple Docker containers.
 The definition is pretty similar to docker-compose. In fact StackHead uses docker-compose to spin up the containers.
 
-**Note:** Not all container options from docker-compose files are supported right now.
+**Note:** We're using **version 2.8** of Docker Compose, however not all container options are supported right now.
 
 The example below consists of two services (app and db).
 
@@ -42,15 +42,15 @@ In the example above, Nginx will proxy web requests to the "app" container's por
 
 #### image (required)
 
-See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/#image)
+See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
 
 #### volumes
 
-See [docker-compose documentation on volumes](https://docs.docker.com/compose/compose-file/#volumes).
+See [docker-compose documentation on volumes](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes).
 
 #### environment
 
-See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/#environment).
+See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/compose-file-v2/#environment).
 
 #### links
 
