@@ -1,27 +1,28 @@
+#jinja2: trim_blocks:False
 version: '2.4'
 services:
-{%- for key, value in dockerapp__services.items() %}
-  {{ key }}:
-    container_name: stackhead-{{ dockerapp__project_name }}-{{ key }}
-    image: {{ value.image }}
+{%- for service in dockerapp__services %}
+  {{ service.name }}:
+    container_name: stackhead-{{ dockerapp__project_name }}-{{ service.name }}
+    image: {{ service.image }}
     restart: always
-    {%- if value.user is defined %}
-    user: {{ value.user }}
+    {%- if service.user is defined %}
+    user: {{ service.user }}
     {%- endif %}
-    {%- if dockerapp__expose is defined and dockerapp__expose.service == key %}
+    {%- if dockerapp__expose is defined and dockerapp__expose.service == service.name %}
     ports:
       - {{ dockerapp__expose.port }}
     {%- endif %}
 
-    {%- if value.links is defined %}
+    {%- if service.links is defined %}
     links:
-      {%- for link in value.links %}
+      {%- for link in service.links %}
       - {{ link }}
       {%- endfor %}
     {%- endif %}
-    {%- if value.environment is defined %}
+    {%- if service.environment is defined %}
     environment:
-      {%- for envName, envVal in value.environment.items() %}
+      {%- for envName, envVal in service.environment.items() %}
       {{ envName }}: {{ envVal }}
       {%- endfor %}
     {%- endif %}

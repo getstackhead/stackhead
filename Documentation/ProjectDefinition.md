@@ -11,7 +11,7 @@ There are two application types: docker and web. Only one application type is al
 Docker-based applications are applications that run in one or multiple Docker containers.
 The definition is pretty similar to docker-compose. In fact StackHead uses docker-compose to spin up the containers.
 
-**Note:** We're using **version 2.8** of Docker Compose, however not all container options are supported right now.
+**Note:** We're using **version 2.4** of Docker Compose, however not all container options are supported right now.
 
 The example below consists of two services (app and db).
 
@@ -25,9 +25,9 @@ deployment:
       port: 80
       service: app
     services:
-      app:
+      - name: app
         image: nginxdemos/hello:latest
-      db:
+      - name: db
         image: mariadb:10.5
         environment:
           MYSQL_ROOT_PASSWORD: example
@@ -41,6 +41,10 @@ In the example above, Nginx will proxy web requests to the "app" container's por
 ### services
 
 The following configuration options are available inside a service definition:
+
+#### name
+
+Internal name of your service. Used as service name in generated docker-compose file.
 
 #### image (required)
 
@@ -73,7 +77,7 @@ Below you can see a comparison of the project definition (left) and the equivale
 
 ```yaml
 services:
-  nginx:
+  - name: nginx
     # ...
     volumes:
       - type: global

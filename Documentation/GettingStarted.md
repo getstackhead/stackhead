@@ -22,7 +22,7 @@ deployment:
       service: app
       port: 80
     services:
-      app:
+      - name: app
         image: nginxdemos/hello:latest
 ```
 
