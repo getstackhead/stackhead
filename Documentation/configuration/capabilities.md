@@ -1,4 +1,6 @@
-# Capabilities
+---
+title: Capabilities
+---
 
 This page lists all available capabilities and how to configure them.
 
