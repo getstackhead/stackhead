@@ -15,7 +15,7 @@ module.exports = {
       },
       links: [
         {
-          to: 'docs/introduction/getting-started',
+          to: 'introduction/getting-started',
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'left',
@@ -30,7 +30,7 @@ module.exports = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka and StackHead contributors. Built with Docusaurus.`,
     },
   },
   presets: [
@@ -39,8 +39,9 @@ module.exports = {
       {
         docs: {
           path: '../',
+          routeBasePath: '',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/getstackhead/deployment/edit/master/website/',
+          editUrl: 'https://github.com/getstackhead/deployment/edit/master/Documentation/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
