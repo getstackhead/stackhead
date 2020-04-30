@@ -1,36 +1,6 @@
-# Concepts
-
-This page describes the concepts used by StackHead.
-
-## Projects
-
-Projects consist of your application and a host domain where your application can be reached.  
-The information about a project is stored in the **project definition** file.
-
-While we recommend running your application in a Docker container,
-you can also set it up to run directly on the target system.
-Please have a look at the [project definition documentation](../ProjectDefinition.md) for more information.
-
-## Provision & Deploy
-
-When using StackHead you'll come upon two words:
-Server **provisioning** and project **deployment**.
-
-### Server provisioning
-
-Any system you want to use StackHead on has to be **provisioned** first.
-This will install all required software packages and services onto the target system.
-
-Find out how to provision your server in the [Getting started guide](../GettingStarted.md).
-
-### Project deployment
-
-Getting your own application on the provisioned server is called **deployment**.
-This will setup the required web server configurations, SSL certificates and application for your project.
-
-Find out how to deploy to your provisioned server in the [Getting started guide](../GettingStarted.md).
-
-## Capabilities
+---
+title: Capabilities
+---
 
 Capabilities are used to define what a target system provides and what a project requires.
 Each capability definition requires specifying a `version`.

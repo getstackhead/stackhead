@@ -1,4 +1,6 @@
-# Plays
+---
+title: Plays
+---
 
 The plays below can be run via ansible-playbook:
 
