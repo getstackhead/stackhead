@@ -2,9 +2,13 @@ name: Deploy documentation to GitHub pages
 
 on:
   push:
+    branches:
+      - master
     paths:
       - Documentation/**
   pull_request:
+    branches:
+      - master
     paths:
       - Documentation/**
 
@@ -24,7 +28,7 @@ jobs:
         working-directory: Documentation/.build
       -
         name: Deploy
-        if: success() and github.ref == 'refs/heads/master'
+        if: success() && github.ref == 'refs/heads/master'
         uses: crazy-max/ghaction-github-pages@v1
         with:
           build_dir: Documentation/.build/build
