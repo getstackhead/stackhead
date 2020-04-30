@@ -1,0 +1,36 @@
+name: Deploy documentation to GitHub pages
+
+on:
+  push:
+#    branches:
+#      - master
+#    paths:
+#      - Documentation/**
+#  pull_request:
+#    branches:
+#      - master
+#    paths:
+#      - Documentation/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: yarn install
+        working-directory: Documentation/.build
+      - run: yarn build
+        working-directory: Documentation/.build
+      -
+        name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v1
+        with:
+          build_dir: Documentation/.build/build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
