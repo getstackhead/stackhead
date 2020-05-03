@@ -1,11 +1,11 @@
 {
-  "name": "@getstackhead/deployment",
+  "name": "@getstackhead/stackhead",
   "version": "1.0.0",
   "bin": "validation/bin/project-validator",
   "description": "Setup your application on a domain automatically",
   "repository": {
     "type": "git",
-    "url": "git@github.com:getstackhead/deployment.git"
+    "url": "git@github.com:getstackhead/stackhead.git"
   },
   "author": "Mario Lubenka",
   "license": "GPL-2.0-or-later",
