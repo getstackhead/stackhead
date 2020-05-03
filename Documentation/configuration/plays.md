@@ -12,4 +12,4 @@ ansible-playbook ansible/[file] -i path/to/inventory.yml
 | ---- | ----------- |
 | server-provision.yml | Setup required programs on server  |
 | server-check.yml | Outputs versions of installed software  |
-| application-deploy.yml | Setup application containers and Nginx config. More information on provisioning see [Getting started](../GettingStarted.md) |
+| application-deploy.yml | Setup application containers and Nginx config. More information on provisioning see [Getting started](../introduction/getting-started.md) |

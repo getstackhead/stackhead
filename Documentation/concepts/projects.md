@@ -7,4 +7,4 @@ The information about a project is stored in the **project definition** file.
 
 While we recommend running your application in a Docker container,
 you can also set it up to run directly on the target system.
-Please have a look at the [project definition documentation](../ProjectDefinition.md) for more information.
+Please have a look at the [project definition documentation](../configuration/project-definition/introduction.md) for more information.
