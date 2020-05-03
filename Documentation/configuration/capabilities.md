@@ -4,7 +4,7 @@ title: Capabilities
 
 This page lists all available capabilities and how to configure them.
 
-Capabilities can be inside **web-based** project definitions to ensure that the target system meets the requirements of the application.
+Capabilities can be inside **native-typed** project definitions to ensure that the target system meets the requirements of the application.
 
 ## PHP
 
@@ -26,7 +26,7 @@ all:
 ```yaml
 ---
 deployment:
-  type: web
+  type: native
   settings:
     capabilities:
       php:

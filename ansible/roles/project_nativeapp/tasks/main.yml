@@ -1,0 +1,22 @@
+- name: "StackHead::Nativeapp || Check if app directory exists | Project: {{ nativeapp__project_name }}"
+  stat:
+    path: "{{ nativeapp__remote_public_fullpath }}"
+  register: app_folder
+
+- name: "StackHead::Nativeapp || Create app directory if not exists | Project: {{ nativeapp__project_name }}"
+  file:
+    path: "{{ nativeapp__remote_public_fullpath }}"
+    state: directory
+  when: app_folder.stat.exists == false
+
+- name: "StackHead::Nativeapp || Setup default content | Project: {{ nativeapp__project_name }}"
+  template:
+    src: "{{ nativeapp__default_page }}"
+    dest: "{{ nativeapp__remote_public_fullpath }}/index.html"
+    force: true
+  when: nativeapp__default_content == true
+  tags:
+    - template
+
+- set_fact:
+    nativeapp_root_path: "{{ nativeapp__remote_public_fullpath }}"

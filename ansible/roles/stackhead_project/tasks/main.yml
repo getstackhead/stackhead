@@ -4,8 +4,8 @@
 - import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
 
 - block:
-  - import_tasks: "roles/stackhead_project/tasks/setup-webapp.yml"
-    when: app_config.deployment.type == 'web'
+  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
+    when: app_config.deployment.type == 'native'
   - import_tasks: "roles/stackhead_project/tasks/setup-dockerapp.yml"
     when: app_config.deployment.type == 'docker'
   - name: "StackHead::Project || Update deployed configuration file | Project: {{ dockerapp__project_name }}"

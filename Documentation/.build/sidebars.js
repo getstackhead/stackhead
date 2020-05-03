@@ -15,7 +15,7 @@ module.exports = {
         items: [
           'configuration/project-definition/introduction',
           'configuration/project-definition/docker',
-          'configuration/project-definition/web'
+          'configuration/project-definition/native'
         ],
       },
       'configuration/capabilities',

@@ -1,14 +1,14 @@
 ---
-title: "Web"
+title: "Native"
 ---
 
-Web-based applications are basic applications that live on the target machine and are served by the Nginx webserver.
+Native applications are basic applications that live on the target machine and are served by the Nginx webserver.
 
 ```yaml
 ---
 domain: example.com
 deployment:
-  type: web
+  type: native
 ```
 
 ## Serve location
@@ -20,7 +20,7 @@ If you want to serve files from a different folder inside that directory, use `d
 ---
 domain: example.com
 deployment:
-  type: web
+  type: native
   settings:
     public_path: public
 ```
@@ -35,7 +35,7 @@ is only deployed to targets that meet the requirements.
 ---
 domain: example.com
 deployment:
-  type: web
+  type: native
   settings:
     capabilities:
       php:

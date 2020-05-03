@@ -18,7 +18,7 @@
     active_domain: "{{ deployed_project.domain | default('') }}"
     deployment_type: "{{ app_config.deployment.type }}"
     settings_changed: "{{ app_config.deployment.settings != deployed_project.deployment.settings| default({}) }}"
-    web_php_enabled: "{{ app_config.deployment.settings.capabilities.php is defined | default(False) }}"
+    native_php_enabled: "{{ app_config.deployment.settings.capabilities.php is defined | default(False) }}"
     php_version: "{{ app_config.deployment.settings.capabilities.php.version | default(None) }}"
     remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
     # Note: settings_changed will not detect if an application was switched from Docker to web and vice versa!
@@ -29,4 +29,4 @@
       - remote_php_version is not none
       - php_version is version(remote_php_version| regex_replace('(\.\d+)$', ''), operator='==')
     fail_msg: "App requires PHP {{ php_version }} which the target server does not provide. Version on target server: {{ remote_php_version | default('none') }}"
-  when: web_php_enabled == true
+  when: native_php_enabled == true
