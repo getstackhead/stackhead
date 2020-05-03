@@ -1,7 +1,7 @@
 ---
 - name: Deploy additional h5bp Nginx files
   synchronize:
-    src: "{{ playbook_dir }}/vendor/server-configs-nginx/h5bp"
+    src: "{{ playbook_dir }}/../vendor/server-configs-nginx/h5bp"
     dest: /etc/nginx
 - name: Setup Nginx
   vars:

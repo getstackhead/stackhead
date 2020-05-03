@@ -71,13 +71,13 @@ Now we should be ready to go to provision our server.
 Make sure you have all Ansible dependencies installed using:
 
 ```
-ansible-galaxy install -r requirements/requirements.yml
+ansible-galaxy install -r ansible/requirements/requirements.yml
 ```
 
 Then run the following command to provision your server:
 
 ```shell script
-ansible-playbook server-provision.yml -i my-inventory.yml
+ansible-playbook ansible/server-provision.yml -i my-inventory.yml
 ```
 
 ### Deploying the project
@@ -88,7 +88,7 @@ Make sure the A record points to the server IP, as this is required for SSL cert
 Then deploy the project with:
 
 ```shell script
-ansible-playbook application-deploy.yml -i my-inventory.yml
+ansible-playbook ansible/application-deploy.yml -i my-inventory.yml
 ```
 
 After deployment, open the domain in your web browser.
