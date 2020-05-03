@@ -1,0 +1,8 @@
+---
+domain: mydomain.com
+deployment:
+  type: docker
+  settings:
+    services:
+      app:
+        expose_port: 8080

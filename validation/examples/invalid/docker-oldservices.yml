@@ -1,0 +1,17 @@
+---
+domain: mydomain.com
+deployment:
+  type: docker
+  settings:
+    expose:
+      service: app
+      port: 8080
+    services:
+      app:
+        image: getstackhead/project-demo-php
+        links:
+          - db
+      db:
+        image: mariadb:10.5
+        environment:
+          MYSQL_ROOT_PASSWORD: example

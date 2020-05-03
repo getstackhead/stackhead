@@ -1,0 +1,9 @@
+---
+domain: mydomain.com
+deployment:
+  type: web
+  settings:
+    public_path: public
+    capabilities:
+      php:
+        version: 7.3

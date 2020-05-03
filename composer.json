@@ -1,6 +1,7 @@
 {
     "name": "getstackhead/deployment",
     "description": "Setup your application on a domain automatically",
+    "bin": "validation/bin/project-validator",
     "type": "library",
     "license": "GPL-2.0+",
     "authors": [
