@@ -1,4 +1,4 @@
-name: Deploy documentation to GitHub pages
+name: Build documentation and deploy to GitHub pages (on master branch)
 
 on:
   push:
@@ -6,11 +6,13 @@ on:
       - master
     paths:
       - Documentation/**
+      - .github/workflows/deploy-docs.yml
   pull_request:
     branches:
       - master
     paths:
       - Documentation/**
+      - .github/workflows/deploy-docs.yml
 
 jobs:
   build:
