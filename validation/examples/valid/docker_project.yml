@@ -1,7 +1,7 @@
 ---
 domain: mydomain.com
 deployment:
-  type: docker
+  type: container
   settings:
     expose:
       service: app

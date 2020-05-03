@@ -18,7 +18,7 @@ Create a new project definitions file at `./stackhead/example_app.yml` and the f
 ---
 domain: example.com
 deployment:
-  type: docker
+  type: container
   settings:
     expose:
       service: app
