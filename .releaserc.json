@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {"prepareCmd": "sed -i -E \"s/(\\s+version=\\\").*(\\\",)/\\1${nextRelease.version}\\2/\" setup.py && sed -i -E \"s/(\\s+\\\"version\\\": \\\").*(\\\",)/\\1${nextRelease.version}\\2/\" package.json"}
+    ],
+    [
+      "@semantic-release/git",
+      {"assets": ["package.json", "setup.py"]}
+    ],
+    "@semantic-release/github"
+  ],
+  "branches": [
+    "master"
+  ]
+}
