@@ -5,7 +5,7 @@ module.exports = {
   baseUrl: '/',
   favicon: 'img/favicon.ico',
   organizationName: 'getstackhead', // Usually your GitHub org/user name.
-  projectName: 'deployment', // Usually your repo name.
+  projectName: 'stackhead', // Usually your repo name.
   themeConfig: {
     navbar: {
       title: 'StackHead',
@@ -21,7 +21,7 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://github.com/getstackhead/deployment',
+          href: 'https://github.com/getstackhead/stackhead',
           label: 'GitHub',
           position: 'right',
         },
@@ -41,7 +41,7 @@ module.exports = {
           path: '../',
           routeBasePath: '',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/getstackhead/deployment/edit/master/Documentation/',
+          editUrl: 'https://github.com/getstackhead/stackhead/edit/master/Documentation/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
