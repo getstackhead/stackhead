@@ -1,6 +1,7 @@
 {
   "name": "@getstackhead/deployment",
   "version": "1.0.0",
+  "bin": "validation/bin/project-validator",
   "description": "Setup your application on a domain automatically",
   "repository": {
     "type": "git",

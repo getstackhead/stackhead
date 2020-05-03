@@ -1,0 +1,15 @@
+---
+domain: mydomain.com
+deployment:
+  type: docker
+  settings:
+    expose:
+      port: 8080
+    services:
+      app:
+        image: getstackhead/project-demo-php
+        links:
+          - db
+        volumes:
+          - type: custom
+            dest: /var/www
