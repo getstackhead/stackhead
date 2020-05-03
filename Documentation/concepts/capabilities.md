@@ -5,7 +5,7 @@ title: Capabilities
 Capabilities are used to define what a target system provides and what a project requires.
 Each capability definition requires specifying a `version`.
 
-Please also have a look at the [complete list of available capabilities](../Features/Capabilities.md).
+Please also have a look at the [complete list of available capabilities](../configuration/capabilities.md).
 
 ### Server
 

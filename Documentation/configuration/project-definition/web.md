@@ -42,4 +42,4 @@ deployment:
         version: 7.3
 ```
 
-Please also have a look at the [complete list of available capabilities](../Features/Capabilities.md).
+Please also have a look at the [complete list of available capabilities](../capabilities.md).
