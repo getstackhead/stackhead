@@ -5,7 +5,7 @@ title: Plays
 The plays below can be run via ansible-playbook:
 
 ```shell script
-ansible-playbook [file] -i path/to/inventory.yml
+ansible-playbook ansible/[file] -i path/to/inventory.yml
 ```
 
 | File | Description |
