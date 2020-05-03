@@ -32,7 +32,7 @@ all:
 
 ### Project
 
-**Web-based** projects can define the same capabilities which the target server has to fulfill in order for the application to be deployed.
+**Native-typed** projects can define the same capabilities which the target server has to fulfill in order for the application to be deployed.
 
 Deployments of applications where the target system does not fulfill the capabilities (i.e. when the package is missing or has a different version than requested)
 will fail.

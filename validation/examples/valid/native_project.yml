@@ -1,7 +1,7 @@
 ---
 domain: mydomain.com
 deployment:
-  type: web
+  type: native
   settings:
     public_path: public
     capabilities:

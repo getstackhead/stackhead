@@ -92,7 +92,7 @@
       "additionalProperties": false,
       "required": ["name", "image"]
     },
-    "web-capability": {
+    "native-capability": {
       "type": "object",
       "propertyNames": {
         "pattern": "^php$"
@@ -144,7 +144,7 @@
         }
       }
     },
-    "web-properties": {
+    "native-properties": {
       "properties": {
         "settings": {
           "additionalProperties": false,
@@ -153,7 +153,7 @@
               "type": "string"
             },
             "capabilities": {
-              "$ref": "#/definitions/web-capability"
+              "$ref": "#/definitions/native-capability"
             }
           }
         }
@@ -171,7 +171,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [ "docker", "web" ]
+          "enum": [ "docker", "native" ]
         },
         "settings": {
           "type": "object"
@@ -182,8 +182,8 @@
           "if": {"properties": {"type": {"const": "docker"}}},
           "then": { "$ref": "#/definitions/docker-properties" }
         }, {
-          "if": {"properties": {"type": {"const": "web"}}},
-          "then": { "$ref": "#/definitions/web-properties" }
+          "if": {"properties": {"type": {"const": "native"}}},
+          "then": { "$ref": "#/definitions/native-properties" }
         }
       ],
       "required": ["type"]

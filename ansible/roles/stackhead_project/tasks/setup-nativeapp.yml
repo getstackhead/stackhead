@@ -1,20 +1,20 @@
 ---
-- name: "StackHead::Project || Setup webapp"
+- name: "StackHead::Project || Setup nativeapp"
   import_role:
-    name: project_webapp
+    name: project_nativeapp
   vars:
-    webapp__project_name: "{{ project_name }}"
-    webapp__public_path: "{{ app_config.deployment.settings.public_path }}"
+    nativeapp__project_name: "{{ project_name }}"
+    nativeapp__public_path: "{{ app_config.deployment.settings.public_path }}"
 
 - name: "StackHead::Project || Update Nginx vhost configuration"
   include_role:
     name: config_nginx
   vars:
     nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.native.j2"
-    nginx_use_php: "{{ web_php_enabled }}"
+    nginx_use_php: "{{ native_php_enabled }}"
     nginx_vhosts:
       - server_name: "{{ app_config.domain }}"
         use_https: 1
         state: present
         filename: "{{ app_config.domain }}.conf"
-        root_path: "{{ webapp_root_path }}"
+        root_path: "{{ nativeapp_root_path }}"
