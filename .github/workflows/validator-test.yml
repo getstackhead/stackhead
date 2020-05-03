@@ -1,0 +1,29 @@
+name: Validator test
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - validation/**
+      - .github/workflows/validator-test.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - validation/**
+      - .github/workflows/validator-test.yml
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Test example file validity
+      working-directory: validation
+      run: ./test.sh
