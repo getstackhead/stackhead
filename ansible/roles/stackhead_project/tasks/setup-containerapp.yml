@@ -1,14 +1,14 @@
 ---
-- name: "StackHead::Project || Setup Docker app"
+- name: "StackHead::Project || Setup Container app"
   import_role:
-    name: project_dockerapp
+    name: project_containerapp
   vars:
-    dockerapp__project_name: "{{ project_name }}"
-    dockerapp__expose: "{{ app_config.deployment.settings.expose }}"
-    dockerapp__services: "{{ app_config.deployment.settings.services }}"
-    dockerapp__registries: "{{ app_config.deployment.settings.registries | default([]) }}"
-    dockerapp__file_changed: "{{ settings_changed }}"
-  when: app_config.deployment.type == 'docker'
+    containerapp__project_name: "{{ project_name }}"
+    containerapp__expose: "{{ app_config.deployment.settings.expose }}"
+    containerapp__services: "{{ app_config.deployment.settings.services }}"
+    containerapp__registries: "{{ app_config.deployment.settings.registries | default([]) }}"
+    containerapp__file_changed: "{{ settings_changed }}"
+  when: app_config.deployment.type == 'container'
 
 - name: "StackHead::Project || Update Nginx reverse proxy configuration"
   include_role:
@@ -18,9 +18,9 @@
     nginx_vhosts:
       - server_name: "{{ app_config.domain }}"
         use_https: 1
-        proxy_pass_port: "{{ docker_port }}"
+        proxy_pass_port: "{{ container_port }}"
         state: present
         filename: "{{ app_config.domain }}.conf"
-  when: docker_port is defined
+  when: container_port is defined
   # currently not checking if Docker steps succeeded as we cant "register" the result due to import_role
   # import_role is required because include_role does not pass the facts set in Docker role

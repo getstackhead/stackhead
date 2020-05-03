@@ -14,7 +14,7 @@ module.exports = {
         label: 'Project definition',
         items: [
           'configuration/project-definition/introduction',
-          'configuration/project-definition/docker',
+          'configuration/project-definition/container',
           'configuration/project-definition/native'
         ],
       },

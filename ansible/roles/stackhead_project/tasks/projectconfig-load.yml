@@ -21,7 +21,7 @@
     native_php_enabled: "{{ app_config.deployment.settings.capabilities.php is defined | default(False) }}"
     php_version: "{{ app_config.deployment.settings.capabilities.php.version | default(None) }}"
     remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
-    # Note: settings_changed will not detect if an application was switched from Docker to web and vice versa!
+    # Note: settings_changed will not detect if an application was switched from container to native and vice versa!
 
 - name: "StackHead::Project || Check if PHP version matches"
   assert:

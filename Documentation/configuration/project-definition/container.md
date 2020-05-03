@@ -1,8 +1,8 @@
 ---
-title: Docker
+title: Container
 ---
 
-Docker-based applications are applications that run in one or multiple Docker containers.
+Container-based applications are applications that run in one or multiple Docker containers.
 The definition is pretty similar to docker-compose. In fact StackHead uses docker-compose to spin up the containers.
 
 We recommend using this kind of configuration.
@@ -17,7 +17,7 @@ The example below consists of two services (app and db).
 ---
 domain: example.com
 deployment:
-  type: docker
+  type: container
   settings:
     expose:
       port: 80
@@ -55,8 +55,8 @@ StackHead saves mounted data in the project directory at project or service leve
 | Configuration | Description | Allowed values |
 | ------------- | ----------- | -------------- |
 | type<br/>(required) | Determines the data storage location | "global", "local" or "custom" |
-|                 | **global**: Data storage location is located at `/stackhead/projects/[project_name]/docker_data/global/` | |
-|                 | **local**: Data storage location is located at `/stackhead/projects/[project_name]/docker_data/services/[service_name]/` | |
+|                 | **global**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/global/` | |
+|                 | **local**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/services/[service_name]/` | |
 |                 |  **custom**: No data storage location. You have to set it yourself using the _src_ setting below (absolute path!). | |
 | src <br/>(required for type=custom)            | Relative path inside data storage location that should be mounted.<br/><br/>Note: When type=custom this is has to be an absolute path! | any string |
 | dest            | Absolute path inside the Docker container where the mount should be applied | any string |
@@ -102,8 +102,8 @@ services:
   nginx:
     # ...
     volumes:
-      - /stackhead/projects/example_project/docker_data/global/assets:/var/www/public/assets:rw
-      - /stackhead/projects/example_project/docker_data/services/nginx/log:/var/www/public/log:rw
+      - /stackhead/projects/example_project/container_data/global/assets:/var/www/public/assets:rw
+      - /stackhead/projects/example_project/container_data/services/nginx/log:/var/www/public/log:rw
       - /etc/secrets.txt:/var/www/secrets.txt:ro
 ```
 

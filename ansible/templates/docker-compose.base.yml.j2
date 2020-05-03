@@ -1,17 +1,17 @@
 #jinja2: trim_blocks:False
 version: '2.4'
 services:
-{%- for service in dockerapp__services %}
+{%- for service in containerapp__services %}
   {{ service.name }}:
-    container_name: stackhead-{{ dockerapp__project_name }}-{{ service.name }}
+    container_name: stackhead-{{ containerapp__project_name }}-{{ service.name }}
     image: {{ service.image }}
     restart: always
     {%- if service.user is defined %}
     user: {{ service.user }}
     {%- endif %}
-    {%- if dockerapp__expose is defined and dockerapp__expose.service == service.name %}
+    {%- if containerapp__expose is defined and containerapp__expose.service == service.name %}
     ports:
-      - {{ dockerapp__expose.port }}
+      - {{ containerapp__expose.port }}
     {%- endif %}
 
     {%- if service.links is defined %}

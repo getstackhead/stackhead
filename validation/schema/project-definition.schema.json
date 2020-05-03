@@ -5,7 +5,7 @@
   "description": "Project definition file required by StackHead",
   "type": "object",
   "definitions": {
-    "docker-volume": {
+    "container-volume": {
       "type": "object",
       "properties": {
         "type": {
@@ -32,26 +32,26 @@
       "if": {"properties": {"type": {"const": "custom"}}},
       "then": {"required": ["src"]}
     },
-    "docker-registry": {
+    "container-registry": {
       "type": "object",
       "properties": {
         "username": {
           "type": "string",
-          "description": "Username for authenticating with the Docker registry"
+          "description": "Username for authenticating with the Container registry"
         },
         "password": {
           "type": "string",
-          "description": "Password for authenticating with the Docker registry"
+          "description": "Password for authenticating with the Container registry"
         },
         "url": {
           "type": "string",
-          "description": "URL to Docker registry (optional)",
+          "description": "URL to Container registry (optional)",
           "default": "https://index.docker.io/v1/"
         }
       },
       "required": ["username", "password"]
     },
-    "docker-service": {
+    "container-service": {
       "type": "object",
       "properties": {
         "name": {
@@ -59,7 +59,7 @@
           "type": "string"
         },
         "image": {
-          "description": "Name of Docker image",
+          "description": "Name of Container image",
           "type": "string"
         },
         "user": {
@@ -67,13 +67,13 @@
           "type": "string"
         },
         "environment": {
-          "description": "Docker environment variables",
+          "description": "Container environment variables",
           "type": "object"
         },
         "volumes": {
           "description": "Volumes to be mounted",
           "type": "array",
-          "items": {"$ref": "#/definitions/docker-volume"},
+          "items": {"$ref": "#/definitions/container-volume"},
           "minItems": 1
         },
         "volumes_from": {
@@ -107,7 +107,7 @@
         }
       }
     },
-    "docker-properties": {
+    "container-properties": {
       "properties": {
         "settings": {
           "additionalProperties": false,
@@ -130,14 +130,14 @@
               "description": "Login data for private registries",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/docker-registry"
+                "$ref": "#/definitions/container-registry"
               }
             },
             "services": {
-              "description": "List of Docker services to be started",
+              "description": "List of Container services to be started",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/docker-service"
+                "$ref": "#/definitions/container-service"
               }
             }
           }
@@ -171,7 +171,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": [ "docker", "native" ]
+          "enum": [ "container", "native" ]
         },
         "settings": {
           "type": "object"
@@ -179,8 +179,8 @@
       },
       "allOf": [
         {
-          "if": {"properties": {"type": {"const": "docker"}}},
-          "then": { "$ref": "#/definitions/docker-properties" }
+          "if": {"properties": {"type": {"const": "container"}}},
+          "then": { "$ref": "#/definitions/container-properties" }
         }, {
           "if": {"properties": {"type": {"const": "native"}}},
           "then": { "$ref": "#/definitions/native-properties" }
