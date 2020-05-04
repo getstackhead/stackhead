@@ -1,0 +1,9 @@
+---
+domain: ${domain}
+deployment:
+  type: native
+  settings:
+    public_path: html
+    capabilities:
+      php:
+        version: 7.3

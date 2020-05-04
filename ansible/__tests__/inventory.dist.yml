@@ -1,0 +1,16 @@
+# inventory for integration test
+---
+all:
+  vars:
+    stackhead__config_folder: "{{ inventory_dir }}/projects"
+    ansible_user: root
+    ansible_connection: ssh
+  hosts:
+    hetzner1:
+      ansible_host: ${ipaddress}
+      stackhead:
+        applications:
+          - ${application}
+        capabilities:
+          php:
+            version: 7.3
