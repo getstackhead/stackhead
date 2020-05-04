@@ -1,0 +1,27 @@
+---
+domain: ${domain}
+deployment:
+  type: container
+  settings:
+    expose:
+      service: nginx
+      port: 80
+    services:
+      - name: data
+        image: getstackhead/project-demo-php:data-latest
+      - name: nginx
+        image: getstackhead/nginx:php
+        links:
+          - php
+        volumes_from:
+          - data:ro
+      - name: php
+        image: getstackhead/php:7.4
+        links:
+          - db
+        volumes_from:
+          - data
+      - name: db
+        image: mariadb:10.5
+        environment:
+          MYSQL_ROOT_PASSWORD: example

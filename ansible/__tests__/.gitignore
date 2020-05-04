@@ -1,0 +1,4 @@
+*.yml
+!*.dist.yml
+*.cfg
+!*.dist.cfg

@@ -1,4 +1,4 @@
-name: Validator test
+name: Unit test for project definition schema
 
 on:
   push:
@@ -6,21 +6,19 @@ on:
       - master
     paths:
       - validation/**
-      - .github/workflows/validator-test.yml
+      - .github/workflows/test-validator.yml
   pull_request:
     branches:
       - master
     paths:
       - validation/**
-      - .github/workflows/validator-test.yml
+      - .github/workflows/test-validator.yml
 
 jobs:
-
-  build:
-    name: Build
+  test:
+    name: Unit test
     runs-on: ubuntu-latest
     steps:
-
     - name: Check out code
       uses: actions/checkout@v2
 
