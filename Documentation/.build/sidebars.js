@@ -19,6 +19,7 @@ module.exports = {
         ],
       },
       'configuration/capabilities',
+      'configuration/security',
       'configuration/plays'
     ],
   },
