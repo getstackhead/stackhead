@@ -1,0 +1,14 @@
+---
+domain: mydomain.com
+security:
+  authentication:
+    - type: basic
+      username: user
+      password: pass
+deployment:
+  type: native
+  settings:
+    public_path: public
+    capabilities:
+      php:
+        version: 7.3

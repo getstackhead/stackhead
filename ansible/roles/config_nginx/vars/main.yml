@@ -2,3 +2,4 @@
 # OS-specific variables see other yml files in this directory
 root_group: root
 nginx_vhost_path: /etc/nginx/sites-enabled
+nginx_htpasswd_path: /etc/nginx/passwd
