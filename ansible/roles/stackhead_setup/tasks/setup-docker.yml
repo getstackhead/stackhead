@@ -1,9 +1,4 @@
 ---
-- name: Update apt caches
-  apt:
-    update_cache: yes
-- import_role:
-    name: andrewrothstein.python
 - import_role:
     name: nickjj.docker
   vars:

@@ -1,0 +1,20 @@
+# Set up basic dependencies
+---
+- name: Update apt caches
+  apt:
+    update_cache: yes
+
+- name: Install Python and pip
+  import_role:
+    name: robertdebock.python_pip
+  vars:
+    python_pip_modules:
+      - name: passlib # for htpasswd generation
+
+- name: Install passlib package
+  package:
+    name: "python-passlib"
+- name: Install passlib3 package
+  package:
+    name: "python3-passlib"
+  when: ansible_python_version is version('3.0.0', '>=')

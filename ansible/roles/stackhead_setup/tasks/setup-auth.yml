@@ -1,5 +1,0 @@
----
-- name: Install passlib dependency for htpasswd generation
-  pip:
-    name: passlib
-    state: present
