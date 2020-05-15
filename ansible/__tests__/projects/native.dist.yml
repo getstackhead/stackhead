@@ -1,5 +1,10 @@
 ---
 domain: ${domain}
+security:
+  authentication:
+    - type: basic
+      username: user
+      password: pass
 deployment:
   type: native
   settings:
