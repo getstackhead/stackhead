@@ -5,8 +5,38 @@
   "description": "Project definition file required by StackHead",
   "type": "object",
   "definitions": {
+    "authentication-basic": {
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username for login"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for login"
+        }
+      },
+      "required": ["username", "password"]
+    },
+    "authentication": {
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "description": "Type of authentication",
+          "type": "string",
+          "enum": ["basic"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"const": "basic"}}},
+          "then": { "$ref": "#/definitions/authentication-basic" }
+        }
+      ]
+    },
     "container-volume": {
-      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "dest"],
       "properties": {
         "type": {
           "type": "string",
@@ -28,12 +58,12 @@
           "default": "rw"
         }
       },
-      "required": ["type", "dest"],
       "if": {"properties": {"type": {"const": "custom"}}},
       "then": {"required": ["src"]}
     },
     "container-registry": {
-      "type": "object",
+      "additionalProperties": false,
+      "required": ["username", "password"],
       "properties": {
         "username": {
           "type": "string",
@@ -48,11 +78,12 @@
           "description": "URL to Container registry (optional)",
           "default": "https://index.docker.io/v1/"
         }
-      },
-      "required": ["username", "password"]
+      }
     },
     "container-service": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "image"],
       "properties": {
         "name": {
           "description": "Service name",
@@ -73,7 +104,10 @@
         "volumes": {
           "description": "Volumes to be mounted",
           "type": "array",
-          "items": {"$ref": "#/definitions/container-volume"},
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/container-volume"
+          },
           "minItems": 1
         },
         "volumes_from": {
@@ -88,12 +122,9 @@
           "items": { "type": "string" },
           "minItems": 1
         }
-      },
-      "additionalProperties": false,
-      "required": ["name", "image"]
+      }
     },
     "native-capability": {
-      "type": "object",
       "propertyNames": {
         "pattern": "^php$"
       },
@@ -130,6 +161,7 @@
               "description": "Login data for private registries",
               "type": "array",
               "items": {
+                "type": "object",
                 "$ref": "#/definitions/container-registry"
               }
             },
@@ -153,6 +185,7 @@
               "type": "string"
             },
             "capabilities": {
+              "type": "object",
               "$ref": "#/definitions/native-capability"
             }
           }
@@ -160,14 +193,32 @@
       }
     }
   },
+  "additionalProperties": false,
+  "required": ["domain"],
   "properties": {
     "domain": {
       "description": "The domain from which the app can be reached",
       "type": "string"
     },
+    "security": {
+      "type": "object",
+      "description": "Security settings for project",
+      "additionalProperties": false,
+      "properties": {
+        "authentication": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/authentication"
+          }
+        }
+      }
+    },
     "deployment": {
       "description": "Deployment configuration",
       "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
       "properties": {
         "type": {
           "type": "string",
@@ -180,14 +231,18 @@
       "allOf": [
         {
           "if": {"properties": {"type": {"const": "container"}}},
-          "then": { "$ref": "#/definitions/container-properties" }
+          "then": {
+            "type": "object",
+            "$ref": "#/definitions/container-properties"
+          }
         }, {
           "if": {"properties": {"type": {"const": "native"}}},
-          "then": { "$ref": "#/definitions/native-properties" }
+          "then": {
+            "type": "object",
+            "$ref": "#/definitions/native-properties"
+          }
         }
-      ],
-      "required": ["type"]
+      ]
     }
-  },
-  "required": ["domain"]
+  }
 }
