@@ -10,3 +10,5 @@
   version: 4.2.0
 - name: geerlingguy.php-versions
   version: 4.0.3
+- name: andrewrothstein.terraform
+  version: v2.2.39
