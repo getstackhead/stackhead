@@ -1,16 +1,9 @@
 ---
-- name: "StackHead::Project || Create SSL certificate"
-  include_role:
-    name: geerlingguy.certbot
-    apply:
-      become: yes
-      become_user: root # installing certbot requires root. # @TODO: move installation into provisioning
+- name: "StackHead::Container || Generate Terraform Ssl configuration file | Project: {{ containerapp__project_name }}"
+  template:
+    src: "templates/terraform/ssl-certificate.tf.j2"
+    dest: "{{ containerapp__project_src }}/terraform/ssl-certificate.tf"
+    force: true
   vars:
-    certbot_create_if_missing: true
-    certbot_create_method: standalone
-    certbot_create_standalone_stop_services:
-      - nginx
-    certbot_certs:
-      - email: certificate@saitho.me
-        domains:
-          - "{{ app_config.domain }}"
+    domain: "{{ app_config.domain }}"
+    domain_alternative: []

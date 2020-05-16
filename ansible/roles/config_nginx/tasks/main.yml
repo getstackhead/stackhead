@@ -7,20 +7,12 @@
     has_basic_auth: "{{ nginx_auth_basic is defined and nginx_auth_basic | length > 0 }}"
     htpasswd_path: "{{ nginx_htpasswd_path }}/.{{ nginx_project_name }}"
 
-- name: Write BasicAuth data
-  htpasswd:
-    path: "{{ htpasswd_path }}"
-    name: "{{ item.username }}"
-    password: "{{ item.password }}"
-    state: present
-  when: item.type == 'basic'
-  with_items: "{{ nginx_auth_basic }}"
-
-- name: Remove BasicAuth file
-  file:
-    path: "{{ htpasswd_path }}"
-    state: absent
-  when: not has_basic_auth
+- name: Generate htpasswd Terraform file
+  template:
+    src: "templates/terraform/htpasswd.tf.j2"
+    dest: "{{ containerapp__project_src }}/terraform/htpasswd.tf"
+    force: true
+  when: has_basic_auth
 
 - name: Add managed vhost config files.
   template:
