@@ -1,0 +1,71 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: "Test Docker Terraform file generation"
+      template:
+        src: "../templates/terraform/docker.tf.j2"
+        dest: "./docker.tf"
+      vars:
+        containerapp__project_name: test
+        containerapp__registries:
+          - username: dockerhub-user
+            password: dockerhub-pass
+          - username: myregistry-user
+            password: myregistry-pass
+            url: myregistry.com
+        containerapp__data_location_global: "/docker/global/%s"
+        containerapp__data_location_services: "/docker/services/%s/%s"
+        containerapp__expose:
+          service: nginx
+          port: 80
+        containerapp__services:
+          - name: data
+            image: mycontainer:latest
+          - name: nginx
+            image: getstackhead/nginx:php
+            environment:
+              NGINX_PUBLIC_DIRECTORY: public
+            links:
+              - php
+            volumes:
+              - type: global
+                src: data
+                dest: /var/www/public/data
+                mode: ro
+              - type: global
+                src: uploads
+                dest: /var/www/public/uploads
+                mode: ro
+            volumes_from:
+              - data:ro
+          - name: php
+            image: getstackhead/php:7.2
+            links:
+              - db
+            volumes_from:
+              - data
+            volumes:
+              - type: global
+                src: fileadmin
+                dest: /var/www/public/fileadmin
+              - type: global
+                src: uploads
+                dest: /var/www/public/uploads
+              - type: global
+                src: typo3temp
+                dest: /var/www/public/typo3temp
+              - type: global
+                src: var
+                dest: /var/www/var
+          - name: db
+            image: mariadb
+            environment:
+              MYSQL_ROOT_PASSWORD: db
+              MYSQL_DATABASE: db
+              MYSQL_USER: db
+              MYSQL_PASSWORD: db
+            volumes:
+              - type: local
+                src: data
+                dest: /var/lib/mysql
