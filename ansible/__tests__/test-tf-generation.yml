@@ -2,6 +2,13 @@
 - hosts: localhost
   connection: local
   tasks:
+    - name: "Test SSL Terraform file generation"
+      template:
+        src: "../templates/terraform/ssl-certificate.tf.j2"
+        dest: "./ssl-certificate.tf"
+      vars:
+        domain: example.com
+        domain_alternative: ["test.example.com", "test2.example.com"]
     - name: "Test Docker Terraform file generation"
       template:
         src: "../templates/terraform/docker.tf.j2"

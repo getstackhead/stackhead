@@ -4,8 +4,6 @@
   version: 3.3.0
 - name: geerlingguy.nginx
   version: 2.7.0
-- name: geerlingguy.certbot
-  version: 3.0.3
 - name: geerlingguy.php
   version: 4.2.0
 - name: geerlingguy.php-versions

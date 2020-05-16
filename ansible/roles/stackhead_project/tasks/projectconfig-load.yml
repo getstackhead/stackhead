@@ -7,21 +7,11 @@
     name: app_config
   delegate_to: 127.0.0.1
 
-- name: "StackHead::Project || Load deployed configuration"
-  shell: "cat {{ stackhead__remote_config_file }}"
-  register: data
-  ignore_errors: yes
-
 - name: "StackHead::Project || Set facts from project file"
   set_fact:
-    deployed_project: "{{ data.stdout | from_yaml }}"
-    active_domain: "{{ deployed_project.domain | default('') }}"
-    deployment_type: "{{ app_config.deployment.type }}"
-    settings_changed: "{{ app_config.deployment.settings != deployed_project.deployment.settings| default({}) }}"
     native_php_enabled: "{{ app_config.deployment.settings.capabilities.php is defined | default(False) }}"
     php_version: "{{ app_config.deployment.settings.capabilities.php.version | default(None) }}"
     remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
-    # Note: settings_changed will not detect if an application was switched from container to native and vice versa!
 
 - name: "StackHead::Project || Check if PHP version matches"
   assert:

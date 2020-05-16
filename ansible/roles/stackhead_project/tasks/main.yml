@@ -1,6 +1,18 @@
 ---
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
+- block:
+    - name: "StackHead::Container || Check if project directory exists | Project: {{ containerapp__project_name }}"
+      stat:
+        path: "{{ stackhead__remote_config_folder }}"
+      register: project_folder
+    - name: "StackHead::Container || Create project directory if not exists | Project: {{ containerapp__project_name }}"
+      file:
+        path: "{{ stackhead__remote_config_folder }}"
+        state: directory
+      when: project_folder.stat.exists == false
+
+# The following tasks will generate and deploy Terraform configuration files to the remote server
 - import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
 
 - block:
@@ -8,6 +20,3 @@
     when: app_config.deployment.type == 'native'
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.deployment.type == 'container'
-  - name: "StackHead::Project || Update deployed configuration file | Project: {{ containerapp__project_name }}"
-    import_tasks: "roles/stackhead_project/tasks/projectconfig-deploy.yml"
-  when: settings_changed
