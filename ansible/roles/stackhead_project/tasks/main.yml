@@ -1,51 +1,50 @@
 ---
+- include_vars: "{{ playbook_dir }}/config.yaml"
+
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
 - block:
-    - name: "StackHead::Container || Check if project directory exists | Project: {{ containerapp__project_name }}"
+    - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
       stat:
         path: "{{ stackhead__tf_project_folder }}"
       register: project_folder
-    - name: "StackHead::Container || Create project directory if not exists | Project: {{ containerapp__project_name }}"
+    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
       file:
         path: "{{ stackhead__tf_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
-#- import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
+- import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
 
-#- block:
-#  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
-#    when: app_config.deployment.type == 'native'
-#  - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
-#    when: app_config.deployment.type == 'container'
+- block:
+  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
+    when: app_config.deployment.type == 'native'
+  - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
+    when: app_config.deployment.type == 'container'
 
 # Symlink Terraform configurations from project to main folder and execute them
 - block:
-  - name: "StackHead::Container || Find all project related Terraform symlinks | Project: {{ containerapp__project_name }}"
+  - name: "StackHead::Project || Find all project related Terraform symlinks | Project: {{ project_name }}"
     find:
       paths: "{{ stackhead__tf_root_folder }}"
       recurse: no
       patterns: "^project_{{ project_name }}_.*\\.tf$"
       file_type: link
+      use_regex: yes
     register: project_tf_symlinks
-  - debug:
-      msg: "{{ stackhead__tf_root_folder }}"
-  - debug:
-      msg: "{{ project_tf_symlinks }}"
-  - name: "StackHead::Container || Remove old symlinks | Project: {{ containerapp__project_name }}"
+  - name: "StackHead::Project || Remove old symlinks | Project: {{ project_name }}"
     file:
       path: "{{ item.path }}"
       state: absent
     with_items: "{{ project_tf_symlinks.files }}"
-  - name: "StackHead::Container || Find all current project Terraform files | Project: {{ containerapp__project_name }}"
+  - name: "StackHead::Project || Find all current project Terraform files | Project: {{ project_name }}"
     find:
       paths: "{{ stackhead__tf_project_folder }}"
       recurse: no
-      patterns: "^*\\.tf$"
+      patterns: "*.tf"
     register: project_tf_files
-  - name: "StackHead::Container || Create new symlinks | Project: {{ containerapp__project_name }}"
+  - name: "StackHead::Project || Create new symlinks | Project: {{ project_name }}"
     file:
       src: "{{ item.path }}"
       dest: "{{ stackhead__tf_root_folder }}/project_{{ project_name }}_{{ item.path | basename }}"

@@ -1,0 +1,4 @@
+# Global variable configurations accessible by all roles
+---
+stackhead__root_folder: "/stackhead"
+stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
