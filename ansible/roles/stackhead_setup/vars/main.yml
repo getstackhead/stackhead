@@ -2,3 +2,4 @@
 STACKHEAD__UID: 1412
 STACKHEAD__GID: 1412
 stackhead__root_folder: "/stackhead"
+stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
