@@ -12,6 +12,7 @@
     uid: "{{ STACKHEAD__UID }}"
     groups: stackhead,www-data
     create_home: no
+    home: "{{ stackhead__root_folder }}"
     state: present
 - name: Generate stackhead sudoers permissions file
   blockinfile:
