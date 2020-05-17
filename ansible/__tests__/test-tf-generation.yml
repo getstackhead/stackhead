@@ -2,13 +2,43 @@
 - hosts: localhost
   connection: local
   tasks:
+    - name: Generate nginx vhost Terraform file
+      template:
+        src: "../templates/terraform/nginx_server_block.tf.j2"
+        dest: "./nginx_vhost.tf"
+        force: true
+      vars:
+        stackhead__acme_folder: ""
+        stackhead__certificates_folder: ""
+        nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
+        nginx_project_name: test
+        resource_name: "{{ nginx_project_name }}"
+        app_config:
+          domain: example.com
+        nginx_htpasswd_path: /etc/nginx/passwd
+        nginx_vhost_template: "{{ playbook_dir }}/../templates/nginx-vhost.reverse-proxy.j2"
+        nginx_basicauth_title: "Restricted area"
+        nginx_auth_basic:
+          - type: basic
+            username: user1
+            password: pass1
+        nginx_vhost:
+          server_name: "example.com"
+          use_https: 1
+          proxy_pass_port: "123"
+          state: present
+          filename: "example_com.conf"
     - name: "Test SSL Terraform file generation"
       template:
         src: "../templates/terraform/ssl-certificate.tf.j2"
         dest: "./ssl-certificate.tf"
       vars:
-        domain: example.com
+        app_config:
+          domain: example.com
         domain_alternative: ["test.example.com", "test2.example.com"]
+        stackhead__acme_folder: ""
+        stackhead__certificates_folder: ""
+        stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
     - name: "Test Docker Terraform file generation"
       template:
         src: "../templates/terraform/docker.tf.j2"

@@ -1,7 +1,7 @@
 {% extends "nginx-vhost.j2" %}
 
 {% block location %}
-    root {{ item.root_path }};
+    root {{ nginx_vhost.root_path }};
 {% if nginx_use_php is defined %}
     index index.php index.html index.htm;
     location ~ \.php$ {
