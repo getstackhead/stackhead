@@ -10,14 +10,14 @@
 - name: Generate htpasswd Terraform file
   template:
     src: "templates/terraform/htpasswd.tf.j2"
-    dest: "{{ containerapp__project_src }}/terraform/htpasswd.tf"
+    dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
     force: true
   when: has_basic_auth
 
 - name: Generate nginx vhost Terraform file
   template:
     src: "templates/terraform/nginx_vhost.tf.j2"
-    dest: "{{ containerapp__project_src }}/terraform/nginx_vhost.tf"
+    dest: "{{ stackhead__tf_project_folder }}/nginx_vhost.tf"
     force: true
   vars:
     nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
