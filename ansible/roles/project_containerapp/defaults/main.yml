@@ -3,6 +3,6 @@ containerapp__project_name:
 containerapp__expose: []
 containerapp__services: []
 containerapp__registries: []
-containerapp__data_location: "{{ stackhead__remote_config_folder }}/container_data"
+containerapp__data_location: "{{ stackhead__project_folder }}/container_data"
 containerapp__data_location_global: "{{ containerapp__data_location }}/global/%s" # %s = src
 containerapp__data_location_services: "{{ containerapp__data_location }}/services/%s/%s" # %s = service name, %s = src

@@ -4,11 +4,11 @@
 - block:
     - name: "StackHead::Container || Check if project directory exists | Project: {{ containerapp__project_name }}"
       stat:
-        path: "{{ stackhead__remote_tf_project_config_folder }}"
+        path: "{{ stackhead__tf_project_folder }}"
       register: project_folder
     - name: "StackHead::Container || Create project directory if not exists | Project: {{ containerapp__project_name }}"
       file:
-        path: "{{ stackhead__remote_tf_project_config_folder }}"
+        path: "{{ stackhead__tf_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false
 
@@ -41,7 +41,7 @@
     with_items: "{{ project_tf_symlinks.files }}"
   - name: "StackHead::Container || Find all current project Terraform files | Project: {{ containerapp__project_name }}"
     find:
-      paths: "{{ stackhead__remote_tf_project_config_folder }}"
+      paths: "{{ stackhead__tf_project_folder }}"
       recurse: no
       patterns: "^*\\.tf$"
     register: project_tf_files
