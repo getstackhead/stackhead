@@ -13,12 +13,6 @@
     groups: stackhead,www-data
     create_home: no
     state: present
-- name: Create StackHead root folder
-  file:
-    path: "{{ stackhead__root_folder }}"
-    state: directory
-    owner: stackhead
-    group: stackhead
 - name: Generate stackhead sudoers permissions file
   blockinfile:
     path: '/etc/sudoers.d/stackhead'

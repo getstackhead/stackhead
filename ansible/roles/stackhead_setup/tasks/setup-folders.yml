@@ -1,0 +1,13 @@
+---
+- name: Create StackHead root folder
+  file:
+    path: "{{ stackhead__root_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
+- name: Create global Terraform folder
+  file:
+    path: "{{ stackhead__tf_root_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
