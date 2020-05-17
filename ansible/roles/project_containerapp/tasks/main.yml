@@ -2,7 +2,7 @@
 - name: "StackHead::Container || Generate Terraform Docker configuration file | Project: {{ containerapp__project_name }}"
   template:
     src: "templates/terraform/docker.tf.j2"
-    dest: "{{ containerapp__project_src }}/terraform/docker.tf"
+    dest: "{{ stackhead__tf_project_folder }}/docker.tf"
     force: true
 
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"

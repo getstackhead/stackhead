@@ -4,54 +4,54 @@
 - block:
     - name: "StackHead::Container || Check if project directory exists | Project: {{ containerapp__project_name }}"
       stat:
-        path: "{{ stackhead__remote_config_folder }}"
+        path: "{{ stackhead__remote_tf_project_config_folder }}"
       register: project_folder
     - name: "StackHead::Container || Create project directory if not exists | Project: {{ containerapp__project_name }}"
       file:
-        path: "{{ stackhead__remote_config_folder }}"
+        path: "{{ stackhead__remote_tf_project_config_folder }}"
         state: directory
       when: project_folder.stat.exists == false
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
-- import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
+#- import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
 
-- block:
-  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
-    when: app_config.deployment.type == 'native'
-  - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
-    when: app_config.deployment.type == 'container'
+#- block:
+#  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
+#    when: app_config.deployment.type == 'native'
+#  - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
+#    when: app_config.deployment.type == 'container'
 
 # Symlink Terraform configurations from project to main folder and execute them
 - block:
   - name: "StackHead::Container || Find all project related Terraform symlinks | Project: {{ containerapp__project_name }}"
     find:
-      paths: "{{ stackhead__remote_tf_config_folder }}"
+      paths: "{{ stackhead__tf_root_folder }}"
       recurse: no
       patterns: "^project_{{ project_name }}_.*\\.tf$"
       file_type: link
     register: project_tf_symlinks
+  - debug:
+      msg: "{{ stackhead__tf_root_folder }}"
+  - debug:
+      msg: "{{ project_tf_symlinks }}"
   - name: "StackHead::Container || Remove old symlinks | Project: {{ containerapp__project_name }}"
     file:
-      path: "{{ item.1.path }}"
+      path: "{{ item.path }}"
       state: absent
-    with_subelements:
-      - "{{ project_tf_symlinks }}"
-      - files
+    with_items: "{{ project_tf_symlinks.files }}"
   - name: "StackHead::Container || Find all current project Terraform files | Project: {{ containerapp__project_name }}"
     find:
-      paths: "{{ stackhead__remote_config_folder }}/terraform"
+      paths: "{{ stackhead__remote_tf_project_config_folder }}"
       recurse: no
       patterns: "^*\\.tf$"
     register: project_tf_files
   - name: "StackHead::Container || Create new symlinks | Project: {{ containerapp__project_name }}"
     file:
-      src: "{{ item.1.path }}"
-      dest: "{{ stackhead__remote_tf_config_folder }}/project_{{ project_name }}_{{ item.1.path | basename }}"
+      src: "{{ item.path }}"
+      dest: "{{ stackhead__tf_root_folder }}/project_{{ project_name }}_{{ item.path | basename }}"
       state: link
-    with_subelements:
-      - "{{ project_tf_files }}"
-      - files
-  - name: "StackHead::Container || Execute Terraform | Project: {{ containerapp__project_name }}"
-    terraform:
-      project_path: '{{ stackhead__remote_tf_config_folder }}'
-      state: present
+    with_items: "{{ project_tf_files.files }}"
+#  - name: "StackHead::Container || Execute Terraform | Project: {{ containerapp__project_name }}"
+#    terraform:
+#      project_path: '{{ stackhead__tf_root_folder }}'
+#      state: present

@@ -2,7 +2,7 @@
 - name: "StackHead::Container || Generate Terraform Ssl configuration file | Project: {{ containerapp__project_name }}"
   template:
     src: "templates/terraform/ssl-certificate.tf.j2"
-    dest: "{{ containerapp__project_src }}/terraform/ssl-certificate.tf"
+    dest: "{{ stackhead__tf_project_folder }}/ssl-certificate.tf"
     force: true
   vars:
     domain: "{{ app_config.domain }}"
