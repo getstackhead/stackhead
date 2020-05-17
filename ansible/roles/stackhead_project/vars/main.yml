@@ -2,6 +2,3 @@
 stackhead__project_folder: "/stackhead/projects/{{ project_name }}"
 stackhead__project_config_file: "{{ stackhead__project_folder }}/project.yml"
 stackhead__tf_project_folder: "{{ stackhead__project_folder }}/terraform"
-
-stackhead__remote_config_folder: "{{ stackhead__project_folder }}" # @deprecated
-stackhead__remote_config_file: "{{ stackhead__project_config_file }}" # @deprecated
