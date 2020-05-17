@@ -1,7 +1,0 @@
-resource "nginx_vhost" "{{ project_name }}" {
-  filename = "nginx_vhost.conf"
-  enable = true
-  content = <<EOF
-{{ nginx_vhost_content }}
-EOF
-}
