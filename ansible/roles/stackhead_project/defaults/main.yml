@@ -1,5 +1,3 @@
 ---
 stackhead__config_folder: "{{ playbook_dir }}/stackhead"
-stackhead__remote_config_folder: "/stackhead/projects/{{ project_name }}"
-stackhead__remote_config_file: "{{ stackhead__remote_config_folder }}/project.yml"
 stackhead__local_config_file: "{{ stackhead__config_folder }}/{{ project_name }}.yml"
