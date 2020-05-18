@@ -1,0 +1,20 @@
+---
+# Create certificate files and remove Nginx configuration for ACME confirmation
+- name: "Generate wrapper executable for environment variable"
+  template:
+    src: "templates/acme_challenge_resolver.sh.j2"
+    dest: "{{ stackhead__tf_project_folder }}/acme_challenge_resolver.sh"
+    mode: 0755
+  vars:
+    domain: "{{ app_config.domain }}"
+- name: "Generate Terraform SSL configuration file"
+  template:
+    src: "templates/terraform/ssl-certificate.tf.j2"
+    dest: "{{ stackhead__tf_project_folder }}/ssl-certificate.tf"
+    force: true
+  vars:
+    domain: "{{ app_config.domain }}"
+    domain_alternative: []
+
+- import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
+- import_tasks: "roles/config_terraform/tasks/execute.yml"

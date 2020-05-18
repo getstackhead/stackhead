@@ -1,4 +1,6 @@
 # Global variable configurations accessible by all roles
 ---
 stackhead__root_folder: "/stackhead"
+stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
+stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"
 stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"

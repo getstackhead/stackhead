@@ -3,6 +3,13 @@ server {
     listen 80;
     listen [::]:80;
     server_name {{ nginx_vhost.server_name }};
+    location /.well-known/acme-challenge {
+        alias {{ stackhead__acme_folder }}/{{ nginx_vhost.server_name }};
+
+        location ~ /.well-known/acme-challenge/(.*) {
+            default_type text/plain;
+        }
+    }
 
     location / {
         return 301 https://{{ nginx_vhost.server_name }}$request_uri;
@@ -18,6 +25,14 @@ server {
 {% else %}
     listen 80;
     listen [::]:80;
+
+    location /.well-known/acme-challenge {
+        alias {{ stackhead__acme_folder }}/{{ nginx_vhost.server_name }};
+
+        location ~ /.well-known/acme-challenge/(.*) {
+            default_type text/plain;
+        }
+    }
 {% endif %}
 
     include /etc/nginx/h5bp/basic.conf;
@@ -28,9 +43,9 @@ server {
 
 {% if nginx_vhost.use_https %}
     ssl on;
-    ssl_certificate /etc/letsencrypt/live/{{ nginx_vhost.server_name }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ nginx_vhost.server_name }}/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/{{ nginx_vhost.server_name }}/chain.pem;
+    ssl_certificate {{ stackhead__certificates_folder }}/fullchain.pem;
+    ssl_certificate_key {{ stackhead__certificates_folder }}/privkey.pem;
+    ssl_trusted_certificate {{ stackhead__certificates_folder }}/chain.pem;
     include /etc/nginx/h5bp/ssl/policy_modern.conf;
     client_max_body_size 10G;
 {% endif %}

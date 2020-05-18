@@ -13,9 +13,9 @@
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-basic.yml"
 
-- import_tasks: "roles/stackhead_setup/tasks/setup-folders.yml"
-
 - import_tasks: "roles/stackhead_setup/tasks/setup-user.yml"
+
+- import_tasks: "roles/stackhead_setup/tasks/setup-folders.yml"
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-terraform.yml"
 
