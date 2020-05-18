@@ -11,12 +11,38 @@ resource "acme_registration" "reg" {
   email_address   = "certificate@saitho.me"
 }
 
+// Create folder for acme-challenges
+// waiting on https://github.com/hashicorp/terraform-provider-local/pull/14
+// resource "local_directory" "acme-folder" {
+//   directory = "{{ stackhead__acme_folder }}/{{ domain }}"
+// }
+
 resource "acme_certificate" "certificate" {
   account_key_pem           = "${acme_registration.reg.account_key_pem}"
   common_name               = "{{ domain }}"
-  subject_alternative_names = {{ domain_alternative }}
+  subject_alternative_names = {{ domain_alternative|default([]) }}
 
   dns_challenge {
-    provider = "httpreq"
+    provider = "exec"
+
+    config = {
+      EXEC_PATH = "{{ stackhead__tf_project_folder }}/acme_challenge_resolver.sh"
+      EXEC_MODE = "RAW"
+    }
   }
+}
+
+resource "local_file" "acme-fullchain" {
+  filename = "{{ stackhead__certificates_folder }}/fullchain.pem"
+  content = "${acme_certificate.certificate.certificate_pem}"
+}
+
+resource "local_file" "acme-privkey" {
+  filename = "{{ stackhead__certificates_folder }}/privkey.pem"
+  content = "${acme_certificate.certificate.private_key_pem}"
+}
+
+resource "local_file" "acme-chain" {
+  filename = "{{ stackhead__certificates_folder }}/chain.pem"
+  content = "${acme_certificate.certificate.issuer_pem}"
 }

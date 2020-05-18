@@ -15,8 +15,15 @@
       when: project_folder.stat.exists == false
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
-- import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
+- block:
+  - name: "StackHead::Project || Check if certificates directory exists | Project: {{ project_name }}"
+    stat:
+      path: "{{ stackhead__certificates_folder }}"
+    register: certificates_folder
+  - import_tasks: "roles/stackhead_project/tasks/generate-ssl-certificate.yml"
+    when: certificates_folder.stat.exists == false
 
+# Setup project by type
 - block:
   - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
     when: app_config.deployment.type == 'native'
@@ -24,5 +31,5 @@
     when: app_config.deployment.type == 'container'
 
 # Symlink Terraform configurations from project to main folder and execute them
-- import_tasks: "roles/config_terraform/tasks/update-symlinks.yml"
-#- import_tasks: "roles/config_terraform/tasks/execute.yml"
+- import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
+- import_tasks: "roles/config_terraform/tasks/execute.yml"

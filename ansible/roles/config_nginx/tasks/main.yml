@@ -21,4 +21,5 @@
     force: true
   vars:
     nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
+    resource_name: "{{ project_name }}"
 
