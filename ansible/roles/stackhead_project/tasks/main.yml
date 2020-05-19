@@ -24,33 +24,5 @@
     when: app_config.deployment.type == 'container'
 
 # Symlink Terraform configurations from project to main folder and execute them
-- block:
-  - name: "StackHead::Project || Find all project related Terraform symlinks | Project: {{ project_name }}"
-    find:
-      paths: "{{ stackhead__tf_root_folder }}"
-      recurse: no
-      patterns: "^project_{{ project_name }}_.*\\.tf$"
-      file_type: link
-      use_regex: yes
-    register: project_tf_symlinks
-  - name: "StackHead::Project || Remove old symlinks | Project: {{ project_name }}"
-    file:
-      path: "{{ item.path }}"
-      state: absent
-    with_items: "{{ project_tf_symlinks.files }}"
-  - name: "StackHead::Project || Find all current project Terraform files | Project: {{ project_name }}"
-    find:
-      paths: "{{ stackhead__tf_project_folder }}"
-      recurse: no
-      patterns: "*.tf"
-    register: project_tf_files
-  - name: "StackHead::Project || Create new symlinks | Project: {{ project_name }}"
-    file:
-      src: "{{ item.path }}"
-      dest: "{{ stackhead__tf_root_folder }}/project_{{ project_name }}_{{ item.path | basename }}"
-      state: link
-    with_items: "{{ project_tf_files.files }}"
-#  - name: "StackHead::Container || Execute Terraform | Project: {{ containerapp__project_name }}"
-#    terraform:
-#      project_path: '{{ stackhead__tf_root_folder }}'
-#      state: present
+- import_tasks: "roles/config_terraform/tasks/update-symlinks.yml"
+#- import_tasks: "roles/config_terraform/tasks/execute.yml"
