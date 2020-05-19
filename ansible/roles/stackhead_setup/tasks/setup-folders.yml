@@ -5,3 +5,9 @@
     state: directory
     owner: stackhead
     group: stackhead
+- name: Create StackHead binary folder
+  file:
+    path: "{{ stackhead__bin_location }}"
+    state: directory
+    owner: stackhead
+    group: stackhead

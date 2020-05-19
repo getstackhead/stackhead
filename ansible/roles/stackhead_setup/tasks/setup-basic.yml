@@ -4,6 +4,11 @@
   apt:
     update_cache: yes
 
+- name: Ensure python-setuptools is installed
+  package:
+    name: "python-setuptools"
+    state: present
+
 - name: Install Python and pip
   import_role:
     name: robertdebock.python_pip
@@ -14,7 +19,10 @@
 - name: Install passlib package
   package:
     name: "python-passlib"
+    state: present
+  when: ansible_python_version is version('3.0.0', '<')
 - name: Install passlib3 package
   package:
     name: "python3-passlib"
+    state: present
   when: ansible_python_version is version('3.0.0', '>=')
