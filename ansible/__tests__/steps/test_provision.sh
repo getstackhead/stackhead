@@ -2,6 +2,7 @@
 # IP address in environment "IP"
 # Domain in environment "DOMAIN"
 INVENTORY_PATH=ansible/__tests__/inventory.yml
+TEST=1
 
 sed -e "s/\${ipaddress}/${IP}/" ansible/__tests__/inventory.dist.yml > $INVENTORY_PATH
 
