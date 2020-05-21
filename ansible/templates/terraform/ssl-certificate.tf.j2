@@ -7,22 +7,23 @@ resource "tls_private_key" "private_key" {
 }
 
 resource "acme_registration" "reg" {
-  account_key_pem = "${tls_private_key.private_key.private_key_pem}"
+  account_key_pem = tls_private_key.private_key.private_key_pem
   email_address   = "certificate@saitho.me"
 }
 
 // Create folder for acme-challenges
 // waiting on https://github.com/hashicorp/terraform-provider-local/pull/14
 // resource "local_directory" "acme-folder" {
-//   directory = "{{ stackhead__acme_folder }}/{{ domain }}"
+//   directory = "{{ stackhead__acme_folder }}/{{ app_config.domain }}"
 // }
 
 resource "acme_certificate" "certificate" {
-  account_key_pem           = "${acme_registration.reg.account_key_pem}"
-  common_name               = "{{ domain }}"
+  account_key_pem           = acme_registration.reg.account_key_pem
+  common_name               = "{{ app_config.domain }}"
   subject_alternative_names = {{ domain_alternative|default([]) }}
 
   dns_challenge {
+    method = "http"
     provider = "exec"
 
     config = {
@@ -34,15 +35,15 @@ resource "acme_certificate" "certificate" {
 
 resource "local_file" "acme-fullchain" {
   filename = "{{ stackhead__certificates_folder }}/fullchain.pem"
-  content = "${acme_certificate.certificate.certificate_pem}"
+  content = acme_certificate.certificate.certificate_pem
 }
 
 resource "local_file" "acme-privkey" {
   filename = "{{ stackhead__certificates_folder }}/privkey.pem"
-  content = "${acme_certificate.certificate.private_key_pem}"
+  content = acme_certificate.certificate.private_key_pem
 }
 
 resource "local_file" "acme-chain" {
   filename = "{{ stackhead__certificates_folder }}/chain.pem"
-  content = "${acme_certificate.certificate.issuer_pem}"
+  content = acme_certificate.certificate.issuer_pem
 }
