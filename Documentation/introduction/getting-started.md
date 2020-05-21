@@ -93,3 +93,11 @@ ansible-playbook ansible/application-deploy.yml -i my-inventory.yml
 
 After deployment, open the domain in your web browser.
 It should display content and have a valid SSL certificate.
+
+### Destroying the project
+
+Now let's remove all configurations we created during deployment.
+
+```shell script
+ansible-playbook ansible/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
+```
