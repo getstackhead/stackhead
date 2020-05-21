@@ -4,4 +4,8 @@ resource "nginx_server_block" "{{ resource_name }}" {
   content = <<EOF
 {{ nginx_vhost_content }}
 EOF
+
+  provisioner "local-exec" {
+    command = "sudo systemctl reload nginx"
+  }
 }
