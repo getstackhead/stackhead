@@ -1,13 +1,6 @@
 ---
-- name: "StackHead::Project || Find all active Terraform files"
-  find:
-    paths: "{{ stackhead__tf_root_folder }}"
-    recurse: no
-    patterns: "*.tf"
-    file_type: link
-  register: all_tf_files
 - name: "StackHead::Project || Apply terraform plans"
   terraform:
     project_path: '{{ stackhead__tf_root_folder }}'
     force_init: yes
-    state: "{% if all_tf_files.matched == 0 %}absent{% else %}present{% endif %}"
+    state: "present"
