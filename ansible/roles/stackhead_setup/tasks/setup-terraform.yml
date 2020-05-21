@@ -21,3 +21,15 @@
     owner: stackhead
     group: stackhead
     force: yes
+- name: Copy patched acme-provider
+  get_url:
+    url: https://github.com/getstackhead/terraform-provider-acme/releases/download/v1.5.0-patched/terraform-provider-acme
+    dest: "{{ terraform_plugin_directory }}/terraform-provider-acme_v1.5.0_x4"
+    mode: '0755'
+    owner: stackhead
+    group: stackhead
+    force: yes
+- name: Create Terraform provider configurations
+  template:
+    src: "templates/terraform/terraform-providers.tf.j2"
+    dest: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
