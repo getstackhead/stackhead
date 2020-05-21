@@ -1,5 +1,5 @@
 resource "nginx_server_block" "{{ resource_name }}" {
-  filename = "{{ project_name }}.conf"
+  filename = "{{ resource_name }}.conf"
   enable = true
   content = <<EOF
 {{ nginx_vhost_content }}
