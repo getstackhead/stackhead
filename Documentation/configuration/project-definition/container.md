@@ -121,7 +121,3 @@ See [docker-compose documentation on environment](https://docs.docker.com/compos
 ### user
 
 See [docker-compose documentation on user](https://docs.docker.com/compose/compose-file/compose-file-v2/#user).
-
-### links
-
-See [docker-compose documentation on links](https://docs.docker.com/compose/compose-file/#links).

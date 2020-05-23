@@ -11,14 +11,10 @@ deployment:
         image: getstackhead/project-demo-php:data-latest
       - name: nginx
         image: getstackhead/nginx:php
-        links:
-          - php
         volumes_from:
           - data:ro
       - name: php
         image: getstackhead/php:7.4
-        links:
-          - db
         volumes_from:
           - data
       - name: db

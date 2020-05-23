@@ -67,8 +67,6 @@
             image: getstackhead/nginx:php
             environment:
               NGINX_PUBLIC_DIRECTORY: public
-            links:
-              - php
             volumes:
               - type: global
                 src: data
@@ -84,8 +82,6 @@
               - data:ro
           - name: php
             image: getstackhead/php:7.2
-            links:
-              - db
             volumes_from:
               - data
             volumes:

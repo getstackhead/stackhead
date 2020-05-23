@@ -32,8 +32,6 @@ deployment:
             src: /etc/secrets.txt
             dest: /var/www/secrets.txt
             mode: ro
-        links:
-          - db
       - name: db
         image: mariadb:10.5
         environment:

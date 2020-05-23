@@ -15,6 +15,12 @@ resource "docker_container" "stackhead-{{ containerapp__project_name }}-{{ servi
   image = "{{ service.image }}"
   name  = "stackhead-{{ containerapp__project_name }}-{{ service.name }}"
   restart = "always"
+
+  networks_advanced {
+    name = docker_network.stackhead-network-{{ containerapp__project_name }}.name
+    aliases = ["{{ service.name }}"]
+  }
+
 {%- if service.user is defined %}
   user = "{{ service.user }}"
 {%- endif %}
@@ -22,9 +28,6 @@ resource "docker_container" "stackhead-{{ containerapp__project_name }}-{{ servi
   ports {
     internal = {{ containerapp__expose.port }}
   }
-{%- endif %}
-{%- if service.links is defined %}
-  links = [docker_container.stackhead-{{ containerapp__project_name }}-{{ service.links|join('.name,docker_container.stackhead-'~containerapp__project_name~'-') }}.name]
 {%- endif %}
 {%- if service.environment is defined %}
   env = [{% for envName, envVal in service.environment.items() %}{% if not loop.first %},{% endif %}"{{ envName }}={{ envVal|TFreplace(containerapp__project_name) }}"{% endfor %}]
@@ -75,3 +78,7 @@ resource "docker_volume" "global-{{ containerapp__project_name }}-{{ sanitizedSr
     {%- endif %}
   {%- endfor %}
 {%- endfor %}
+
+resource "docker_network" "stackhead-network-{{ containerapp__project_name }}" {
+  name = "stackhead-network-{{ containerapp__project_name }}"
+}
