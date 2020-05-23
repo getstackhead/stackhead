@@ -42,7 +42,6 @@ server {
 {% endif %}
 
 {% if nginx_vhost.use_https %}
-    ssl on;
     ssl_certificate {{ stackhead__certificates_folder }}/fullchain.pem;
     ssl_certificate_key {{ stackhead__certificates_folder }}/privkey.pem;
     ssl_trusted_certificate {{ stackhead__certificates_folder }}/chain.pem;
