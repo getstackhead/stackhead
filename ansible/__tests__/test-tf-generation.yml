@@ -78,6 +78,8 @@
                 src: uploads
                 dest: /var/www/public/uploads
                 mode: ro
+            environment:
+              DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
             volumes_from:
               - data:ro
           - name: php
