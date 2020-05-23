@@ -16,3 +16,4 @@ if [[ $content != *"This website was provisioned by StackHead"* ]]; then
   echo "HTTP content check on container project failed" 1>&2
   exit 1
 fi
+ansible-playbook ansible/application-destroy.yml -i $INVENTORY_PATH --extra-vars "project_name=native"
