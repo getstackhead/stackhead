@@ -115,12 +115,6 @@
           "type": "array",
           "items": { "type": "string" },
           "minItems": 1
-        },
-        "links": {
-          "description": "Links to other services",
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1
         }
       }
     },
