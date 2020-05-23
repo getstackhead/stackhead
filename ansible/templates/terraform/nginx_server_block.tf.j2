@@ -1,14 +1,18 @@
 resource "nginx_server_block" "{{ resource_name }}" {
   filename = "{{ resource_name }}.conf"
   enable = true
+
+{% if nginx_dockerapp == 1 %}
   markers = {
     docker_port = docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}.ports[0].external
   }
+{% endif %}
+
   content = <<EOF
 {{ nginx_vhost_content }}
 EOF
 
-{% if containerapp__expose is defined and containerapp__expose.service is defined %}
+{% if nginx_dockerapp == 1 and containerapp__expose is defined and containerapp__expose.service is defined %}
   depends_on = [
     docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}
   ]

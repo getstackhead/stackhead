@@ -8,9 +8,11 @@
         dest: "./nginx_vhost.tf"
         force: true
       vars:
+        nginx_dockerapp: 1
         stackhead__acme_folder: ""
         stackhead__certificates_folder: ""
         nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
+        project_name: test
         nginx_project_name: test
         containerapp__expose:
           service: test
