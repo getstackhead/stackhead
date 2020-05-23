@@ -5,7 +5,7 @@
 
 - set_fact:
     has_basic_auth: "{{ nginx_auth_basic is defined and nginx_auth_basic | length > 0 }}"
-    htpasswd_path: "{{ nginx_htpasswd_path }}/.{{ nginx_project_name }}"
+    htpasswd_path: "{{ nginx_htpasswd_path }}/.{{ project_name }}"
 
 - name: Generate htpasswd Terraform file
   template:

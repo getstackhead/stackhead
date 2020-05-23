@@ -2,7 +2,7 @@
 
 {% block location %}
     location / {
-      proxy_pass http://localhost:{{ nginx_vhost.proxy_pass_port }};
+      proxy_pass http://localhost:{~ docker_port ~};
       proxy_redirect off;
       proxy_set_header X-Scheme $scheme;
       proxy_set_header Host $host;

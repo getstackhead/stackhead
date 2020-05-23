@@ -12,15 +12,10 @@
   include_role:
     name: config_nginx
   vars:
-    nginx_project_name: "{{ project_name }}"
     nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.reverse-proxy.j2"
     nginx_auth_basic: "{{ app_config.security.authentication|default([]) }}"
     nginx_vhost:
       server_name: "{{ app_config.domain }}"
       use_https: 1
-      proxy_pass_port: "{{ container_port }}"
       state: present
       filename: "{{ app_config.domain }}.conf"
-  when: container_port is defined
-  # currently not checking if Docker steps succeeded as we cant "register" the result due to import_role
-  # import_role is required because include_role does not pass the facts set in Docker role

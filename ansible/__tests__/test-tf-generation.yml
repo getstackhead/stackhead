@@ -12,6 +12,8 @@
         stackhead__certificates_folder: ""
         nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
         nginx_project_name: test
+        containerapp__expose:
+          service: test
         resource_name: "{{ nginx_project_name }}"
         app_config:
           domain: example.com

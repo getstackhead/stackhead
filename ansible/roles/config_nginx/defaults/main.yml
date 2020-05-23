@@ -1,4 +1,3 @@
 ---
 nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.j2"
 nginx_basicauth_title: "Restricted area"
-nginx_project_name: "_default" # should be set when using this role!
