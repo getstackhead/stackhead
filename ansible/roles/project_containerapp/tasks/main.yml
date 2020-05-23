@@ -4,19 +4,3 @@
     src: "templates/terraform/docker.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/docker.tf"
     force: true
-
-- import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
-- import_tasks: "roles/config_terraform/tasks/execute.yml"
-
-# Always fetch port - required for Nginx config update when domain changed
-- block:
-  - name: "StackHead::Container || Get current Docker port"
-    shell: "docker port stackhead-{{ project_name }}-{{ item.name }} {{ containerapp__expose.port }}"
-    when: containerapp__expose is defined and item.name == containerapp__expose.service
-    with_items: "{{ containerapp__services }}"
-    register: used_port
-
-  - set_fact:
-      container_port: "{{ item.stdout | replace('0.0.0.0:','') }}"
-    when: item.changed == true
-    with_items: "{{ used_port.results }}"
