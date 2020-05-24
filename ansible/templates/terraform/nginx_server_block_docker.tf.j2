@@ -1,0 +1,22 @@
+resource "nginx_server_block" "{{ resource_name }}" {
+  filename = "{{ resource_name }}.conf"
+  enable = true
+
+  markers = {
+    docker_port = docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}.ports[0].external
+  }
+
+  content = <<EOF
+{{ nginx_vhost_content }}
+EOF
+
+{% if containerapp__expose is defined and containerapp__expose.service is defined %}
+  depends_on = [
+    docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}
+  ]
+{% endif %}
+
+  provisioner "local-exec" {
+    command = "sudo systemctl reload nginx"
+  }
+}

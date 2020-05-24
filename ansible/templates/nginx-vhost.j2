@@ -52,7 +52,7 @@ server {
 {% if nginx_auth_basic is defined and nginx_auth_basic | length > 0 %}
     location / {
         auth_basic           "{{ nginx_basicauth_title }}";
-        auth_basic_user_file "{{ nginx_htpasswd_path }}/.{{ nginx_project_name }}";
+        auth_basic_user_file "{{ nginx_htpasswd_path }}/.{{ project_name }}";
     }
 {% endif %}
 
