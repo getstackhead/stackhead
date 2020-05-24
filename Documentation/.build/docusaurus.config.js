@@ -7,6 +7,12 @@ module.exports = {
   organizationName: 'getstackhead', // Usually your GitHub org/user name.
   projectName: 'stackhead', // Usually your repo name.
   themeConfig: {
+    announcementBar: {
+      id: 'wip_message', // Any value that will identify this message.
+      content:
+        'This project is highly <strong>WORK-IN-PROGRESS</strong>. Stuff may break and change without notice!',
+      backgroundColor: 'darkorange'
+    },
     navbar: {
       title: 'StackHead',
       logo: {
@@ -30,7 +36,7 @@ module.exports = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka and StackHead contributors. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka and StackHead contributors. Documentation built with Docusaurus.`,
     },
   },
   presets: [
