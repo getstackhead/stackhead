@@ -28,6 +28,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Initialize submodules
       run: git submodule sync && git submodule update --init
+    - name: Print Ansible version
+      run: ansible --version
     - uses: webfactory/ssh-agent@v0.2.0
       with:
         ssh-private-key: "${{ secrets.SSH_PRIVATE_KEY }}"
