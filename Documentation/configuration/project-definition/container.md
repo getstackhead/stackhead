@@ -3,12 +3,11 @@ title: Container
 ---
 
 Container-based applications are applications that run in one or multiple Docker containers.
-The definition is pretty similar to docker-compose. In fact StackHead uses docker-compose to spin up the containers.
-
-We recommend using this kind of configuration.
+While the settings are based on Docker Compose version 2.4, some may require a different syntax.
+Please have a closer look at the list below.
 
 :::note
-We're using **version 2.4** of Docker Compose, however not all container options are supported right now.
+Not all options from Docker Compose are supported right now.
 :::
 
 The example below consists of two services (app and db).
@@ -35,6 +34,14 @@ deployment:
 The Nginx webserver will proxy all web traffic to the service and port specified in `expose` setting.
 
 In the example above, Nginx will proxy web requests to the "app" container's port 80.
+
+### service
+
+Name of the Container service to receive the web request.
+
+### port
+
+Port of the given container service to receive the web request.
 
 ## services
 
