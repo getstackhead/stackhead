@@ -12,8 +12,8 @@ The following software has to already be installed on your system to use StackHe
 
 StackHead consists of multiple Ansible playbooks which you can install using several package managers.
 
-:::important
-When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.
+:::important   
+When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.   
 :::
 
 ### Using Ansible
@@ -46,8 +46,8 @@ Please install it directly from the repository as below:
 	}
 }
 ```
-:::note
-StackHead is installed into `vendor/getstackhead/stackhead`.
+:::tip   
+StackHead is installed into `vendor/getstackhead/stackhead`.   
 :::
 
 

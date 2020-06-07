@@ -1,34 +1,23 @@
 module.exports = {
   someSidebar: {
     Introduction: [
-      'introduction/concepts',
+      'introduction/workflow',
       'introduction/installation',
       'introduction/getting-started',
+      'introduction/plays'
     ],
-    // Concepts: [
-    //   'concepts/projects',
-    //   'concepts/provision-and-deploy',
-    //   'concepts/capabilities'
-    // ],
-     Configuration: [
+     'Configuration': [
+       'configuration/project-definition',
        {
          type: 'category',
-         label: 'Project definition',
+         label: 'Project types',
          items: [
-           'configuration/project-definition/introduction',
-           {
-             type: 'category',
-             label: 'Project types',
-             items: [
-               'configuration/project-definition/container',
-               'configuration/project-definition/native'
-             ],
-           }
+           'configuration/project-definition/container',
+           'configuration/project-definition/native'
          ],
        },
-    //   'configuration/capabilities',
-    //   'configuration/security',
-    //   'configuration/plays'
+       'configuration/capabilities',
+       'configuration/security'
      ],
     'Technical Documentation': [
       'technical-documentation/workflow'
