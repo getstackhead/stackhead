@@ -18,13 +18,11 @@ The highlighted terms are explained in further detail below.
 A web project usually includes an application and additional components (runtime environment, databases, etc).
 Also it is usually served on a Top Level Domain by some kind of webserver.
 
-This information is stored inside a **project definition** file.
+This information is stored inside a [**project definition** file](../configuration/project-definition.md).
 
 There you can either set up container-based applications (recommended) or also run you application natively.
 
 Based on the project definition file, StackHead will take care setting up the required configurations.
-
-TODO: Link to more detailed pages
 
 ## Ansible inventory
 
@@ -45,6 +43,10 @@ The server setup is executed by running the respective Ansible playbook.
 
 Setting up a project is called deployment and is done by running the respective Ansible playbook.
 This will create all project-related resources such as Nginx configuration, SSL certificates and start up containers.
+
+:::note  
+Only servers that have been set up using the StackHead **server setup** can be deployed onto!  
+:::
 
 ## Resource management
 

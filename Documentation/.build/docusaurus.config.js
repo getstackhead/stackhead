@@ -4,11 +4,11 @@ module.exports = {
   url: 'https://docs.stackhead.io',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
-  organizationName: 'getstackhead', // Usually your GitHub org/user name.
-  projectName: 'stackhead', // Usually your repo name.
+  organizationName: 'getstackhead',
+  projectName: 'stackhead',
   themeConfig: {
     announcementBar: {
-      id: 'wip_message', // Any value that will identify this message.
+      id: 'wip_message',
       content:
         'This project is highly <strong>WORK-IN-PROGRESS</strong>. Stuff may break and change without notice!',
       backgroundColor: 'darkorange'
@@ -21,7 +21,7 @@ module.exports = {
       },
       links: [
         {
-          to: 'introduction/getting-started',
+          to: 'introduction/workflow',
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'left',
