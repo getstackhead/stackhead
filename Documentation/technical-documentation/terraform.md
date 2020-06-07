@@ -29,6 +29,7 @@ With that Terraform is able to manage resources for all projects simultaneously.
 ![tf-apply]
 
 Each deployment will remove existing Symlinks in the global Terraform directory and relink those that are currently in the project's Terraform directory.
+The files in the global Terraform directory will have the format `[projectname]-[originalname].tf`.
 
 :::note  
 Symlinks are regenerated at the end of the deployment.
