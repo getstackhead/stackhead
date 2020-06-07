@@ -1,0 +1,20 @@
+server {
+{% block listen %}
+    listen {{ nginx_port_external }};
+    listen [::]:{{ nginx_port_external }};
+{% endblock %}
+
+    include /etc/nginx/h5bp/basic.conf;
+
+{% if nginx_vhost.server_name is defined %}
+    server_name {{ nginx_vhost.server_name }};
+{% endif %}
+
+{% block sslcertificates %}{% endblock %}
+
+{% block authentication %}{% endblock %}
+
+{% block location %}{% endblock %}
+}
+
+{% block additional %}{% endblock %}

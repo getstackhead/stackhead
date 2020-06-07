@@ -20,6 +20,7 @@
           domain: example.com
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_vhost_template: "{{ playbook_dir }}/../templates/nginx-vhost.reverse-proxy.j2"
+        nginx_port_external: 80
         nginx_basicauth_title: "Restricted area"
         nginx_auth_basic:
           - type: basic
