@@ -9,8 +9,9 @@ deployment:
   type: container
   settings:
     expose:
-      service: app
-      port: 8080
+      - service: app
+        internal_port: 8080
+        external_port: 80
     registries:
       - username: dockerhubuser
         password: dockerhubpassword

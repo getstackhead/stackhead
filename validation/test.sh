@@ -9,7 +9,7 @@ for filename in examples/valid/*; do
   : # file is valid
   else
     TEST_FAILED=1
-    echo 'File ${filename} is invalid.' > /dev/stderr
+    echo "File ${filename} is invalid." > /dev/stderr
   fi
 done
 
@@ -19,7 +19,7 @@ echo "Invalid files should be invalid:\n"
 for filename in examples/invalid/*; do
   if bin/project-validator ${filename}; then
     TEST_FAILED=1
-    echo 'File ${filename} is valid.' > /dev/stderr
+    echo "File ${filename} is valid." > /dev/stderr
   fi
 done
 

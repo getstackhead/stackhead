@@ -138,18 +138,23 @@
           "additionalProperties": false,
           "properties": {
             "expose": {
-              "type": "object",
-              "properties": {
+              "type": "array",
+              "items": {
+                "type": "object",
                 "service": {
                   "type": "string",
                   "description": "Name of the service below that exposes the port"
                 },
-                "port": {
+                "internal_port": {
                   "type": "integer",
                   "description": "Port that receives web traffic (e.g. 80, 3000, 8080 for most applications)"
-                }
-              },
-              "required": ["service", "port"]
+                },
+                "external_port": {
+                  "type": "integer",
+                  "description": "Port that is exposed by web server. Traffic received on this port is forwarded to the internal Docker container port. Note that HTTPS forwarding is generated automatically if external_port is 80, so port is not allowed here!"
+                },
+                "required": ["service", "internal_port", "external_port"]
+              }
             },
             "registries": {
               "description": "Login data for private registries",
