@@ -54,4 +54,4 @@ StackHead uses Terraform for creating resources of any kind.
 Such include configuration files, SSL certificates and Docker containers.
 
 While understanding how we use Terraform is not required for using StackHead,
-you can find out more in the [technical documentation](../technical-documentation/workflow.md) if you are interested.
+you can find out more in the [technical documentation](../technical-documentation/terraform.md) if you are interested.
