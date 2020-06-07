@@ -20,7 +20,7 @@ module.exports = {
        'configuration/security'
      ],
     'Technical Documentation': [
-      'technical-documentation/workflow'
+      'technical-documentation/terraform'
     ]
   },
 };
