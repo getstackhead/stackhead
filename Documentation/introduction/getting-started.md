@@ -41,8 +41,9 @@ deployment:
   type: container
   settings:
     expose:
-      service: app
-      port: 80
+      - service: app
+        external_port: 80
+        internal_port: 80
     services:
       - name: app
         image: nginxdemos/hello:latest

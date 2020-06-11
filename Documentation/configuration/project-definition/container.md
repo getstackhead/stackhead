@@ -19,8 +19,9 @@ deployment:
   type: container
   settings:
     expose:
-      port: 80
-      service: app
+      - internal_port: 80
+        external_port: 80
+        service: app
     services:
       - name: app
         image: nginxdemos/hello:latest
@@ -39,9 +40,21 @@ In the example above, Nginx will proxy web requests to the "app" container's por
 
 Name of the Container service to receive the web request.
 
-### port
+### internal_port
 
 Port of the given container service to receive the web request.
+
+### external_port
+
+Port that Nginx listens to.
+
+:::caution  
+Setting _external_port_ to 443 is not allowed, as HTTPS forwarding is automatically enabled for exposes with `external_port=80`.  
+:::
+
+:::note  
+Make sure to define the different _external_port_ within one project definition, so that each port is only used once!  
+:::
 
 ## services
 
