@@ -1,7 +1,7 @@
 {% extends "serverblock.https.j2" %}
 
 {% block main_location %}
-{% if nginx_vhost is defined and root_path is defined %}
+{% if nginx_vhost is defined and nginx_vhost.root_path is defined %}
         root {{ nginx_vhost.root_path }};
 {% endif %}
 {% if nginx_use_php is defined %}
