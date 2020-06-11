@@ -1,4 +1,47 @@
 ---
+- name: "StackHead::Container || Build src folder list || Project: {{ containerapp__project_name }}"
+  block:
+    - name: "Collect local volumes"
+      set_fact:
+        managedContainerVolumePaths: "{{ managedContainerVolumePaths|default([]) + [ ''~ containerapp__data_location_services|format(item.0.name, item.1.src|default()) ~'' ] }}"
+      when: item.1.type == 'local'
+      with_subelements:
+        - "{{ containerapp__services }}"
+        - volumes
+        - flags:
+          skip_missing: True
+    - name: "Collect global volumes"
+      set_fact:
+        managedContainerVolumePaths: "{{ managedContainerVolumePaths|default([]) + [ '' ~ containerapp__data_location_global|format(item.1.src|default()) ~ '' ] }}"
+      when: item.1.type == 'global'
+      with_subelements:
+        - "{{ containerapp__services }}"
+        - volumes
+        - flags:
+          skip_missing: True
+    - name: "Collect custom volumes"
+      set_fact:
+        managedContainerVolumePaths: "{{ managedContainerVolumePaths|default([]) + [ '' ~ item.1.src ~ '' ] }}"
+      when: item.1.type == 'custom'
+      with_subelements:
+        - "{{ containerapp__services }}"
+        - volumes
+        - flags:
+          skip_missing: True
+- block:
+    - name: "StackHead::Container || Checking volume folders"
+      stat:
+        path: "{{ item }}"
+      register: folder_stats
+      with_items: "{{ managedContainerVolumePaths }}"
+    - name: "StackHead::Container || Creating missing volume folders"
+      file:
+        path: "{{ item.item }}"
+        state: directory
+        mode: 0755
+      when: item.stat.exists == false
+      with_items: "{{ folder_stats.results }}"
+  when: managedContainerVolumePaths is defined
 - name: "StackHead::Container || Generate Terraform Docker configuration file | Project: {{ containerapp__project_name }}"
   template:
     src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
