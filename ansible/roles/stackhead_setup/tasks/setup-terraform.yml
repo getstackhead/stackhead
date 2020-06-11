@@ -15,7 +15,7 @@
     name: andrewrothstein.terraform
 - name: Download Nginx provider
   get_url:
-    url: https://github.com/getstackhead/terraform-nginx/releases/download/v1.3.0-rc1/terraform-provider-nginx
+    url: https://github.com/getstackhead/terraform-nginx/releases/download/v1.3.0-rc2/terraform-provider-nginx
     dest: "{{ terraform_plugin_directory }}/terraform-provider-nginx"
     mode: '0755'
     owner: stackhead

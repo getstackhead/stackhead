@@ -1,4 +1,8 @@
+{% if nginx_vhost.use_https %}
 {% set port = "443 ssl http2" %}
+{% else %}
+{% set port = "443 http2" %}
+{% endif %}
 {% extends "serverblock.j2" %}
 
 {% block options %}
