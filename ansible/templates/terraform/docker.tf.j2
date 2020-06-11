@@ -70,12 +70,20 @@ resource "docker_container" "stackhead-{{ containerapp__project_name }}-{{ servi
     {%- if volume.type == "local" %}
 resource "docker_volume" "local-{{ containerapp__project_name }}-{{ service.name }}-{{ sanitizedSrc }}" {
   name = "local-{{ containerapp__project_name }}-{{ service.name }}-{{ sanitizedSrc }}"
-  driver_opts = ["type=none","device={{ containerapp__data_location_services|format(service.name, src) }}", "o=bind"]
+  driver_opts = {
+    type: "none",
+    device: "{{ containerapp__data_location_services|format(service.name, src) }}",
+    o: "bind"
+  }
 }
     {%- elif volume.type == "global" and sanitizedSrc not in globalVolumeKeys %}
 resource "docker_volume" "global-{{ containerapp__project_name }}-{{ sanitizedSrc }}" {
   name = "global-{{ containerapp__project_name }}-{{ sanitizedSrc }}"
-  driver_opts = ["type=none","device={{ containerapp__data_location_global|format(src) }}", "o=bind"]
+  driver_opts = {
+    type: "none",
+    device: "{{ containerapp__data_location_global|format(src) }}",
+    o: "bind"
+  }
 }
       {%- set _ = globalVolumeKeys.append( sanitizedSrc ) %}
     {%- endif %}
