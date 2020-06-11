@@ -1,16 +1,17 @@
 #jinja2: trim_blocks:False
-
-{% set nginx_vhost_template = "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2" %}
 resource "nginx_server_block" "{{ resource_name }}" {
   filename = "{{ resource_name }}.conf"
   enable = true
 
   markers = {
-{% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
-{%- if nginx_expose is defined and nginx_expose.service is defined %}
-    docker_port = docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}.ports[0].external
-{%- endif %}
-{% endfor %}
+    docker_ports = [
+      {%- for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
+      {%- if nginx_expose is defined and nginx_expose.service is defined %}
+      docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}.ports[{{ loop.index0 }}].external{% if not loop.last %},{% endif %}
+      {%- endif %}
+      {%- endfor %}
+    ]
+
   }
 
   content = <<EOF
