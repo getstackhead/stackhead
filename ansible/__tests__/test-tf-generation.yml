@@ -16,12 +16,12 @@
         stackhead__certificates_folder: ""
         project_name: test
         containerapp__expose:
+          - service: test2
+            internal_port: 5000
+            external_port: 5000
           - service: test
             internal_port: 80
             external_port: 80
-          - service: test
-            internal_port: 5000
-            external_port: 5000
         resource_name: "{{ project_name }}"
         app_config:
           domain: example.com
@@ -63,10 +63,10 @@
         containerapp__data_location_global: "/docker/global/%s"
         containerapp__data_location_services: "/docker/services/%s/%s"
         containerapp__expose:
+          - service: php
+            internal_port: 3000
           - service: nginx
             internal_port: 80
-          - service: nginx
-            internal_port: 443
         containerapp__services:
           - name: data
             image: mycontainer:latest
