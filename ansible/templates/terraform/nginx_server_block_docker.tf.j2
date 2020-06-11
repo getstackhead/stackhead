@@ -5,10 +5,14 @@ resource "nginx_server_block" "{{ resource_name }}" {
 
   markers = {
     docker_ports = [
-      {%- for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
-      {%- if nginx_expose is defined and nginx_expose.service is defined %}
-      docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}.ports[{{ loop.index0 }}].external{% if not loop.last %},{% endif %}
+      {%- set loopvars = namespace(index=0, previous_service='') %}
+      {%- for nginx_expose in containerapp__expose|sort(attribute='service') if nginx_expose.service is defined and nginx_expose.external_port != 443 %}
+      {%- if loopvars.previous_service != nginx_expose.service %}
+        {%- set loopvars.index = 0 %}
       {%- endif %}
+      docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}.ports[{{ loopvars.index }}].external{% if not loop.last %},{% endif %}
+      {%- set loopvars.previous_service = nginx_expose.service %}
+      {%- set loopvars.index = loopvars.index + 1 %}
       {%- endfor %}
     ]
 
