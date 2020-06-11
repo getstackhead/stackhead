@@ -7,7 +7,6 @@
     force: true
   vars:
     nginx_dockerapp: 0
-    nginx_vhost_content: "{{ lookup('template', playbook_dir ~ '/templates/nginx-vhost.acmechallenge.j2') }}"
     resource_name: "__acme-{{ project_name }}"
     nginx_vhost:
       server_name: "{{ app_config.domain }}"

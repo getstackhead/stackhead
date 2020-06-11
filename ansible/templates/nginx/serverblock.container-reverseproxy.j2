@@ -1,0 +1,15 @@
+{% if base == "http" %}
+{% extends "serverblock.http.j2" %}
+{% elif base == "https" %}
+{% extends "serverblock.https.j2" %}
+{% endif %}
+
+{% block main_location %}
+        proxy_pass http://localhost:{~ docker_port[{{ ansible_loop.index }}] ~};
+        proxy_redirect off;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        add_header Strict-Transport-Security 'max-age=15552000; includeSubDomains' always;
+{% endblock %}

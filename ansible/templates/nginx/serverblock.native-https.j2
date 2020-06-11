@@ -1,0 +1,13 @@
+{% extends "serverblock.https.j2" %}
+
+{% block main_location %}
+        root {{ nginx_vhost.root_path }};
+        {% if nginx_use_php is defined %}
+        index index.php index.html index.htm;
+        location ~ \.php$ {
+           fastcgi_index index.php;
+           include fastcgi_params;
+           fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+        }
+        {% endif %}
+{% endblock %}

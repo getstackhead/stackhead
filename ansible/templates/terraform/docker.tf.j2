@@ -24,10 +24,13 @@ resource "docker_container" "stackhead-{{ containerapp__project_name }}-{{ servi
 {%- if service.user is defined %}
   user = "{{ service.user }}"
 {%- endif %}
-{%- if containerapp__expose is defined and containerapp__expose.service == service.name %}
+{%- if containerapp__expose is defined %}
+
+{%- for expose in containerapp__expose if expose.internal_port is defined and expose.service == service.name %}
   ports {
-    internal = {{ containerapp__expose.port }}
+    internal = {{ expose.internal_port }}
   }
+{%- endfor %}
 {%- endif %}
 {%- if service.environment is defined %}
   env = [{% for envName, envVal in service.environment.items() %}{% if not loop.first %},{% endif %}"{{ envName }}={{ envVal|TFreplace(containerapp__project_name) }}"{% endfor %}]

@@ -1,20 +1,36 @@
+#jinja2: trim_blocks:False
+
+{% set nginx_vhost_template = "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2" %}
 resource "nginx_server_block" "{{ resource_name }}" {
   filename = "{{ resource_name }}.conf"
   enable = true
 
   markers = {
-    docker_port = docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}.ports[0].external
+{% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
+{%- if nginx_expose is defined and nginx_expose.service is defined %}
+    docker_port = docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}.ports[0].external
+{%- endif %}
+{% endfor %}
   }
 
   content = <<EOF
-{{ nginx_vhost_content }}
+{% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
+{% if nginx_expose.external_port == 80 %}
+{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.http.j2", template_vars=dict(ansible_loop=loop)) }}
+{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,base="https")) }}
+{% else %}
+{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,port=nginx_expose.external_port,base="http")) }}
+{% endif %}
+{% endfor %}
 EOF
 
-{% if containerapp__expose is defined and containerapp__expose.service is defined %}
+{%- if nginx_expose is defined and nginx_expose.service is defined %}
   depends_on = [
-    docker_container.stackhead-{{ project_name }}-{{ containerapp__expose.service }}
+{% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
+{% if not loop.first %},{% endif %}docker_container.stackhead-{{ project_name }}-{{ nginx_expose.service }}
+{% endfor %}
   ]
-{% endif %}
+{%- endif %}
 
   provisioner "local-exec" {
     command = "sudo systemctl reload nginx"
