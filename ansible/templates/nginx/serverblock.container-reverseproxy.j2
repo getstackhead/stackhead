@@ -5,7 +5,7 @@
 {% endif %}
 
 {% block main_location %}
-        proxy_pass http://localhost:{~ docker_ports[{{ ansible_loop.index }}] ~};
+        proxy_pass http://localhost:{~ docker_ports[{{ ansible_loop.index0 }}] ~};
         proxy_redirect off;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $host;
