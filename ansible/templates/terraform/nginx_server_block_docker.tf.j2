@@ -21,10 +21,10 @@ resource "nginx_server_block" "{{ resource_name }}" {
   content = <<EOF
 {% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
 {% if nginx_expose.external_port == 80 %}
-{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.http.j2", template_vars=dict(ansible_loop=loop)) }}
-{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,base="https")) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(ansible_loop=loop)) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,base="https")) }}
 {% else %}
-{{ lookup('template', "{{ playbook_dir }}/../templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,port=nginx_expose.external_port,base="http")) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,port=nginx_expose.external_port,base="http")) }}
 {% endif %}
 {% endfor %}
 EOF

@@ -9,7 +9,7 @@
 
 - name: Generate htpasswd Terraform file
   template:
-    src: "templates/terraform/htpasswd.tf.j2"
+    src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
     force: true
   when: has_basic_auth

@@ -2,9 +2,12 @@
 - hosts: localhost
   connection: local
   tasks:
+    - include_vars: "{{ playbook_dir }}/../config.yaml"
+    - set_fact:
+        stackhead__templates: "{{ playbook_dir }}/../templates"
     - name: Generate nginx vhost Terraform file
       template:
-        src: "../templates/terraform/nginx_server_block_docker.tf.j2"
+        src: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
         dest: "./nginx_vhost.tf"
         force: true
       vars:
@@ -36,7 +39,7 @@
           filename: "example_com.conf"
     - name: "Test SSL Terraform file generation"
       template:
-        src: "../templates/terraform/ssl-certificate.tf.j2"
+        src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
         dest: "./ssl-certificate.tf"
       vars:
         app_config:
@@ -47,7 +50,7 @@
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
     - name: "Test Docker Terraform file generation"
       template:
-        src: "../templates/terraform/docker.tf.j2"
+        src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
         dest: "./docker.tf"
       vars:
         containerapp__project_name: test

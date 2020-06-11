@@ -31,5 +31,5 @@
     force: yes
 - name: Create Terraform provider configurations
   template:
-    src: "templates/terraform/terraform-providers.tf.j2"
+    src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
     dest: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"

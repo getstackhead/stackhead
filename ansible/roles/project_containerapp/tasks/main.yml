@@ -1,6 +1,6 @@
 ---
 - name: "StackHead::Container || Generate Terraform Docker configuration file | Project: {{ containerapp__project_name }}"
   template:
-    src: "templates/terraform/docker.tf.j2"
+    src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/docker.tf"
     force: true
