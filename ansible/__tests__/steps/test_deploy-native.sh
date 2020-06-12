@@ -9,7 +9,7 @@ INVENTORY_PATH=ansible/__tests__/inventory.yml
 sed -e "s/\${ipaddress}/${IP}/" -e "s/\${application}/native/" ansible/__tests__/inventory.dist.yml > ansible/__tests__/inventory.yml
 sed -e "s/\${domain}/${DOMAIN}/" ansible/__tests__/projects/native.dist.yml > ansible/__tests__/projects/native.yml
 TEST=1 ansible-playbook ansible/application-deploy.yml -i $INVENTORY_PATH -vv
-content=$(wget --no-check-certificate --http-user=user --http-password=pass --https-only -q -O - ${DOMAIN})
+content=$(wget --no-check-certificate --http-user=user --http-password=pass --https-only -q -O - https://${DOMAIN})
 if [[ $content != *"This website was provisioned by StackHead"* ]]; then
   echo "HTTP content check on container project failed" 1>&2
   exit 1
