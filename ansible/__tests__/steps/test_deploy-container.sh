@@ -14,4 +14,10 @@ if [[ $content != *"Hello world!"* ]]; then
   echo "HTTP content check on container project failed" 1>&2
   exit 1
 fi
+# test that phpmyadmin is available
+content=$(wget --no-check-certificate --https-only -q -O - ${DOMAIN}:81)
+if [[ $content != *"phpMyAdmin"* ]]; then
+  echo "HTTP content check on phpmyadmin in container project failed" 1>&2
+  exit 1
+fi
 TEST=1 ansible-playbook ansible/application-destroy.yml -i $INVENTORY_PATH --extra-vars "project_name=container" -vv
