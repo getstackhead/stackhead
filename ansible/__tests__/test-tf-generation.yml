@@ -2,24 +2,56 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: Generate nginx vhost Terraform file
+    - include_vars: "{{ playbook_dir }}/../config.yaml"
+    - set_fact:
+        stackhead__templates: "{{ playbook_dir }}/../templates"
+    - name: Generate nginx native Terraform file
       template:
-        src: "../templates/terraform/nginx_server_block.tf.j2"
-        dest: "./nginx_vhost.tf"
+        src: "{{ stackhead__templates }}/terraform/nginx_server_block.tf.j2"
+        dest: "./nginx_vhost-native.tf"
         force: true
       vars:
         nginx_dockerapp: 1
         stackhead__acme_folder: ""
         stackhead__certificates_folder: ""
-        nginx_vhost_content: "{{ lookup('template', nginx_vhost_template) }}"
         project_name: test
-        containerapp__expose:
-          service: test
         resource_name: "{{ project_name }}"
         app_config:
           domain: example.com
         nginx_htpasswd_path: /etc/nginx/passwd
-        nginx_vhost_template: "{{ playbook_dir }}/../templates/nginx-vhost.reverse-proxy.j2"
+        nginx_basicauth_title: "Restricted area"
+        nginx_auth_basic:
+          - type: basic
+            username: user1
+            password: pass1
+        nginx_vhost:
+          server_name: "example.com"
+          use_https: 1
+          proxy_pass_port: "123"
+          state: present
+          filename: "example_com.conf"
+          root_path: "/var/www/project/htdocs"
+    - name: Generate nginx container Terraform file
+      template:
+        src: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
+        dest: "./nginx_vhost-container.tf"
+        force: true
+      vars:
+        nginx_dockerapp: 1
+        stackhead__acme_folder: ""
+        stackhead__certificates_folder: ""
+        project_name: test
+        containerapp__expose:
+          - service: test2
+            internal_port: 5000
+            external_port: 5000
+          - service: test
+            internal_port: 80
+            external_port: 80
+        resource_name: "{{ project_name }}"
+        app_config:
+          domain: example.com
+        nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
         nginx_auth_basic:
           - type: basic
@@ -33,7 +65,7 @@
           filename: "example_com.conf"
     - name: "Test SSL Terraform file generation"
       template:
-        src: "../templates/terraform/ssl-certificate.tf.j2"
+        src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
         dest: "./ssl-certificate.tf"
       vars:
         app_config:
@@ -44,7 +76,7 @@
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
     - name: "Test Docker Terraform file generation"
       template:
-        src: "../templates/terraform/docker.tf.j2"
+        src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
         dest: "./docker.tf"
       vars:
         containerapp__project_name: test
@@ -57,8 +89,10 @@
         containerapp__data_location_global: "/docker/global/%s"
         containerapp__data_location_services: "/docker/services/%s/%s"
         containerapp__expose:
-          service: nginx
-          port: 80
+          - service: php
+            internal_port: 3000
+          - service: nginx
+            internal_port: 80
         containerapp__services:
           - name: data
             image: mycontainer:latest
@@ -66,6 +100,7 @@
             image: getstackhead/nginx:php
             environment:
               NGINX_PUBLIC_DIRECTORY: public
+              DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
             volumes:
               - type: global
                 src: data
@@ -75,8 +110,6 @@
                 src: uploads
                 dest: /var/www/public/uploads
                 mode: ro
-            environment:
-              DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
             volumes_from:
               - data:ro
           - name: php

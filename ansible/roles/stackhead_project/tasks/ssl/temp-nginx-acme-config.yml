@@ -2,12 +2,11 @@
 # Set up basic nginx that can handle ACME requests
 - name: Generate nginx ACME challenge configuration Terraform file
   template:
-    src: "templates/terraform/nginx_server_block.tf.j2"
+    src: "{{ stackhead__templates }}/terraform/nginx_server_block.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/nginx_server_block-acme.tf"
     force: true
   vars:
     nginx_dockerapp: 0
-    nginx_vhost_content: "{{ lookup('template', playbook_dir ~ '/templates/nginx-vhost.acmechallenge.j2') }}"
     resource_name: "__acme-{{ project_name }}"
     nginx_vhost:
       server_name: "{{ app_config.domain }}"

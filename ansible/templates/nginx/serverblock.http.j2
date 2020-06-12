@@ -1,0 +1,16 @@
+{% set port = port|default(80) %}
+{% extends "serverblock.j2" %}
+
+{% block location %}
+    location /.well-known/acme-challenge {
+        alias {{ stackhead__acme_folder }}/{{ nginx_vhost.server_name }};
+
+        location ~ /.well-known/acme-challenge/(.*) {
+            default_type text/plain;
+        }
+    }
+{% endblock %}
+
+{% block main_location %}
+        return 301 https://{{ nginx_vhost.server_name }}$request_uri;
+{% endblock %}

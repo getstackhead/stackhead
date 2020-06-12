@@ -1,4 +1,0 @@
----
-- name: reload nginx
-  # reload by shell command as stackhead user is non-root
-  command: sudo systemctl reload nginx # needs to be run with sudo

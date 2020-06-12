@@ -10,7 +10,6 @@
   include_role:
     name: config_nginx
   vars:
-    nginx_vhost_template: "{{ playbook_dir }}/templates/nginx-vhost.native.j2"
     nginx_auth_basic: "{{ app_config.security.authentication|default([]) }}"
     nginx_use_php: "{{ native_php_enabled }}"
     nginx_vhost:

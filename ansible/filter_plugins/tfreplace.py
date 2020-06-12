@@ -12,6 +12,8 @@ class FilterModule(object):
         }
 
     def tf_replace(self, text, project_name):
+        if not isinstance(text, str):
+            return text
         # Replace Docker service name variables
         docker_service = re.compile(r'\$DOCKER_SERVICE_NAME\[\'(.*)\'\]')
         text = docker_service.sub("${docker_container.stackhead-" + project_name + "-\\1.name}", text)
