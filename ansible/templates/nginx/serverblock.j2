@@ -1,6 +1,7 @@
+{% set listen_params_v %}{% block listen_params %}{% endblock %}{% endset %}
 server {
-    listen {{ port }};
-    listen [::]:{{ port }};
+    listen {{ port }} {{ listen_params_v }};
+    listen [::]:{{ port }} {{ listen_params_v }};
     server_name {{ nginx_vhost.server_name }};
 
 {% block options %}{% endblock %}

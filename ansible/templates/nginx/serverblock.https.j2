@@ -1,9 +1,9 @@
-{% if nginx_vhost.use_https %}
-{% set port = "443 ssl http2" %}
-{% else %}
-{% set port = "443 http2" %}
-{% endif %}
+{% set port = port|default(443) %}
 {% extends "serverblock.j2" %}
+
+{% block listen_params %}
+http2 {% if nginx_vhost.use_https %}ssl{% endif %}
+{% endblock %}
 
 {% block options %}
     gzip off;

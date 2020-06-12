@@ -1,8 +1,4 @@
-{% if base == "http" %}
-{% extends "serverblock.http.j2" %}
-{% elif base == "https" %}
 {% extends "serverblock.https.j2" %}
-{% endif %}
 
 {% block main_location %}
         proxy_pass http://localhost:{~ docker_ports[{{ ansible_loop.index0 }}] ~};
