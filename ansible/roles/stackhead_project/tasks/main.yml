@@ -26,9 +26,9 @@
 # Setup project by type
 - block:
   - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
-    when: app_config.deployment.type == 'native'
+    when: app_config.type == 'native'
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
-    when: app_config.deployment.type == 'container'
+    when: app_config.type == 'container'
 
 # Symlink Terraform configurations from project to main folder and execute them
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
