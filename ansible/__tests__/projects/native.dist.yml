@@ -1,14 +1,14 @@
 ---
-domain: ${domain}
-security:
-  authentication:
-    - type: basic
-      username: user
-      password: pass
-deployment:
-  type: native
-  settings:
+type: native
+domains:
+  - domain: ${domain}
     public_path: html
-    capabilities:
-      php:
-        version: 7.3
+    security:
+      authentication:
+        - type: basic
+          username: user
+          password: pass
+native:
+  capabilities:
+    php:
+      version: 7.3
