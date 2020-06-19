@@ -1,0 +1,139 @@
+{
+  "definitions": {
+    "container-registry": {
+      "additionalProperties": false,
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username for authenticating with the Container registry"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for authenticating with the Container registry"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to Container registry (optional)",
+          "default": "https://index.docker.io/v1/"
+        }
+      }
+    },
+    "container-volume": {
+      "additionalProperties": false,
+      "required": ["type", "dest"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Volume type, determines the data folder",
+          "enum": [ "global", "local", "custom" ]
+        },
+        "src": {
+          "type": "string",
+          "description": "Path that is mounted into the container, relative from data folder"
+        },
+        "dest": {
+          "type": "string",
+          "description": "Target folder on the container"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Permissions on the mounted volume - rw=readwrite, ro=readonly",
+          "enum": [ "rw", "ro" ],
+          "default": "rw"
+        }
+      },
+      "if": {"properties": {"type": {"const": "custom"}}},
+      "then": {"required": ["src"]}
+    },
+    "container-service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "image"],
+      "properties": {
+        "name": {
+          "description": "Service name",
+          "type": "string"
+        },
+        "image": {
+          "description": "Name of Container image",
+          "type": "string"
+        },
+        "user": {
+          "description": "User to be used inside container",
+          "type": "string"
+        },
+        "environment": {
+          "description": "Container environment variables",
+          "type": "object"
+        },
+        "volumes": {
+          "description": "Volumes to be mounted",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/container-volume"
+          },
+          "minItems": 1
+        },
+        "volumes_from": {
+          "description": "Use volumes from given services",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    }
+  },
+  "properties": {
+    "domains": {
+      "type": "array",
+      "items": {
+        "required": ["expose"],
+        "properties": {
+          "expose": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "service": {
+                "type": "string",
+                "description": "Name of the service below that exposes the port"
+              },
+              "internal_port": {
+                "type": "integer",
+                "description": "Port that receives web traffic (e.g. 80, 3000, 8080 for most applications)"
+              },
+              "external_port": {
+                "type": "integer",
+                "description": "Port that is exposed by web server. Traffic received on this port is forwarded to the internal Docker container port. Note that HTTPS forwarding is generated automatically if external_port is 80, so port is not allowed here!"
+              },
+              "required": ["service", "internal_port", "external_port"]
+            }
+          }
+        }
+      }
+    },
+    "container": {
+      "additionalProperties": false,
+      "required": ["services"],
+      "properties": {
+        "registries": {
+          "description": "Login data for private registries",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/container-registry"
+          }
+        },
+        "services": {
+          "description": "List of Container services to be started",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/container-service"
+          }
+        }
+      }
+    }
+  }
+}

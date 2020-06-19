@@ -1,247 +1,46 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://stackhead.io/schemas/project-definition.sample.json",
   "title": "Project Definition",
   "description": "Project definition file required by StackHead",
   "type": "object",
-  "definitions": {
-    "authentication-basic": {
-      "properties": {
-        "username": {
-          "type": "string",
-          "description": "Username for login"
-        },
-        "password": {
-          "type": "string",
-          "description": "Password for login"
-        }
-      },
-      "required": ["username", "password"]
+  "required": ["type", "domains"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [ "container", "native" ]
     },
-    "authentication": {
-      "required": ["type"],
-      "properties": {
-        "type": {
-          "description": "Type of authentication",
-          "type": "string",
-          "enum": ["basic"]
-        }
-      },
-      "allOf": [
-        {
-          "if": {"properties": {"type": {"const": "basic"}}},
-          "then": { "$ref": "#/definitions/authentication-basic" }
-        }
-      ]
-    },
-    "container-volume": {
-      "additionalProperties": false,
-      "required": ["type", "dest"],
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "Volume type, determines the data folder",
-          "enum": [ "global", "local", "custom" ]
-        },
-        "src": {
-          "type": "string",
-          "description": "Path that is mounted into the container, relative from data folder"
-        },
-        "dest": {
-          "type": "string",
-          "description": "Target folder on the container"
-        },
-        "mode": {
-          "type": "string",
-          "description": "Permissions on the mounted volume - rw=readwrite, ro=readonly",
-          "enum": [ "rw", "ro" ],
-          "default": "rw"
-        }
-      },
-      "if": {"properties": {"type": {"const": "custom"}}},
-      "then": {"required": ["src"]}
-    },
-    "container-registry": {
-      "additionalProperties": false,
-      "required": ["username", "password"],
-      "properties": {
-        "username": {
-          "type": "string",
-          "description": "Username for authenticating with the Container registry"
-        },
-        "password": {
-          "type": "string",
-          "description": "Password for authenticating with the Container registry"
-        },
-        "url": {
-          "type": "string",
-          "description": "URL to Container registry (optional)",
-          "default": "https://index.docker.io/v1/"
-        }
-      }
-    },
-    "container-service": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["name", "image"],
-      "properties": {
-        "name": {
-          "description": "Service name",
-          "type": "string"
-        },
-        "image": {
-          "description": "Name of Container image",
-          "type": "string"
-        },
-        "user": {
-          "description": "User to be used inside container",
-          "type": "string"
-        },
-        "environment": {
-          "description": "Container environment variables",
-          "type": "object"
-        },
-        "volumes": {
-          "description": "Volumes to be mounted",
-          "type": "array",
-          "items": {
+    "domains": {
+      "type": "array",
+      "items": {
+        "description": "Domain configuration",
+        "required": ["domain"],
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Domain name without protocols or slashes"
+          },
+          "security": {
             "type": "object",
-            "$ref": "#/definitions/container-volume"
-          },
-          "minItems": 1
-        },
-        "volumes_from": {
-          "description": "Use volumes from given services",
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1
-        }
-      }
-    },
-    "native-capability": {
-      "propertyNames": {
-        "pattern": "^php$"
-      },
-      "patternProperties": {
-        ".*": {
-          "type": "object",
-          "properties": {
-            "version": {}
-          },
-          "required": ["version"]
-        }
-      }
-    },
-    "container-properties": {
-      "properties": {
-        "settings": {
-          "additionalProperties": false,
-          "properties": {
-            "expose": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "service": {
-                  "type": "string",
-                  "description": "Name of the service below that exposes the port"
-                },
-                "internal_port": {
-                  "type": "integer",
-                  "description": "Port that receives web traffic (e.g. 80, 3000, 8080 for most applications)"
-                },
-                "external_port": {
-                  "type": "integer",
-                  "description": "Port that is exposed by web server. Traffic received on this port is forwarded to the internal Docker container port. Note that HTTPS forwarding is generated automatically if external_port is 80, so port is not allowed here!"
-                },
-                "required": ["service", "internal_port", "external_port"]
-              }
-            },
-            "registries": {
-              "description": "Login data for private registries",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "$ref": "#/definitions/container-registry"
-              }
-            },
-            "services": {
-              "description": "List of Container services to be started",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/container-service"
-              }
-            }
-          }
-        }
-      }
-    },
-    "native-properties": {
-      "properties": {
-        "settings": {
-          "additionalProperties": false,
-          "properties": {
-            "public_path": {
-              "type": "string"
-            },
-            "capabilities": {
-              "type": "object",
-              "$ref": "#/definitions/native-capability"
-            }
+            "$ref": "security.json"
           }
         }
       }
     }
   },
-  "additionalProperties": false,
-  "required": ["domain"],
-  "properties": {
-    "domain": {
-      "description": "The domain from which the app can be reached",
-      "type": "string"
-    },
-    "security": {
-      "type": "object",
-      "description": "Security settings for project",
-      "additionalProperties": false,
-      "properties": {
-        "authentication": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/authentication"
-          }
-        }
+  "allOf": [
+    {
+      "if": {"properties": {"type": {"const": "native"}}},
+      "then": {
+        "type": "object",
+        "$ref": "native.json"
       }
     },
-    "deployment": {
-      "description": "Deployment configuration",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["type"],
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [ "container", "native" ]
-        },
-        "settings": {
-          "type": "object"
-        }
-      },
-      "allOf": [
-        {
-          "if": {"properties": {"type": {"const": "container"}}},
-          "then": {
-            "type": "object",
-            "$ref": "#/definitions/container-properties"
-          }
-        }, {
-          "if": {"properties": {"type": {"const": "native"}}},
-          "then": {
-            "type": "object",
-            "$ref": "#/definitions/native-properties"
-          }
-        }
-      ]
+    {
+      "if": {"properties": {"type": {"const": "container"}}},
+      "then": {
+        "type": "object",
+        "$ref": "container.json"
+      }
     }
-  }
+  ]
 }
