@@ -5,8 +5,8 @@
   vars:
     containerapp__project_name: "{{ project_name }}"
     containerapp__expose: "{{ app_config.deployment.settings.expose }}"
-    containerapp__services: "{{ app_config.deployment.settings.services }}"
-    containerapp__registries: "{{ app_config.deployment.settings.registries | default([]) }}"
+    containerapp__services: "{{ app_config.container.services }}"
+    containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
 - name: "StackHead::Project || Update Nginx reverse proxy configuration"
   include_role:
