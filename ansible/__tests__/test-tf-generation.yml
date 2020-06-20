@@ -1,10 +1,96 @@
 ---
 - hosts: localhost
   connection: local
+  vars:
+    containerapp__data_location_global: "/docker/global/%s"
+    containerapp__data_location_services: "/docker/services/%s/%s"
+    containerapp__project_name: test
+    containerapp__registries:
+      - username: dockerhub-user
+        password: dockerhub-pass
+      - username: myregistry-user
+        password: myregistry-pass
+        url: myregistry.com
+    app_config:
+      domains:
+        - domain: example.com
+          expose:
+            - service: php
+              internal_port: 5000
+              external_port: 5000
+            - service: nginx
+              internal_port: 80
+              external_port: 80
+          security:
+            authentication:
+              - type: basic
+                username: user1
+                password: pass1
+        - domain: test.example.com
+          expose:
+            - service: php
+              internal_port: 5000
+              external_port: 80
+          security:
+            authentication:
+              - type: basic
+                username: user1
+                password: pass1
+    containerapp__services:
+      - name: data
+        image: mycontainer:latest
+      - name: nginx
+        image: getstackhead/nginx:php
+        environment:
+          NGINX_PUBLIC_DIRECTORY: public
+          DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
+        volumes:
+          - type: global
+            src: data
+            dest: /var/www/public/data
+            mode: ro
+          - type: global
+            src: uploads
+            dest: /var/www/public/uploads
+            mode: ro
+        volumes_from:
+          - data:ro
+      - name: php
+        image: getstackhead/php:7.2
+        volumes_from:
+          - data
+        volumes:
+          - type: global
+            src: fileadmin
+            dest: /var/www/public/fileadmin
+          - type: global
+            src: uploads
+            dest: /var/www/public/uploads
+          - type: global
+            src: typo3temp
+            dest: /var/www/public/typo3temp
+          - type: global
+            src: var
+            dest: /var/www/var
+      - name: db
+        image: mariadb
+        environment:
+          MYSQL_ROOT_PASSWORD: db
+          MYSQL_DATABASE: db
+          MYSQL_USER: db
+          MYSQL_PASSWORD: db
+        volumes:
+          - type: local
+            src: data
+            dest: /var/lib/mysql
   tasks:
     - include_vars: "{{ playbook_dir }}/../config.yaml"
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../templates"
+    - set_fact:
+        containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
+      when: item.expose is defined and item.expose not in containerapp__expose|default([])
+      with_items: "{{ app_config.domains }}"
     - name: Generate nginx native Terraform file
       template:
         src: "{{ stackhead__templates }}/terraform/nginx_server_block.tf.j2"
@@ -17,14 +103,6 @@
         stackhead__certificates_folder: ""
         project_name: test
         resource_name: "{{ project_name }}"
-        app_config:
-          domains:
-            - domain: example.com
-              security:
-                authentication:
-                  - type: basic
-                    username: user1
-                    password: pass1
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
     - name: Generate nginx container Terraform file
@@ -40,38 +118,6 @@
         stackhead__certificates_folder: ""
         project_name: test
         resource_name: "{{ project_name }}"
-        app_config:
-          domains:
-            - domain: example.com
-              expose:
-                - service: test2
-                  internal_port: 5000
-                  external_port: 5000
-                - service: test
-                  internal_port: 80
-                  external_port: 80
-              security:
-                authentication:
-                  - type: basic
-                    username: user1
-                    password: pass1
-            - domain: test.example.com
-              expose:
-                - service: test2
-                  internal_port: 5000
-                  external_port: 80
-              security:
-                authentication:
-                  - type: basic
-                    username: user1
-                    password: pass1
-        containerapp__expose:
-          - service: test2
-            internal_port: 5000
-            external_port: 5000
-          - service: test
-            internal_port: 80
-            external_port: 80
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
     - name: "Test SSL Terraform file generation"
@@ -79,11 +125,6 @@
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
         dest: "./ssl-certificate.tf"
       vars:
-        app_config:
-          domains:
-            - domain: example.com
-            - domain: test.example.com
-            - domain: test2.example.com
         stackhead__acme_folder: ""
         stackhead__certificates_folder: ""
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
@@ -91,68 +132,3 @@
       template:
         src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
         dest: "./docker.tf"
-      vars:
-        app_config:
-          domains:
-            - domain: example.com
-              expose:
-                - service: php
-                  internal_port: 3000
-                - service: nginx
-                  internal_port: 80
-        containerapp__project_name: test
-        containerapp__registries:
-          - username: dockerhub-user
-            password: dockerhub-pass
-          - username: myregistry-user
-            password: myregistry-pass
-            url: myregistry.com
-        containerapp__data_location_global: "/docker/global/%s"
-        containerapp__data_location_services: "/docker/services/%s/%s"
-        containerapp__services:
-          - name: data
-            image: mycontainer:latest
-          - name: nginx
-            image: getstackhead/nginx:php
-            environment:
-              NGINX_PUBLIC_DIRECTORY: public
-              DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
-            volumes:
-              - type: global
-                src: data
-                dest: /var/www/public/data
-                mode: ro
-              - type: global
-                src: uploads
-                dest: /var/www/public/uploads
-                mode: ro
-            volumes_from:
-              - data:ro
-          - name: php
-            image: getstackhead/php:7.2
-            volumes_from:
-              - data
-            volumes:
-              - type: global
-                src: fileadmin
-                dest: /var/www/public/fileadmin
-              - type: global
-                src: uploads
-                dest: /var/www/public/uploads
-              - type: global
-                src: typo3temp
-                dest: /var/www/public/typo3temp
-              - type: global
-                src: var
-                dest: /var/www/var
-          - name: db
-            image: mariadb
-            environment:
-              MYSQL_ROOT_PASSWORD: db
-              MYSQL_DATABASE: db
-              MYSQL_USER: db
-              MYSQL_PASSWORD: db
-            volumes:
-              - type: local
-                src: data
-                dest: /var/lib/mysql
