@@ -3,8 +3,6 @@
   connection: local
   vars:
     project_name: test
-    containerapp__data_location_global: "/docker/global/%s"
-    containerapp__data_location_services: "/docker/services/%s/%s"
     containerapp__registries:
       - username: dockerhub-user
         password: dockerhub-pass
@@ -83,6 +81,9 @@
           - type: local
             src: data
             dest: /var/lib/mysql
+    containerapp__project_name: "{{ project_name }}"
+    containerapp__data_location_global: "/docker/global/%s"
+    containerapp__data_location_services: "/docker/services/%s/%s"
   tasks:
     - include_vars: "{{ playbook_dir }}/../config.yaml"
     - set_fact:
