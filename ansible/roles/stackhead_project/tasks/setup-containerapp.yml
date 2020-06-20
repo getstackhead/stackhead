@@ -1,10 +1,13 @@
 ---
+- name: "StackHead::Project || Collect exposed services"
+  set_fact:
+    containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
+  with_items: "{{ app_config.domains }}"
 - name: "StackHead::Project || Setup Container app"
   import_role:
     name: project_containerapp
   vars:
     containerapp__project_name: "{{ project_name }}"
-    containerapp__expose: "{{ app_config.deployment.settings.expose }}"
     containerapp__services: "{{ app_config.container.services }}"
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
