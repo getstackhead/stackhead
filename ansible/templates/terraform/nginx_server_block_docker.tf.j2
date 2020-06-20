@@ -15,14 +15,18 @@ resource "nginx_server_block" "{{ resource_name }}" {
   }
 
   content = <<EOF
-{% for nginx_expose in containerapp__expose if nginx_expose.external_port != 443 %}
+{%- set ns = namespace (domainCfg = {}) %}
+{%- for domainConfig in app_config.domains %}
+{%- set ns.domainCfg = domainConfig %}
+{%- for nginx_expose in domainConfig.expose if nginx_expose.external_port != 443 %}
 {% if nginx_expose.external_port == 80 %}
-{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(ansible_loop=loop)) }}
-{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop)) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(ansible_loop=loop,domainConfig=ns.domainCfg)) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,domainConfig=ns.domainCfg)) }}
 {% else %}
-{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,port=nginx_expose.external_port)) }}
+{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(ansible_loop=loop,port=nginx_expose.external_port,domainConfig=ns.domainCfg)) }}
 {% endif %}
-{% endfor %}
+{%- endfor %}
+{%- endfor %}
 EOF
 
 {%- if nginx_expose is defined and nginx_expose.service is defined %}

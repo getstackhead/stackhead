@@ -2,3 +2,5 @@
 nginx_tf_template: "{{ stackhead__templates }}/terraform/nginx_server_block.tf.j2"
 nginx_basicauth_title: "Restricted area"
 nginx_dockerapp: 0
+nginx_usehttps: 1
+nginx_servername:

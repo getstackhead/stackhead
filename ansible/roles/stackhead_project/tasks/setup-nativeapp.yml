@@ -6,14 +6,8 @@
     nativeapp__project_name: "{{ project_name }}"
     nativeapp__public_path: "{{ app_config.deployment.settings.public_path }}" # todo: remove
 
-- name: "StackHead::Project || Set vhost config"
-  set_fact:
-    nginx_vhosts: "{{ nginx_vhosts|default([]) + ['server_name': item.domain, 'use_https': 1, 'root_path': nativeapp__remote_path ~ '/' ~ item.public_path] }}"
-  with_items: "{{ app_config.domains }}"
-
 - name: "StackHead::Project || Update Nginx vhost configuration"
   include_role:
     name: config_nginx
   vars:
-    nginx_auth_basic: "{{ app_config.security.authentication|default([]) }}"
     nginx_use_php: "{{ native_php_enabled }}"

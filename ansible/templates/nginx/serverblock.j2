@@ -2,7 +2,7 @@
 server {
     listen {{ port }} {{ listen_params_v }};
     listen [::]:{{ port }} {{ listen_params_v }};
-    server_name {{ nginx_vhost.server_name }};
+    server_name {{ domainConfig.domain }};
 
 {% block options %}{% endblock %}
 
@@ -14,9 +14,9 @@ server {
     location / {
 {% block main_location %}{% endblock %}
         # Authentication
-{% block authentication %}{% if nginx_auth_basic is defined and nginx_auth_basic | length > 0 %}
+{% block authentication %}{% if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
         auth_basic           "{{ nginx_basicauth_title }}";
-        auth_basic_user_file "{{ nginx_htpasswd_path }}/.{{ project_name }}";
+        auth_basic_user_file "{{ nginx_htpasswd_path }}/.{{ domainConfig.domain }}";
 {% endif %}{% endblock %}
     }
 }

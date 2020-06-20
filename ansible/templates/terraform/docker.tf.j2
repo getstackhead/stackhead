@@ -24,9 +24,9 @@ resource "docker_container" "stackhead-{{ containerapp__project_name }}-{{ servi
 {%- if service.user is defined %}
   user = "{{ service.user }}"
 {%- endif %}
-{%- if containerapp__expose is defined %}
+{%- if domainConfig.expose is defined %}
 
-{%- for expose in containerapp__expose if expose.internal_port is defined and expose.service == service.name %}
+{%- for expose in domainConfig.expose if expose.internal_port is defined and expose.service == service.name %}
   ports {
     internal = {{ expose.internal_port }}
   }
