@@ -8,6 +8,7 @@
   vars:
     nginx_dockerapp: 0
     nginx_usehttps: 0
+    nginx_servername: "{{ app_config.domains[0].domain }}"
     resource_name: "__acme-{{ project_name }}"
 
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"

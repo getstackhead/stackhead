@@ -18,7 +18,7 @@ resource "acme_registration" "reg" {
 resource "acme_certificate" "certificate" {
   account_key_pem           = acme_registration.reg.account_key_pem
   common_name               = "{{ app_config.domains[0].domain }}"
-  subject_alternative_names = {{ app_config.domains[1:]|map(attribute='domain')|default([]) }}
+  subject_alternative_names = {{ app_config.domains[1:]|map(attribute='domain')|list|to_json|default([]) }}
 
   dns_challenge {
     method = "http"
