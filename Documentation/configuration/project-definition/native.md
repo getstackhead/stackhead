@@ -6,9 +6,9 @@ Native applications are basic applications that live on the target machine and a
 
 ```yaml
 ---
-domain: example.com
-deployment:
-  type: native
+type: native
+domains:
+  - domain: example.com
 ```
 
 ## Serve location
@@ -18,10 +18,9 @@ If you want to serve files from a different folder inside that directory, use `d
 
 ```yaml
 ---
-domain: example.com
-deployment:
-  type: native
-  settings:
+type: native
+domains:
+  - domain: example.com
     public_path: public
 ```
 
@@ -33,13 +32,13 @@ is only deployed to targets that meet the requirements.
 
 ```yaml
 ---
-domain: example.com
-deployment:
-  type: native
-  settings:
-    capabilities:
-      php:
-        version: 7.3
+type: native
+domains:
+  - domain: example.com
+native:
+  capabilities:
+    php:
+      version: 7.3
 ```
 
 Please also have a look at the [complete list of available capabilities](../capabilities.md).

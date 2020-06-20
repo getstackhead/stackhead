@@ -14,23 +14,24 @@ The example below consists of two services (app and db).
 
 ```yaml
 ---
-domain: example.com
-deployment:
-  type: container
-  settings:
+type: container
+domains:
+  - domain: example.com
     expose:
       - internal_port: 80
         external_port: 80
         service: app
-    services:
-      - name: app
-        image: nginxdemos/hello:latest
-      - name: db
-        image: mariadb:10.5
-        environment:
-          MYSQL_ROOT_PASSWORD: example
+container:
+  services:
+    - name: app
+      image: nginxdemos/hello:latest
+    - name: db
+      image: mariadb:10.5
+      environment:
+        MYSQL_ROOT_PASSWORD: example
 ```
-## expose
+
+## domains.*.expose
 
 The Nginx webserver will proxy all web traffic to the service and port specified in `expose` setting.
 
@@ -56,7 +57,7 @@ Setting _external_port_ to 443 is not allowed, as HTTPS forwarding is automatica
 Make sure to define the different _external_port_ within one project definition, so that each port is only used once!  
 :::
 
-## services
+## container.services
 
 The following configuration options are available inside a service definition:
 

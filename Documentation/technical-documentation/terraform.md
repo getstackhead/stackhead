@@ -13,7 +13,7 @@ The aim is to use Terraform for all resources we need to create in order to allo
 
 ## Resources managed by Terraform
 
-Right now the following resources are created with Terraform:
+Right now the following resources are being created with Terraform:
 
 * Nginx server block configurations
 * Docker containers

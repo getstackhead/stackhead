@@ -36,17 +36,17 @@ Create a new project definitions file at `./stackhead/example_app.yml` and the f
 
 ```yaml
 ---
-domain: example.com
-deployment:
-  type: container
-  settings:
+type: container
+domains:
+  - domain: example.com
     expose:
       - service: app
         external_port: 80
         internal_port: 80
-    services:
-      - name: app
-        image: nginxdemos/hello:latest
+container:
+  services:
+    - name: app
+      image: nginxdemos/hello:latest
 ```
 
 This defines that a new Docker container shall be created with the `nginxdemos/hello:latest` image.
