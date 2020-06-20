@@ -24,13 +24,11 @@
           - type: basic
             username: user1
             password: pass1
-        nginx_vhost:
-          server_name: "example.com"
-          use_https: 1
-          proxy_pass_port: "123"
-          state: present
-          filename: "example_com.conf"
-          root_path: "/var/www/project/htdocs"
+        nginx_vhosts:
+          - server_name: "example.com"
+            use_https: 1
+            proxy_pass_port: "123"
+            root_path: "/var/www/project/htdocs"
     - name: Generate nginx container Terraform file
       template:
         src: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
@@ -57,12 +55,10 @@
           - type: basic
             username: user1
             password: pass1
-        nginx_vhost:
-          server_name: "example.com"
-          use_https: 1
-          proxy_pass_port: "123"
-          state: present
-          filename: "example_com.conf"
+        nginx_vhosts:
+          - server_name: "example.com"
+            use_https: 1
+            proxy_pass_port: "123"
     - name: "Test SSL Terraform file generation"
       template:
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"

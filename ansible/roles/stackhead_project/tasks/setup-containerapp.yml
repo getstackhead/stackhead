@@ -18,8 +18,6 @@
     nginx_dockerapp: 1
     nginx_tf_template: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
     nginx_auth_basic: "{{ app_config.security.authentication|default([]) }}"
-    nginx_vhost:
-      server_name: "{{ app_config.domain }}"
-      use_https: 1
-      state: present
-      filename: "{{ app_config.domain }}.conf"
+    nginx_vhosts:
+      - server_name: "{{ app_config.domain }}"
+        use_https: 1
