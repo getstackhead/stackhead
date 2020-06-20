@@ -17,7 +17,7 @@ jobs:
     name: Smoketest test-tf-generation
     runs-on: ubuntu-latest
     steps:
-      - run: ansible-playbook ansible/__tests__/test-tf-generation.yml
+      - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
     name: Please request integration test and review
