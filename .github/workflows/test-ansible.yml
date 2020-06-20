@@ -17,6 +17,7 @@ jobs:
     name: Smoketest test-tf-generation
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
