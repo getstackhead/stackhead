@@ -62,6 +62,16 @@ jobs:
         proxied: 0
         token: "${{ secrets.CLOUDFLARE_TOKEN }}"
         zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+    - name: Add DNS record for subdomain
+      uses: saitho/create-dns-record@patch-1
+      with:
+        type: "A"
+        name: "sub.${{ env.DOMAIN }}"
+        content: "${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}"
+        ttl: 1
+        proxied: 0
+        token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+        zone: "${{ secrets.CLOUDFLARE_ZONE }}"
     - name: Add IP to known_hosts
       run: |
         ssh-keyscan -v -T 30 ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} >> ~/.ssh/known_hosts
@@ -82,6 +92,13 @@ jobs:
       if: always()
       with:
         name: "${{ env.DOMAIN }}"
+        token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+        zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+    - name: Remove DNS record for subdomain
+      uses: saitho/delete-dns-record@saitho-patch-1
+      if: always()
+      with:
+        name: "sub.${{ env.DOMAIN }}"
         token: "${{ secrets.CLOUDFLARE_TOKEN }}"
         zone: "${{ secrets.CLOUDFLARE_ZONE }}"
     - name: Remove Hetzner server
