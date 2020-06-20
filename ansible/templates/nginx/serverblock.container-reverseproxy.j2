@@ -1,7 +1,7 @@
 {% extends "serverblock.https.j2" %}
 
 {% block main_location %}
-        proxy_pass http://localhost:{~ docker_ports[{{ ansible_loop.index0 }}] ~};
+        proxy_pass http://localhost:{~ docker_ports[{{ port_index }}] ~};
         proxy_redirect off;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $host;
