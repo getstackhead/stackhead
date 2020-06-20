@@ -6,7 +6,7 @@
 
 - name: "StackHead::Nativeapp || Create app directory if not exists | Project: {{ nativeapp__project_name }}"
   file:
-    path: "{{ nativeapp__remote_path }}/{{ item.public_path }}"
+    path: "{{ nativeapp__remote_path }}/{{ item.item.public_path }}"
     state: directory
   when: item.stat.exists == false
   with_items: "{{ app_folders.results }}"
@@ -14,10 +14,7 @@
 - name: "StackHead::Nativeapp || Setup default content | Project: {{ nativeapp__project_name }}"
   template:
     src: "{{ nativeapp__default_page }}"
-    dest: "{{ nativeapp__remote_path }}/{{ item.public_path }}/index.html"
+    dest: "{{ nativeapp__remote_path }}/{{ item.item.public_path }}/index.html"
     force: true
   when: nativeapp__default_content == true
   with_items: "{{ app_folders.results }}"
-
-- set_fact:
-    nativeapp_root_path: "{{ nativeapp__remote_path }}/{{ nativeapp__public_path }}" # todo: remove

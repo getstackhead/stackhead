@@ -4,7 +4,6 @@
     name: project_nativeapp
   vars:
     nativeapp__project_name: "{{ project_name }}"
-    nativeapp__public_path: "{{ app_config.deployment.settings.public_path }}" # todo: remove
 
 - name: "StackHead::Project || Update Nginx vhost configuration"
   include_role:
