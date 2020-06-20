@@ -9,7 +9,7 @@
 - name: "StackHead::Project || Set vhost config"
   set_fact:
     nginx_vhosts: "{{ nginx_vhosts|default([]) + ['server_name': item.domain, 'use_https': 1, 'root_path': nativeapp__remote_path ~ '/' ~ item.public_path] }}"
-  with_items: "{{ app_config.domains }}
+  with_items: "{{ app_config.domains }}"
 
 - name: "StackHead::Project || Update Nginx vhost configuration"
   include_role:

@@ -11,6 +11,11 @@
     containerapp__services: "{{ app_config.container.services }}"
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
+- name: "StackHead::Project || Set vhost config"
+  set_fact:
+    nginx_vhosts: "{{ nginx_vhosts|default([]) + ['server_name': item.domain, 'use_https': 1] }}"
+  with_items: "{{ app_config.domains }}"
+
 - name: "StackHead::Project || Update Nginx reverse proxy configuration"
   include_role:
     name: config_nginx
