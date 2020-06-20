@@ -24,6 +24,7 @@ class FilterModule(object):
             if previous_service != service_name:
                 index = 0
             output.append({
+                'index': len(output),
                 'service': service_name,
                 'internal_port': internal_port,
                 'tfstring': "${docker_container.stackhead-" + project_name + "-" + service_name + ".ports[" + str(index) + "].external}"
