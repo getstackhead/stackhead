@@ -131,3 +131,10 @@
       template:
         src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
         dest: "./docker.tf"
+    - name: Generate htpasswd Terraform file
+      template:
+        src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
+        dest: "./htpasswd.tf"
+        force: true
+      vars:
+        nginx_htpasswd_path: "./htpasswd/path"
