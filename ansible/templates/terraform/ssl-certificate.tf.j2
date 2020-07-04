@@ -33,19 +33,17 @@ resource "acme_certificate" "{{ project_name }}-certificate" {
       EXEC_MODE = "RAW"
     }
   }
+  provisioner "local-exec" {
+    command = "sudo systemctl reload nginx"
+  }
 }
 
 resource "local_file" "{{ project_name }}-acme-fullchain" {
   filename = "{{ stackhead__certificates_folder }}/fullchain.pem"
-  content = acme_certificate.{{ project_name }}-certificate.certificate_pem
+  sensitive_content = acme_certificate.{{ project_name }}-certificate.certificate_pem
 }
 
 resource "local_file" "{{ project_name }}-acme-privkey" {
   filename = "{{ stackhead__certificates_folder }}/privkey.pem"
-  content = acme_certificate.{{ project_name }}-certificate.private_key_pem
-}
-
-resource "local_file" "{{ project_name }}-acme-chain" {
-  filename = "{{ stackhead__certificates_folder }}/chain.pem"
-  content = acme_certificate.{{ project_name }}-certificate.issuer_pem
+  sensitive_content = acme_certificate.{{ project_name }}-certificate.private_key_pem
 }
