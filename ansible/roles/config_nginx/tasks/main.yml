@@ -14,7 +14,7 @@
     src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
     force: true
-  when: auths_basic | length > 0
+  when: auths_basic is defined and auths_basic | length > 0
 
 - name: Generate nginx vhost Terraform file
   template:
