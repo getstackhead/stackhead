@@ -1,0 +1,17 @@
+---
+# Create certificates directory
+- file:
+    path: "{{ stackhead__certificates_folder }}"
+    state: directory
+# Generate a Self Signed OpenSSL certificate to be able to start up Nginx
+- openssl_privatekey:
+    path: "{{ stackhead__certificates_folder }}/privkey.pem"
+- openssl_csr:
+    path: "{{ stackhead__certificates_folder }}/chain.pem"
+    privatekey_path: "{{ stackhead__certificates_folder }}/privkey.pem"
+    common_name: "dummy-cert"
+- openssl_certificate:
+    path: "{{ stackhead__certificates_folder }}/fullchain.pem"
+    privatekey_path: "{{ stackhead__certificates_folder }}/privkey.pem"
+    csr_path: "{{ stackhead__certificates_folder }}/chain.pem"
+    provider: selfsigned

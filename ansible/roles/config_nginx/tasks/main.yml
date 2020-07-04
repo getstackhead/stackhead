@@ -21,6 +21,4 @@
     src: "{{ nginx_tf_template }}"
     dest: "{{ stackhead__tf_project_folder }}/nginx_server_block.tf"
     force: true
-  vars:
-    resource_name: "{{ project_name }}"
 

@@ -20,6 +20,10 @@ resource "acme_certificate" "{{ project_name }}-certificate" {
   common_name               = "{{ app_config.domains[0].domain }}"
   subject_alternative_names = {{ app_config.domains[1:]|map(attribute='domain')|list|to_json|default([]) }}
 
+  depends_on = [
+    nginx_server_block.nginx-{{ project_name }}
+  ]
+
   dns_challenge {
     method = "http"
     provider = "exec"
