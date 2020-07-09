@@ -11,3 +11,9 @@
     state: directory
     owner: stackhead
     group: stackhead
+- name: Create certificates folder
+  file:
+    path: "{{ stackhead__certificates_project_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
