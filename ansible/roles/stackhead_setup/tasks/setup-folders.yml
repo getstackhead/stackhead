@@ -13,7 +13,7 @@
     group: stackhead
 - name: Create certificates folder
   file:
-    path: "{{ stackhead__certificates_project_folder }}"
+    path: "{{ stackhead__certificates_folder }}"
     state: directory
     owner: stackhead
     group: stackhead

@@ -10,3 +10,9 @@
     - file:
         path: "{{ stackhead__project_folder }}"
         state: absent
+    - file:
+        path: "{{ stackhead__certificates_project_folder }}"
+        state: absent
+    - file:
+        path: "{{ stackhead__project_certificates_folder }}"
+        state: absent

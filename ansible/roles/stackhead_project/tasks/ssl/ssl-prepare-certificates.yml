@@ -1,5 +1,8 @@
 ---
-# Create certificates directory
+# Create certificates directories
+- file:
+    path: "{{ stackhead__certificates_project_folder }}"
+    state: directory
 - file:
     path: "{{ stackhead__project_certificates_folder }}"
     state: directory
