@@ -3,6 +3,10 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
+  depends_on = [
+    local_file.{{ project_name }}-acme-fullchain
+  ]
+
 {%- set all_ports = containerapp__expose|containerPorts(project_name) %}
   markers = {
     docker_ports = "{{ all_ports|map(attribute='tfstring')|join(',') }}"

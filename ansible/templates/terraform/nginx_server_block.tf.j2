@@ -2,6 +2,10 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
+  depends_on = [
+    local_file.{{ project_name }}-acme-fullchain
+  ]
+
   content = <<EOF
 {% for domain in app_config.domains %}
 {{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(domainConfig=domain)) }}
