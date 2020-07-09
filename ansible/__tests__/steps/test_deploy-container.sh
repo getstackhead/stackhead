@@ -23,7 +23,7 @@ fi
 # test that phpmyadmin is available on subdomain
 content=$(wget --no-check-certificate --http-user=user --http-password=pass --https-only -q -O - https://"sub.${DOMAIN}")
 if [[ $content != *"phpMyAdmin"* ]]; then
-  echo "HTTP content check on phpmyadmin in container project failed" 1>&2
+  echo "HTTP content check on subdomain phpmyadmin in container project failed" 1>&2
   exit 1
 fi
 TEST=1 ansible-playbook ansible/application-destroy.yml -i $INVENTORY_PATH --extra-vars "project_name=container" -vv

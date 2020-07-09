@@ -8,6 +8,8 @@ domains:
         - type: basic
           username: user
           password: pass
+  - domain: sub.${domain}
+    public_path: html
 native:
   capabilities:
     php:

@@ -11,7 +11,13 @@ sed -e "s/\${domain}/${DOMAIN}/" ansible/__tests__/projects/native.dist.yml > an
 TEST=1 ansible-playbook ansible/application-deploy.yml -i $INVENTORY_PATH -vv
 content=$(wget --no-check-certificate --http-user=user --http-password=pass --https-only -q -O - https://"${DOMAIN}")
 if [[ $content != *"This website was provisioned by StackHead"* ]]; then
-  echo "HTTP content check on container project failed" 1>&2
+  echo "HTTP content check on main domain in native project failed" 1>&2
+  exit 1
+fi
+# test that subdomain is available
+content=$(wget --no-check-certificate --https-only -q -O - https://sub."${DOMAIN}":
+if [[ $content != *"This website was provisioned by StackHead"* ]]; then
+  echo "HTTP content check on subdomain in native project failed" 1>&2
   exit 1
 fi
 TEST=1 ansible-playbook ansible/application-destroy.yml -i $INVENTORY_PATH --extra-vars "project_name=native" -vv
