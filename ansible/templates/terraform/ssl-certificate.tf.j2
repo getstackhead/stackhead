@@ -36,6 +36,10 @@ resource "acme_certificate" "{{ project_name }}-certificate" {
   provisioner "local-exec" {
     command = "sudo systemctl reload nginx"
   }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "sudo systemctl reload nginx"
+  }
 }
 
 resource "local_file" "{{ project_name }}-acme-fullchain" {

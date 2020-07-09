@@ -38,4 +38,8 @@ EOF
   provisioner "local-exec" {
     command = "sudo systemctl reload nginx"
   }
+  provisioner "local-exec" {
+    when = "destroy"
+    command = "sudo systemctl reload nginx"
+  }
 }
