@@ -33,21 +33,34 @@ resource "acme_certificate" "{{ project_name }}-certificate" {
       EXEC_MODE = "RAW"
     }
   }
-  provisioner "local-exec" {
-    command = "sudo systemctl reload nginx"
-  }
-  provisioner "local-exec" {
-    when = destroy
-    command = "sudo systemctl reload nginx"
-  }
-}
-
-resource "local_file" "{{ project_name }}-acme-fullchain" {
-  filename = "{{ stackhead__certificates_folder }}/fullchain.pem"
-  sensitive_content = acme_certificate.{{ project_name }}-certificate.certificate_pem
 }
 
 resource "local_file" "{{ project_name }}-acme-privkey" {
-  filename = "{{ stackhead__certificates_folder }}/privkey.pem"
+  filename = "{{ stackhead__certificates_project_folder }}/privkey.pem"
   sensitive_content = acme_certificate.{{ project_name }}-certificate.private_key_pem
+}
+
+resource "local_file" "{{ project_name }}-acme-fullchain" {
+  filename = "{{ stackhead__certificates_project_folder }}/fullchain.pem"
+  sensitive_content = acme_certificate.{{ project_name }}-certificate.certificate_pem
+  depends_on = [
+    local_file.{{ project_name }}-acme-privkey
+  ]
+  provisioner "local-exec" {
+    # Symlink to project certificate files to generated files
+    command = <<EOT
+        ln -s {{ stackhead__project_certificates_folder }}/fullchain.pem {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+        ln -s {{ stackhead__certificates_project_folder }}/privkey.pem {{ stackhead__certificates_project_folder }}/privkey.pem &&
+        sudo systemctl reload nginx
+EOT
+  }
+  provisioner "local-exec" {
+    when = destroy
+    # Symlink project certificate files to snakeoil files
+    command = <<EOT
+        ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+        ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
+        sudo systemctl reload nginx
+EOT
+  }
 }

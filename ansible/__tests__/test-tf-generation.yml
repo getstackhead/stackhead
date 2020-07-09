@@ -101,7 +101,7 @@
         nginx_servername: "test_project"
         nginx_usehttps: 1
         stackhead__acme_folder: ""
-        stackhead__certificates_folder: ""
+        stackhead__project_certificates_folder: ""
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
     - name: Generate nginx container Terraform file
@@ -114,7 +114,7 @@
         nginx_usehttps: 1
         nginx_servername: "test_project"
         stackhead__acme_folder: ""
-        stackhead__certificates_folder: ""
+        stackhead__project_certificates_folder: ""
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
     - name: "Test SSL Terraform file generation"
@@ -123,7 +123,8 @@
         dest: "./ssl-certificate.tf"
       vars:
         stackhead__acme_folder: ""
-        stackhead__certificates_folder: ""
+        stackhead__certificates_project_folder: ""
+        stackhead__project_certificates_folder: ""
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
     - name: "Test Docker Terraform file generation"
       template:
