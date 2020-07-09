@@ -15,7 +15,7 @@ if [[ $content != *"This website was provisioned by StackHead"* ]]; then
   exit 1
 fi
 # test that subdomain is available
-content=$(wget --no-check-certificate --https-only -q -O - https://sub."${DOMAIN}":
+content=$(wget --no-check-certificate --https-only -q -O - https://sub."${DOMAIN}")
 if [[ $content != *"This website was provisioned by StackHead"* ]]; then
   echo "HTTP content check on subdomain in native project failed" 1>&2
   exit 1
