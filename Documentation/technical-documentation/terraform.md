@@ -13,7 +13,7 @@ The aim is to use Terraform for all resources we need to create in order to allo
 
 ## Resources managed by Terraform
 
-Right now the following resources are created with Terraform:
+Right now the following resources are being created with Terraform:
 
 * Nginx server block configurations
 * Docker containers
@@ -33,8 +33,6 @@ The files in the global Terraform directory will have the format `[projectname]-
 
 :::note  
 Symlinks are regenerated at the end of the deployment.
-If changes mid-deployment are required (e.g. temporary Nginx configuration to resolve ACME challenge) 
-relink and execution have to be also executed during the process by calling the respective task from the _config_terraform_ role.
 :::  
 
 [tf-apply]: /img/docs/terraform-files-structure.png "Applying Terraform changes"

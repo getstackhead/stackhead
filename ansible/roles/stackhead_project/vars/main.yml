@@ -2,4 +2,5 @@
 stackhead__project_folder: "/stackhead/projects/{{ project_name }}"
 stackhead__project_config_file: "{{ stackhead__project_folder }}/project.yml"
 stackhead__tf_project_folder: "{{ stackhead__project_folder }}/terraform"
-stackhead__certificates_folder: "{{ stackhead__project_folder }}/certificate"
+stackhead__certificates_project_folder: "/stackhead/certificates/{{ project_name }}"
+stackhead__project_certificates_folder: "{{ stackhead__project_folder }}/certificates"

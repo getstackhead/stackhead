@@ -3,7 +3,7 @@ title: Security
 ---
 
 These options can be used to add further security to your projects.
-Add these to your project definition file.
+Add these to the domain definitions in project definition file.
 
 ## Authentication
 
@@ -16,14 +16,16 @@ Require user to log in with a name and password. You may specify how many users 
 Removing the `authentication` section will remove the file containing the usernames and passwords for your project.
 
 ```yaml
-security:
-  authentication:
-    - type: basic
-      username: user1
-      password: pass1
-    - type: basic
-      username: user2
-      password: pass2
+domains:
+  - domain: mydomain.com
+    security:
+      authentication:
+        - type: basic
+          username: user1
+          password: pass1
+        - type: basic
+          username: user2
+          password: pass2
 ```
 
 :::note

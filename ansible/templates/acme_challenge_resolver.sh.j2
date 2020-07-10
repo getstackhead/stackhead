@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-CHALLENGE_FOLDER={{ stackhead__acme_folder }}/{{ app_config.domain }}
+CHALLENGE_FOLDER={{ stackhead__acme_folder }}/{{ app_config.domains[0].domain }}
 mkdir -p "$CHALLENGE_FOLDER"
 
 if [ $# -ne 5 ]

@@ -1,5 +1,5 @@
 ---
-type: native
+type: docker
 domains:
   - domain: mydomain.com
     public_path: public

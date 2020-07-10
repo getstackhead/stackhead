@@ -1,7 +1,19 @@
 # Global variable configurations accessible by all roles
 ---
+# StackHead
 stackhead__templates: "{{ playbook_dir }}/templates"
 stackhead__root_folder: "/stackhead"
 stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
-stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"
+
+# Terraform
 stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
+
+# Python
+ansible_python_interpreter: /usr/bin/python3
+
+# SSL certificates
+stackhead__certificates_folder: "{{ stackhead__root_folder }}/certificates"
+stackhead__snakeoil_privkey: "{{ stackhead__certificates_folder }}/privkey_snakeoil.pem"
+stackhead__snakeoil_fullchain: "{{ stackhead__certificates_folder }}/fullchain_snakeoil.pem"
+stackhead__snakeoil_certrequest_tmp: "{{ stackhead__certificates_folder }}/certrequest_snakeoil.pem"
+stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"

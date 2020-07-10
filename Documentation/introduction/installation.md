@@ -7,6 +7,7 @@ title: Installation
 The following software has to already be installed on your system to use StackHead:
 
 * Ansible
+* Python 3
 
 ## Installing StackHead
 
@@ -27,23 +28,23 @@ Please install it directly from the repository as below:
 
 ```json title="composer.json"
 {
-	"repositories": [
-		{ "type": "vcs", "url": "git@github.com:getstackhead/stackhead.git" }
-	],
-	"require": {
-		"getstackhead/stackhead": "dev-master"
-	},
-	"scripts":{
-		"stackhead-submodules": [
-			"cd vendor/getstackhead/stackhead && git submodule sync && git submodule update --init"
-		],
-		"post-install-cmd": [
-			"@stackhead-submodules"
-		],
-		"post-update-cmd": [
-			"@stackhead-submodules"
-		]
-	}
+    "repositories": [
+        { "type": "vcs", "url": "git@github.com:getstackhead/stackhead.git" }
+    ],
+    "require": {
+        "getstackhead/stackhead": "dev-master"
+    },
+    "scripts":{
+        "stackhead-submodules": [
+            "cd vendor/getstackhead/stackhead && git submodule sync && git submodule update --init"
+        ],
+        "post-install-cmd": [
+            "@stackhead-submodules"
+        ],
+        "post-update-cmd": [
+            "@stackhead-submodules"
+        ]
+    }
 }
 ```
 :::tip   

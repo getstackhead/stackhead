@@ -1,5 +1,5 @@
 ---
-type: container
+type: native
 domains:
   - domain: mydomain.com
     expose:

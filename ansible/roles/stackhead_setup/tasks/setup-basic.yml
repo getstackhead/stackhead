@@ -12,3 +12,6 @@
 - name: Install Python and pip
   import_role:
     name: robertdebock.python_pip
+  vars:
+    python_pip_modules:
+      - name: cryptography # for self-signed certificates

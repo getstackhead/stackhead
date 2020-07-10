@@ -3,10 +3,14 @@
   become_user: stackhead
   vars:
     stackhead__project_folder: "/stackhead/projects/{{ project_name }}" # temporary
+    stackhead__certificates_project_folder: "/stackhead/certificates/{{ project_name }}" # temporary
   tasks:
     - include_vars: "{{ playbook_dir }}/config.yaml"
     - include_tasks: "roles/config_terraform/tasks/remove-project-symlinks.yml"
     - import_tasks: "roles/config_terraform/tasks/execute.yml"
     - file:
-        path: "{{ stackhead__project_folder }}"
+        path: "{{ item }}"
         state: absent
+      with_items:
+        - "{{ stackhead__project_folder }}"
+        - "{{ stackhead__certificates_project_folder }}"

@@ -3,9 +3,9 @@
 TEST_FAILED=0
 
 # Valid files should be valid
-echo "Valid files should be valid:\n"
+printf "Valid files should be valid:\n"
 for filename in examples/valid/*; do
-  if bin/project-validator ${filename}; then
+  if bin/project-validator "${filename}"; then
   : # file is valid
   else
     TEST_FAILED=1
@@ -13,11 +13,11 @@ for filename in examples/valid/*; do
   fi
 done
 
-echo "\n\n"
+printf "\n\n"
 # Invalid files should be invalid
-echo "Invalid files should be invalid:\n"
+printf "Invalid files should be invalid:\n"
 for filename in examples/invalid/*; do
-  if bin/project-validator ${filename}; then
+  if bin/project-validator "${filename}"; then
     TEST_FAILED=1
     echo "File ${filename} is valid." > /dev/stderr
   fi

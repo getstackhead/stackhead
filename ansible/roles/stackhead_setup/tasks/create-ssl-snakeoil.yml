@@ -1,0 +1,19 @@
+---
+# Generate a Self Signed OpenSSL certificate
+# which is used as default certificate when no SSL certificate has been generated yet
+- block:
+    - openssl_privatekey:
+        path: "{{ stackhead__snakeoil_privkey }}"
+    - openssl_csr:
+        path: "{{ stackhead__snakeoil_certrequest_tmp }}"
+        privatekey_path: "{{ stackhead__snakeoil_privkey }}"
+        common_name: "dummy-cert"
+    - openssl_certificate:
+        path: "{{ stackhead__snakeoil_fullchain }}"
+        privatekey_path: "{{ stackhead__snakeoil_privkey }}"
+        csr_path: "{{ stackhead__snakeoil_certrequest_tmp }}"
+        provider: selfsigned
+        selfsigned_not_after: "+36500d" # expire after 100 years (effectively infinite); re-setup after 100 years ;)
+    - file:
+        path: "{{ stackhead__snakeoil_certrequest_tmp }}"
+        state: absent

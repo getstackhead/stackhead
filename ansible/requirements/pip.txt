@@ -1,0 +1,1 @@
+PyOpenSSL>=0.6

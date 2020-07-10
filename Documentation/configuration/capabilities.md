@@ -34,10 +34,9 @@ all:
 
 ```yaml title="Project definition"
 ---
-deployment:
-  type: native
-  settings:
-    capabilities:
-      php:  # requires target system with PHP 7.3
-        version: 7.3
+type: native
+native:
+  capabilities:
+    php:  # requires target system with PHP 7.3
+      version: 7.3
 ```

@@ -1,8 +1,8 @@
 {% extends "serverblock.https.j2" %}
 
 {% block main_location %}
-{% if nginx_vhost is defined and nginx_vhost.root_path is defined %}
-        root {{ nginx_vhost.root_path }};
+{% if domainConfig is defined and domainConfig.public_path is defined %}
+        root {{ nativeapp__remote_path }}/{{ domainConfig.public_path }};
 {% endif %}
 {% if nginx_use_php is defined %}
         index index.php index.html index.htm;

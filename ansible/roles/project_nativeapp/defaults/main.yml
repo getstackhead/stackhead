@@ -1,7 +1,5 @@
 ---
 nativeapp__project_name:
 nativeapp__remote_path: "/var/www/{{ nativeapp__project_name }}"
-nativeapp__public_path: "htdocs"
 nativeapp__default_content: true
 nativeapp__default_page: "{{ stackhead__templates }}/nativeapp-default.html.j2"
-nativeapp__remote_public_fullpath: "{{ nativeapp__remote_path }}/{{ nativeapp__public_path }}"

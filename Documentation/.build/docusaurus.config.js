@@ -17,27 +17,27 @@ module.exports = {
       title: 'StackHead',
       logo: {
         alt: 'StackHead Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.svg'
       },
       links: [
         {
           to: 'introduction/workflow',
           activeBasePath: 'docs',
           label: 'Docs',
-          position: 'left',
+          position: 'left'
         },
         {
           href: 'https://github.com/getstackhead/stackhead',
           label: 'GitHub',
-          position: 'right',
-        },
-      ],
+          position: 'right'
+        }
+      ]
     },
     footer: {
       style: 'dark',
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka and StackHead contributors. Documentation built with Docusaurus.`,
-    },
+      copyright: `Copyright © ${new Date().getFullYear()} Mario Lubenka and StackHead contributors. Documentation built with Docusaurus.`
+    }
   },
   presets: [
     [
@@ -47,12 +47,12 @@ module.exports = {
           path: '../',
           routeBasePath: '',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/getstackhead/stackhead/edit/master/Documentation/',
+          editUrl: 'https://github.com/getstackhead/stackhead/edit/master/Documentation/'
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      },
-    ],
-  ],
-};
+          customCss: require.resolve('./src/css/custom.css')
+        }
+      }
+    ]
+  ]
+}

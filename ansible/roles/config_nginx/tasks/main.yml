@@ -3,22 +3,22 @@
   include_vars: "{{ ansible_os_family }}.yml"
   ignore_errors: yes
 
-- set_fact:
-    has_basic_auth: "{{ nginx_auth_basic is defined and nginx_auth_basic | length > 0 }}"
-    htpasswd_path: "{{ nginx_htpasswd_path }}/.{{ project_name }}"
+- name: Check if authentications are defined
+  set_fact:
+    auths_basic: "{{ auths_basic|default([]) + item.security.authentication }}"
+  when: item.security is defined and item.security.authentication is defined
+  with_items: "{{ app_config.domains }}"
 
 - name: Generate htpasswd Terraform file
   template:
     src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
     dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
     force: true
-  when: has_basic_auth
+  when: auths_basic is defined and auths_basic | length > 0
 
 - name: Generate nginx vhost Terraform file
   template:
     src: "{{ nginx_tf_template }}"
     dest: "{{ stackhead__tf_project_folder }}/nginx_server_block.tf"
     force: true
-  vars:
-    resource_name: "{{ project_name }}"
 
