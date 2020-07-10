@@ -49,8 +49,8 @@ resource "local_file" "{{ project_name }}-acme-fullchain" {
   provisioner "local-exec" {
     # Symlink to project certificate files to generated files
     command = <<EOT
-        ln -s {{ stackhead__project_certificates_folder }}/fullchain.pem {{ stackhead__certificates_project_folder }}/fullchain.pem &&
-        ln -s {{ stackhead__certificates_project_folder }}/privkey.pem {{ stackhead__certificates_project_folder }}/privkey.pem &&
+        ln -sf {{ stackhead__project_certificates_folder }}/fullchain.pem {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+        ln -sf {{ stackhead__certificates_project_folder }}/privkey.pem {{ stackhead__certificates_project_folder }}/privkey.pem &&
         sudo systemctl reload nginx
 EOT
   }
@@ -58,8 +58,8 @@ EOT
     when = destroy
     # Symlink project certificate files to snakeoil files
     command = <<EOT
-        ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
-        ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
+        ln -sf {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+        ln -sf {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
         sudo systemctl reload nginx
 EOT
   }

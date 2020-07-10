@@ -3,10 +3,6 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
-  depends_on = [
-    local_file.{{ project_name }}-acme-fullchain
-  ]
-
 {%- set all_ports = containerapp__expose|containerPorts(project_name) %}
   markers = {
     docker_ports = "{{ all_ports|map(attribute='tfstring')|join(',') }}"
@@ -40,6 +36,12 @@ EOF
 {%- endif %}
 
   provisioner "local-exec" {
+    # Symlink project certificate files to snakeoil files after initial creation
+    command = <<EOT
+            ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+            ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
+            sudo systemctl reload nginx
+EOT
     command = "sudo systemctl reload nginx"
   }
   provisioner "local-exec" {

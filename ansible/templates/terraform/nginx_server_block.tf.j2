@@ -2,10 +2,6 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
-  depends_on = [
-    local_file.{{ project_name }}-acme-fullchain
-  ]
-
   content = <<EOF
 {% for domain in app_config.domains %}
 {{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(domainConfig=domain)) }}
@@ -14,7 +10,12 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
 EOF
 
   provisioner "local-exec" {
-    command = "sudo systemctl reload nginx"
+    # Symlink project certificate files to snakeoil files after initial creation
+    command = <<EOT
+            ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
+            ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
+            sudo systemctl reload nginx
+EOT
   }
   provisioner "local-exec" {
     when = destroy
