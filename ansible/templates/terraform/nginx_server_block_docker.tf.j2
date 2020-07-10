@@ -38,8 +38,8 @@ EOF
   provisioner "local-exec" {
     # Symlink project certificate files to snakeoil files after initial creation
     command = <<EOT
-            ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem &&
-            ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem &&
+            ln -s {{ stackhead__snakeoil_fullchain }} {{ stackhead__certificates_project_folder }}/fullchain.pem || true &&
+            ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem || true &&
             sudo systemctl reload nginx
 EOT
     command = "sudo systemctl reload nginx"
