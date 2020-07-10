@@ -12,6 +12,7 @@
     app_config:
       domains:
         - domain: example.com
+          public_path: html
           expose:
             - service: php
               internal_port: 5000
@@ -25,6 +26,7 @@
                 username: user1
                 password: pass1
         - domain: test.example.com
+          public_path: html
           expose:
             - service: php
               internal_port: 5000
@@ -104,6 +106,7 @@
         nginx_usehttps: 1
         stackhead__acme_folder: ""
         nginx_htpasswd_path: /etc/nginx/passwd
+        nativeapp__remote_path: /var/www/test_project
         nginx_basicauth_title: "Restricted area"
     - name: Generate nginx container Terraform file
       template:

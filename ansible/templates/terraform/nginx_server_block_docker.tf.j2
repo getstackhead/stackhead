@@ -3,6 +3,46 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
+  configurations = [
+    {% for domainConfig in app_config.domains %}
+    {%- if not loop.first %},{% endif %}{
+      listen = 80
+      server_name = "{{ domainConfig.domain }}"
+
+      forward_acme = "{{ stackhead__acme_folder }}/{{ nginx_servername }}"
+
+      locations = [
+        {
+          path = "/"
+          return = "301 https://{{ domainConfig.domain }}$request_uri;"
+          {%- if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
+          auth_basic = "{{ nginx_basicauth_title }}"
+          auth_basic_user_file = "{{ nginx_htpasswd_path }}/.{{ domainConfig.domain }}"
+          {% endif %}
+        }
+      ]
+    },
+    {
+      listen = 443
+      server_name = "{{ domainConfig.domain }}"
+      locations = [
+        {
+          path = "/"
+          root = "{{ nativeapp__remote_path }}/{{ domainConfig.public_path }}"
+          {% if nginx_use_php is defined %}
+          index = "index.php index.html index.htm"
+          use_php_version = "{{ php_version }}"
+          {% endif %}
+          {% if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
+          auth_basic = "{{ nginx_basicauth_title }}"
+          auth_basic_user_file = "{{ nginx_htpasswd_path }}/.{{ domainConfig.domain }}"
+          {% endif %}
+        }
+      ]
+    }
+    {% endfor %}
+  ]
+
 {%- set all_ports = containerapp__expose|containerPorts(project_name) %}
   markers = {
     docker_ports = "{{ all_ports|map(attribute='tfstring')|join(',') }}"

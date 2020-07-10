@@ -2,18 +2,34 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
   enable = true
 
+  configurations = [
+{% for domainConfig in app_config.domains %}
+    {
+      server_name = "{{ domainConfig.domain }}"
+      https = true
+      forward_https = true
+      forward_acme = "{{ stackhead__acme_folder }}/{{ nginx_servername }}"
+      location = {
+        path = "/"
+        root = "{{ nativeapp__remote_path }}/{{ domainConfig.public_path }}"
+        {% if nginx_use_php is defined %}
+        use_php_version = "{{ php_version }}"
+        {% endif %}
+        {% if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
+        auth_basic = "{{ nginx_basicauth_title }}"
+        auth_basic_user_file = "{{ nginx_htpasswd_path }}/.{{ domainConfig.domain }}"
+        {% endif %}
+      }
+    }{% if not loop.last %},{% endif %}
+
+{% endfor %}
+  ]
+
   depends_on = [
     {%- for domainConfig in app_config.domains if (domainConfig.security is defined and domainConfig.security.authentication is defined) %}
     {%- if not loop.first %},{% endif %}local_file.auth-{{ project_name }}-{{ domainConfig.domain|replace('.', '_') }}
     {%- endfor %}
   ]
-
-  content = <<EOF
-{% for domain in app_config.domains %}
-{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.http.j2", template_vars=dict(domainConfig=domain)) }}
-{{ lookup('template', "{{ stackhead__templates }}/nginx/serverblock.native-https.j2", template_vars=dict(domainConfig=domain)) }}
-{% endfor %}
-EOF
 
   provisioner "local-exec" {
     # Symlink project certificate files to snakeoil files after initial creation
