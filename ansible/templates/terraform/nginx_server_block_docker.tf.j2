@@ -42,7 +42,6 @@ EOF
             ln -s {{ stackhead__snakeoil_privkey }} {{ stackhead__certificates_project_folder }}/privkey.pem || true &&
             sudo systemctl reload nginx
 EOT
-    command = "sudo systemctl reload nginx"
   }
   provisioner "local-exec" {
     when = destroy
