@@ -12,7 +12,7 @@ You will require:
 
 :::note   
 In this guide `<LOCAL_STACKHEAD_PATH>` will refer to the location where you installed StackHead.
-This path usually depends on how you installed StackHead.   
+This path usually depends on how you installed StackHead.  
 :::
 
 ## File structure
@@ -26,8 +26,8 @@ That means we have the following file structure:
 * stackhead
   * example_app.yml
   
-:::note   
-Per default StackHead looks for project definition files in the _stackhead_ directory which is in the same directory as the inventory file.   
+:::note  
+Per default StackHead looks for project definition files in the _stackhead_ directory which is in the same directory as the inventory file.  
 :::
 
 ## Creating a project defintion
