@@ -33,8 +33,6 @@ The files in the global Terraform directory will have the format `[projectname]-
 
 :::note  
 Symlinks are regenerated at the end of the deployment.
-If changes mid-deployment are required (e.g. temporary Nginx configuration to resolve ACME challenge) 
-relink and execution have to be also executed during the process by calling the respective task from the _config_terraform_ role.
 :::  
 
 [tf-apply]: /img/docs/terraform-files-structure.png "Applying Terraform changes"
