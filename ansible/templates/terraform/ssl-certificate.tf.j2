@@ -36,12 +36,12 @@ resource "acme_certificate" "{{ project_name }}-certificate" {
 }
 
 resource "local_file" "{{ project_name }}-acme-privkey" {
-  filename = "{{ stackhead__certificates_project_folder }}/privkey.pem"
+  filename = "{{ stackhead__project_certificates_folder }}/privkey.pem"
   sensitive_content = acme_certificate.{{ project_name }}-certificate.private_key_pem
 }
 
 resource "local_file" "{{ project_name }}-acme-fullchain" {
-  filename = "{{ stackhead__certificates_project_folder }}/fullchain.pem"
+  filename = "{{ stackhead__project_certificates_folder }}/fullchain.pem"
   sensitive_content = acme_certificate.{{ project_name }}-certificate.certificate_pem
   depends_on = [
     local_file.{{ project_name }}-acme-privkey
@@ -50,7 +50,7 @@ resource "local_file" "{{ project_name }}-acme-fullchain" {
     # Symlink to project certificate files to generated files
     command = <<EOT
         ln -sf {{ stackhead__project_certificates_folder }}/fullchain.pem {{ stackhead__certificates_project_folder }}/fullchain.pem &&
-        ln -sf {{ stackhead__certificates_project_folder }}/privkey.pem {{ stackhead__certificates_project_folder }}/privkey.pem &&
+        ln -sf {{ stackhead__project_certificates_folder }}/privkey.pem {{ stackhead__certificates_project_folder }}/privkey.pem &&
         sudo systemctl reload nginx
 EOT
   }
