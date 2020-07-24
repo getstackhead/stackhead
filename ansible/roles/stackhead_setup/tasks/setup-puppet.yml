@@ -1,0 +1,6 @@
+---
+- include_role:
+    name: geerlingguy.puppet
+- shell:
+    cmd: "puppet module install {{ item }}"
+  with_items: ["getstackhead-stackhead", "puppetlabs-docker"]
