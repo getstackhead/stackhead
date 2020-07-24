@@ -1,6 +1,18 @@
 ---
+- name: Create global Puppet folder
+  file:
+    path: "{{ stackhead__puppet_root_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
 - include_role:
     name: geerlingguy.puppet
-- shell:
+  vars:
+    puppet_package: puppet
+- name: Install StackHead Puppet modules
+  shell:
+    cmd: "puppet module install {{ puppet_module_name }} --version '{{ puppet_module_version }}'"
+- name: Install Puppet modules
+  shell:
     cmd: "puppet module install {{ item }}"
-  with_items: ["getstackhead-stackhead", "puppetlabs-docker"]
+  with_items: ["puppetlabs-docker"]

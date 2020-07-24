@@ -1,0 +1,3 @@
+---
+- import_tasks: "roles/config_puppet/tasks/remove-project-symlinks.yml"
+- import_tasks: "roles/config_puppet/tasks/create-project-symlinks.yml"

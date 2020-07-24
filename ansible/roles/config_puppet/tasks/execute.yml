@@ -1,0 +1,4 @@
+---
+- name: "StackHead::Project || Apply puppet manifests"
+  shell:
+    cmd: "puppet apply {{ stackhead__puppet_root_folder }}"

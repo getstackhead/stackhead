@@ -8,6 +8,11 @@ stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
 # Terraform
 stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
 
+# Puppet
+stackhead__puppet_root_folder: "{{ stackhead__root_folder }}/puppet/"
+puppet_module_name: "getstackhead-stackhead"
+puppet_module_version: ">=1.0.0 <2.0.0"
+
 # Python
 ansible_python_interpreter: /usr/bin/python3
 

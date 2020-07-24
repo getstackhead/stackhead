@@ -3,18 +3,32 @@
 
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
+- name: Ensure latest compatible version of StackHead puppet module is installed
+  shell:
+    cmd: "puppet module upgrade {{ puppet_module_name }} --version '{{ puppet_module_version }}'"
+
+#- block:
+#    - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
+#      stat:
+#        path: "{{ stackhead__tf_project_folder }}"
+#      register: project_folder
+#    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
+#      file:
+#        path: "{{ stackhead__tf_project_folder }}"
+#        state: directory
+#      when: project_folder.stat.exists == false
+
 - block:
     - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
       stat:
-        path: "{{ stackhead__tf_project_folder }}"
+        path: "{{ stackhead__puppet_project_folder }}"
       register: project_folder
-    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
+    - name: "StackHead::Container || Create Puppet project directory if not exists | Project: {{ project_name }}"
       file:
-        path: "{{ stackhead__tf_project_folder }}"
+        path: "{{ stackhead__puppet_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false
 
-# The following tasks will generate and deploy Terraform configuration files to the remote server
 - name: "StackHead::Project || Prepare certificates directory | Project: {{ project_name }}"
   import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
 
@@ -28,5 +42,5 @@
 - import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
 
 # Symlink Terraform configurations from project to main folder and execute them
-- import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
-- import_tasks: "roles/config_terraform/tasks/execute.yml"
+- import_tasks: "roles/config_puppet/tasks/update-project-symlinks.yml"
+- import_tasks: "roles/config_puppet/tasks/execute.yml"

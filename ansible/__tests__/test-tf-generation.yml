@@ -84,6 +84,7 @@
             src: data
             dest: /var/lib/mysql
     containerapp__project_name: "{{ project_name }}"
+    nativeapp__remote_path: "/public"
     containerapp__data_location_global: "/docker/global/%s"
     containerapp__data_location_services: "/docker/services/%s/%s"
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
@@ -135,6 +136,13 @@
       template:
         src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
         dest: "./htpasswd.tf"
+        force: true
+      vars:
+        nginx_htpasswd_path: "./htpasswd/path"
+    - name: Generate Puppet file
+      template:
+        src: "{{ stackhead__templates }}/puppet/main.pp.j2"
+        dest: "./puppet_main.pp"
         force: true
       vars:
         nginx_htpasswd_path: "./htpasswd/path"
