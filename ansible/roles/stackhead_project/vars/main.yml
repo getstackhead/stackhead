@@ -3,4 +3,5 @@ stackhead__project_folder: "/stackhead/projects/{{ project_name }}"
 stackhead__project_config_file: "{{ stackhead__project_folder }}/project.yml"
 stackhead__puppet_project_folder: "{{ stackhead__project_folder }}/puppet"
 stackhead__certificates_project_folder: "/stackhead/certificates/{{ project_name }}"
+letsencrypt_certificate_folder: "/etc/letsencrypt/live/{{ project_name }}" # folder containing the certbot generated certificates
 stackhead__project_certificates_folder: "{{ stackhead__project_folder }}/certificates"

@@ -1,4 +1,3 @@
 ---
 STACKHEAD__UID: 1412
 STACKHEAD__GID: 1412
-terraform_plugin_directory: "{{ stackhead__tf_root_folder }}/.terraform/plugins/{{ terraform_platform }}"

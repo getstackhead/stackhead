@@ -42,11 +42,6 @@
       when: item.stat.exists == false
       with_items: "{{ folder_stats.results }}"
   when: managedContainerVolumePaths is defined
-#- name: "StackHead::Container || Generate Terraform Docker configuration file | Project: {{ containerapp__project_name }}"
-#  template:
-#    src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
-#    dest: "{{ stackhead__tf_project_folder }}/docker.tf"
-#    force: true
 - name: "StackHead::Container || Generate Puppet configuration file | Project: {{ containerapp__project_name }}"
   template:
     src: "{{ stackhead__templates }}/puppet/main.pp.j2"

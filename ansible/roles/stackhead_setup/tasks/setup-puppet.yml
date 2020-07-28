@@ -1,10 +1,4 @@
 ---
-- name: Create global Puppet folder
-  file:
-    path: "{{ stackhead__puppet_root_folder }}"
-    state: directory
-    owner: stackhead
-    group: stackhead
 - include_role:
     name: geerlingguy.puppet
   vars:
