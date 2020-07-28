@@ -18,3 +18,4 @@
     force: true
   when: nativeapp__default_content == true
   with_items: "{{ app_folders.results }}"
+# todo: implement "ensure", generate puppet configuration file

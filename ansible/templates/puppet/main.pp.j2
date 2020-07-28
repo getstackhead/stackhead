@@ -6,11 +6,11 @@ node default {
     letsencrypt_certificate_dir => '{{ letsencrypt_certificate_folder }}',
     certificate_email => 'certificate@saitho.me',
     htpasswd_path => '{{ nginx_htpasswd_path }}',
-    test => true
+    test => true # todo: set true when environment TEST=1
   }
 
   stackhead::project::setup_container { '{{ project_name }}':
-    ensure => 'present',
+    ensure => '{{ ensure }}',
     domains => {{ app_config.domains|to_ruby_hash }},
     services => {{ containerapp__services|to_ruby_hash }}
   }

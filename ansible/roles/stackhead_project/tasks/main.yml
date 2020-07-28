@@ -16,16 +16,44 @@
         path: "{{ stackhead__puppet_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false
+  when: ensure == 'present'
+- name: "StackHead::Container || Remove Puppet project directory| Project: {{ project_name }}"
+  file:
+    path: "{{ stackhead__puppet_project_folder }}"
+    state: absent
+  when: ensure == 'absent'
 
-- name: "StackHead::Project || Prepare certificates directory | Project: {{ project_name }}"
-  import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
+- name: "StackHead::Project || Create certificates project directory | Project: {{ project_name }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
+  with_items:
+    - "{{ stackhead__certificates_project_folder }}"
+    - "{{ stackhead__project_certificates_folder }}"
+    - "{{ stackhead__acme_folder }}/{{ project_name }}"
+  when: ensure == 'present'
+- name: "StackHead::Project || Remove certificates project directory | Project: {{ project_name }}"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ stackhead__certificates_project_folder }}"
+    - "{{ stackhead__project_certificates_folder }}"
+    - "{{ stackhead__acme_folder }}/{{ project_name }}"
+  when: ensure == 'absent'
 
 # Setup project by type
 - block:
   - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
     when: app_config.type == 'native'
+    vars:
+      ensure: "{{ ensure }}"
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.type == 'container'
+    vars:
+      ensure: "{{ ensure }}"
 
 - name: "StackHead::Project || Apply puppet project manifests"
   raw: "puppet apply {{ stackhead__puppet_project_folder }}"
