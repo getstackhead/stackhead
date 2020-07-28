@@ -27,6 +27,5 @@
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.type == 'container'
 
-# Symlink Puppet configurations from project to main folder and execute them
-- import_tasks: "roles/config_puppet/tasks/update-project-symlinks.yml"
-- import_tasks: "roles/config_puppet/tasks/execute.yml"
+- name: "StackHead::Project || Apply puppet project manifests"
+  raw: "puppet apply {{ stackhead__puppet_project_folder }}"
