@@ -12,7 +12,3 @@
 - name: Install StackHead Puppet modules
   shell:
     cmd: "puppet module install {{ puppet_module_name }} --version '{{ puppet_module_version }}'"
-- name: Install Puppet modules
-  shell:
-    cmd: "puppet module install {{ item }}"
-  with_items: ["puppetlabs-docker"]
