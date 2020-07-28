@@ -15,10 +15,3 @@
     dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
     force: true
   when: auths_basic is defined and auths_basic | length > 0
-
-- name: Generate nginx vhost Terraform file
-  template:
-    src: "{{ nginx_tf_template }}"
-    dest: "{{ stackhead__tf_project_folder }}/nginx_server_block.tf"
-    force: true
-

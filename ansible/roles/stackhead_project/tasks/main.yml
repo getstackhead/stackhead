@@ -4,19 +4,7 @@
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
 - name: Ensure latest compatible version of StackHead puppet module is installed
-  shell:
-    cmd: "puppet module upgrade {{ puppet_module_name }} --version '{{ puppet_module_version }}'"
-
-#- block:
-#    - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
-#      stat:
-#        path: "{{ stackhead__tf_project_folder }}"
-#      register: project_folder
-#    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
-#      file:
-#        path: "{{ stackhead__tf_project_folder }}"
-#        state: directory
-#      when: project_folder.stat.exists == false
+  raw: "puppet module upgrade {{ puppet_module_name }} --version '{{ puppet_module_version }}'"
 
 - block:
     - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
@@ -39,8 +27,6 @@
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.type == 'container'
 
-- import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
-
-# Symlink Terraform configurations from project to main folder and execute them
+# Symlink Puppet configurations from project to main folder and execute them
 - import_tasks: "roles/config_puppet/tasks/update-project-symlinks.yml"
 - import_tasks: "roles/config_puppet/tasks/execute.yml"

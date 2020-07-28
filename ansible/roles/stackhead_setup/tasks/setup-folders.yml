@@ -17,3 +17,9 @@
     state: directory
     owner: stackhead
     group: stackhead
+- name: Create ACME folder
+  file:
+    path: "{{ stackhead__acme_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead

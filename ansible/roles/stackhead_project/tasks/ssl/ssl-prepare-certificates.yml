@@ -1,8 +1,20 @@
 ---
 # Create certificates directories
-- file:
-    path: "{{ stackhead__certificates_project_folder }}"
-    state: directory
-- file:
-    path: "{{ stackhead__project_certificates_folder }}"
-    state: directory
+- name: Create certificates directories
+  block:
+  - file:
+      path: "{{ stackhead__certificates_project_folder }}"
+      state: directory
+      owner: stackhead
+      group: stackhead
+  - file:
+      path: "{{ stackhead__project_certificates_folder }}"
+      state: directory
+      owner: stackhead
+      group: stackhead
+  - name: Create project ACME folder
+    file:
+      path: "{{ stackhead__acme_folder }}/{{ project_name }}"
+      state: directory
+      owner: stackhead
+      group: stackhead

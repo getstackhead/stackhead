@@ -146,3 +146,4 @@
         force: true
       vars:
         nginx_htpasswd_path: "./htpasswd/path"
+        stackhead__acme_folder: "/.acme"
