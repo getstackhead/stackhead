@@ -34,12 +34,8 @@
 - block:
   - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
     when: app_config.type == 'native'
-    vars:
-      ensure: "{{ ensure }}"
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.type == 'container'
-    vars:
-      ensure: "{{ ensure }}"
 
 - name: "StackHead::Project || Apply puppet project manifests"
   raw: "puppet apply {{ stackhead__puppet_project_folder }}"

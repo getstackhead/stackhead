@@ -8,7 +8,6 @@
   import_role:
     name: project_containerapp
   vars:
-    ensure: "{{ ensure }}"
     containerapp__project_name: "{{ project_name }}"
     containerapp__services: "{{ app_config.container.services }}"
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"

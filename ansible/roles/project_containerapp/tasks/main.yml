@@ -47,5 +47,3 @@
     src: "{{ stackhead__templates }}/puppet/main.pp.j2"
     dest: "{{ stackhead__puppet_project_folder }}/main.pp"
     force: true
-  vars:
-    ensure: "{{ ensure }}"
