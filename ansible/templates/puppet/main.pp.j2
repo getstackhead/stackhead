@@ -6,61 +6,13 @@ node default {
     letsencrypt_certificate_dir => '{{ letsencrypt_certificate_folder }}',
     certificate_email => 'certificate@saitho.me',
     htpasswd_path => '{{ nginx_htpasswd_path }}',
-    test => true # todo: set true when environment TEST=1
+    test => {% if lookup('env', 'TEST') == 1 %}true{% else %}false{% endif %},
   }
 
-  stackhead::project::setup_container { '{{ project_name }}':
+  stackhead::project::container { '{{ project_name }}':
     ensure => '{{ ensure }}',
     domains => {{ app_config.domains|to_ruby_hash }},
     services => {{ containerapp__services|to_ruby_hash }}
   }
 
-{%- set globalVolumeKeys = [] %}
-{% for service in containerapp__services if service.volumes is defined %}
-  {% for volume in service.volumes %}
-  {%- set src = volume.src|default('') %}
-  {%- set sanitizedSrc = src | regex_replace('[^\w]', '_') %}
-  {% if volume.type == "local" %}
-  docker_volume { 'local-{{ containerapp__project_name }}-{{ service.name }}-{{ sanitizedSrc }}':
-    ensure  => present,
-    driver  => 'local',
-    options => ['type=none','o=bind','device={{ containerapp__data_location_services|format(service.name, src) }}']
-  }
-    {% elif volume.type == "global" and sanitizedSrc not in globalVolumeKeys %}
-  docker_volume { 'global-{{ containerapp__project_name }}-{{ sanitizedSrc }}':
-    ensure  => present,
-    driver  => 'local',
-    options => ['type=none','o=bind','device={{ containerapp__data_location_global|format(src) }}']
-  }
-  {%- set _ = globalVolumeKeys.append( sanitizedSrc ) %}
-  {% endif %}
-  {% endfor %}
-{% endfor %}
-
-{% for service in containerapp__services %}
-  docker::run { '{{ service.name }}':
-    image            => '{{ service.image }}',
-    detach           => true,
-    service_prefix   => 'stackhead-{{ containerapp__project_name }}-',
-    restart_service  => true,
-    pull_on_start    => true,
-
-    {%- set ns = namespace (exposedPorts = []) %}
-    {%- for domainConfig in app_config.domains if domainConfig.expose is defined %}
-      {%- for expose in domainConfig.expose if expose.internal_port is defined and expose.service == service.name %}
-      {%- set ns.exposedPorts = ns.exposedPorts|default([]) + [expose.internal_port|string] %}
-      {%- endfor %}
-    {%- endfor %}
-
-    #ports            => ['4444', '4555'],
-    expose           => {{ ns.exposedPorts }}, # todo: check if expose is sufficient
-    #links            => ['mysql:db'], # todo: should not be needed as services should connect to network automatically
-    net              => ['stackhead-network-{{ containerapp__project_name }}'],
-
-    {% if 'volumes' in service %}volumes          => {{ service|containerVolumes(containerapp__project_name) }},{% endif %}
-
-    {% if 'volumes_from' in service %}volumes_from     => '{{ service.volumes_from.0 }}',{% endif %}
-
-  }
-{% endfor %}
 }
