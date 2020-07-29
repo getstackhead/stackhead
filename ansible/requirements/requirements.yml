@@ -1,12 +1,12 @@
 - name: nickjj.docker
-  version: v1.9.2
+  version: v2.0.0
 - name: robertdebock.python_pip
   version: 3.3.0
 - name: geerlingguy.nginx
-  version: 2.7.0
+  version: 2.8.0
 - name: geerlingguy.php
-  version: 4.2.0
+  version: 4.4.0
 - name: geerlingguy.php-versions
   version: 4.0.3
 - name: andrewrothstein.terraform
-  version: v2.2.39
+  version: v2.2.43
