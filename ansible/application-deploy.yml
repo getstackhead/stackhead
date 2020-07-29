@@ -7,3 +7,5 @@
       loop_control:
         loop_var: project_name
       with_items: "{{ stackhead.applications }}"
+      vars:
+        ensure: 'present'
