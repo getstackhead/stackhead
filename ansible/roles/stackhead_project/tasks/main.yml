@@ -12,11 +12,12 @@
       file:
         path: "{{ stackhead__tf_project_folder }}"
         state: directory
-      when: project_folder.stat.exists == false
+      when: project_folder.stat.exists == false and ensure == 'present'
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
 - name: "StackHead::Project || Prepare certificates directory | Project: {{ project_name }}"
   import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
+  when: ensure == 'present'
 
 # Setup project by type
 - block:
@@ -24,9 +25,20 @@
     when: app_config.type == 'native'
   - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     when: app_config.type == 'container'
+  when: ensure == 'present'
 
 - import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
 
 # Symlink Terraform configurations from project to main folder and execute them
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
+  when: ensure == 'present'
+- include_tasks: "roles/config_terraform/tasks/remove-project-symlinks.yml"
+  when: ensure == 'absent'
 - import_tasks: "roles/config_terraform/tasks/execute.yml"
+- file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ stackhead__project_folder }}"
+    - "{{ stackhead__certificates_project_folder }}"
+  when: ensure == 'absent'
