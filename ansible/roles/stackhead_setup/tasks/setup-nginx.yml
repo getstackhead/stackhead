@@ -5,13 +5,28 @@
     dest: /etc/nginx
 - name: Setup Nginx
   vars:
-    nginx_ppa_use: true
-    nginx_conf_template: "{{ stackhead__templates }}/nginx.conf.j2"
-    nginx_vhosts: []
-    __nginx_user: "stackhead"
-    root_group: "stackhead"
+    nginx_main_template_enable: 1
+    nginx_html_demo_template_enable: 1
+    nginx_main_template:
+      user: "stackhead"
+      http_custom_options:
+        # Add X-XSS-Protection for HTML documents. /etc/nginx/h5bp/security/x-xss-protection.conf
+        - "map $sent_http_content_type $x_xss_protection {\n      ~*text/html \"1; mode=block\";\n     }"
+        # Add X-Frame-Options for HTML documents. /etc/nginx/h5bp/security/x-frame-options.conf
+        - "map $sent_http_content_type $x_frame_options {\n       ~*text/html DENY;\n     }"
+        # Add Content-Security-Policy for HTML documents. /etc/nginx/h5bp/security/content-security-policy.conf
+        - "map $sent_http_content_type $content_security_policy {\n       ~*text/html \"default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests\";\n     }"
+        # Add Referrer-Policy for HTML documents. /etc/nginx/h5bp/security/referrer-policy.conf.conf
+        - "map $sent_http_content_type $referrer_policy {\n       ~*text/html \"strict-origin-when-cross-origin\";\n     }"
+        # Add X-UA-Compatible for HTML documents. /etc/nginx/h5bp/internet_explorer/x-ua-compatible.conf
+        - "map $sent_http_content_type $x_ua_compatible {\n       ~*text/html \"IE=edge\";\n     }"
+        # Add Access-Control-Allow-Origin. /etc/nginx/h5bp/cross-origin/requests.conf
+        - "map $sent_http_content_type $cors {\n       ~*image/ \"*\";\n       ~*font/ \"*\";\n       ~*application/vnd.ms-fontobject \"*\";\n       ~*application/x-font-ttf \"*\";\n       ~*application/font-woff \"*\";\n       ~*application/x-font-woff \"*\";\n       ~*application/font-woff2 \"*\";\n     }"
+      http_custom_includes:
+        - /etc/nginx/h5bp/web_performance/compression.conf
+        - /etc/nginx/h5bp/web_performance/cache_expiration.conf
   include_role:
-    name: geerlingguy.nginx
+    name: nginxinc.nginx
 - name: adjust owner of /var/www directories
   file:
     path: /var/www
