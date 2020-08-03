@@ -1,5 +1,5 @@
-- name: nickjj.docker
-  version: v2.0.0
+- name: geerlingguy.docker
+  version: 2.8.1
 - name: robertdebock.python_pip
   version: 3.3.0
 - name: geerlingguy.nginx
