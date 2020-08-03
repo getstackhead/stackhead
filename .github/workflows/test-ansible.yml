@@ -9,9 +9,6 @@ on:
       - ansible/**
       - .github/workflows/test-ansible.yml
 
-env:
-  DOMAIN: pr-${{ github.run_id }}.test.stackhead.io
-
 jobs:
   smoke:
     name: Smoketest test-tf-generation
@@ -32,6 +29,12 @@ jobs:
     needs: checkLabel
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        webserver: ['nginx', 'caddy']
+    env:
+      DOMAIN: pr-${{ github.run_id }}-${{ matrix.webserver }}.test.stackhead.io
+      WEBSERVER: ${{ matrix.webserver }}
     steps:
     - uses: actions/checkout@v2
     - name: Initialize submodules
