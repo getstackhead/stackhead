@@ -10,8 +10,8 @@ dependencies:
 tags:
   - demo
   - collection
-readme: "../README.md"
-license_file: "../LICENSE"
+readme: "README.md"
+license: "GPL-2.0"
 repository: "https://github.com/getstackhead/stackhead"
 documentation: "http://docs.stackhead.io/"
 #build_ignore:
