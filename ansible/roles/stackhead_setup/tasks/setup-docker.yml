@@ -1,5 +1,5 @@
 ---
 - import_role:
-    name: nickjj.docker
+    name: geerlingguy.docker
   vars:
-    docker__users: ["{{ ansible_env.SUDO_USER | d('root') }}", "stackhead"]
+    docker_users: ["{{ ansible_env.SUDO_USER | d('root') }}", "stackhead"]
