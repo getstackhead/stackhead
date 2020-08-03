@@ -49,7 +49,7 @@ jobs:
       uses: saitho/hetzner-cloud-action@v1.1.0
       with:
         action: create
-        server_name: "pr-${{ github.run_id }}"
+        server_name: "pr-${{ github.run_id }}-${{ matrix.webserver }}"
         server_image: ubuntu-18.04
         server_location: fsn1
         server_ssh_key_name: gh-actions
