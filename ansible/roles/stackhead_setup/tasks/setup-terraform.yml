@@ -21,6 +21,14 @@
     owner: stackhead
     group: stackhead
     force: yes
+- name: Download Caddy provider
+  get_url:
+    url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
+    dest: "{{ terraform_plugin_directory }}/terraform-provider-caddy"
+    mode: '0755'
+    owner: stackhead
+    group: stackhead
+    force: yes
 - name: Copy patched acme-provider
   get_url:
     url: https://github.com/getstackhead/terraform-provider-acme/releases/download/v1.5.0-patched/terraform-provider-acme

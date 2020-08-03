@@ -1,7 +1,6 @@
 #jinja2: trim_blocks:False
 resource "caddy_server_block" "caddy-{{ project_name }}" {
   filename = "{{ project_name }}.conf"
-  enable = true
 
 {%- set all_ports = containerapp__expose|containerPorts(project_name) %}
   markers = {
