@@ -19,3 +19,4 @@
     nginx_dockerapp: 1
     nginx_usehttps: 1
     nginx_tf_template: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
+  when: stackhead__webserver == 'nginx'
