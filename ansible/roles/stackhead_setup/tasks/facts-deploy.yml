@@ -11,7 +11,7 @@
       when: facts_folder.stat.exists == false
 - name: Setup custom facts
   synchronize:
-    src: "{{ playbook_dir }}/facts/"
+    src: "{{ playbook_dir }}/../facts/"
     dest: /etc/ansible/facts.d/
     perms: false
     rsync_opts:

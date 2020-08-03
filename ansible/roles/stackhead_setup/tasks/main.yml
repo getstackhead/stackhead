@@ -1,5 +1,5 @@
 ---
-- include_vars: "{{ playbook_dir }}/config.yaml"
+- include_vars: "{{ playbook_dir }}/../config.yaml"
 
 - import_tasks: "roles/stackhead_setup/tasks/facts-load.yml"
   ignore_errors: yes

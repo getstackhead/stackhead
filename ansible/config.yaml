@@ -1,7 +1,7 @@
 # Global variable configurations accessible by all roles
 ---
 # StackHead
-stackhead__templates: "{{ playbook_dir }}/templates"
+stackhead__templates: "{{ playbook_dir }}/../templates"
 stackhead__root_folder: "/stackhead"
 stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
 
