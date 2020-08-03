@@ -11,6 +11,3 @@ all:
       stackhead:
         applications:
           - ${application}
-        capabilities:
-          php:
-            version: 7.3

@@ -94,17 +94,6 @@
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
-    - name: Generate nginx native Terraform file
-      template:
-        src: "{{ stackhead__templates }}/terraform/nginx_server_block.tf.j2"
-        dest: "./nginx_vhost-native.tf"
-        force: true
-      vars:
-        nginx_servername: "test_project"
-        nginx_usehttps: 1
-        stackhead__acme_folder: ""
-        nginx_htpasswd_path: /etc/nginx/passwd
-        nginx_basicauth_title: "Restricted area"
     - name: Generate nginx container Terraform file
       template:
         src: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"

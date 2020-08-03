@@ -80,10 +80,6 @@ jobs:
       run: ./ansible/__tests__/steps/test_provision.sh
       env:
         IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
-    - name: "Test step: Deploy native application"
-      run: ./ansible/__tests__/steps/test_deploy-native.sh
-      env:
-        IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
     - name: "Test step: Deploy container application"
       run: ./ansible/__tests__/steps/test_deploy-container.sh
       env:
