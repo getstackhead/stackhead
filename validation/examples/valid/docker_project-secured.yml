@@ -1,5 +1,4 @@
 ---
-type: container
 domains:
   - domain: mydomain.com
     expose:
