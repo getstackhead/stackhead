@@ -3,12 +3,3 @@
 - name: Update apt caches
   apt:
     update_cache: yes
-
-- name: Ensure python-setuptools is installed
-  package:
-    name: "python-setuptools"
-    state: present
-
-- name: Install Python and pip
-  import_role:
-    name: robertdebock.python_pip
