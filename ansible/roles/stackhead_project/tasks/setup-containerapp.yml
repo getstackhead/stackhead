@@ -19,9 +19,9 @@
     nginx_dockerapp: 1
     nginx_usehttps: 1
     nginx_tf_template: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
-  when: stackhead__webserver == 'nginx'
+  when: _stackhead__webserver == 'nginx'
 
 - name: "StackHead::Project || Update Caddy reverse proxy configuration"
   include_role:
     name: config_caddy
-  when: stackhead__webserver == 'caddy'
+  when: _stackhead__webserver == 'caddy'

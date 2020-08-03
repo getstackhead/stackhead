@@ -8,7 +8,7 @@ stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
 # Terraform
 stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
 
-stackhead__webserver: "{{ stackhead__webserver | default('nginx')}}"
+_stackhead__webserver: "{{ stackhead__webserver | default('nginx')}}"
 
 # Python
 ansible_python_interpreter: /usr/bin/python3

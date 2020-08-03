@@ -24,7 +24,7 @@
   when: ensure == 'present'
 
 - import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
-  when: stackhead__webserver != 'caddy'
+  when: _stackhead__webserver != 'caddy'
 
 # Symlink Terraform configurations from project to main folder and execute them
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
