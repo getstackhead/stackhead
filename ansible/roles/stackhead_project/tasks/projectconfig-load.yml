@@ -6,17 +6,3 @@
     file: "{{ stackhead__local_config_file }}"
     name: app_config
   delegate_to: 127.0.0.1
-
-- name: "StackHead::Project || Set facts from project file"
-  set_fact:
-    native_php_enabled: "{{ app_config.native.capabilities.php is defined | default(False) }}"
-    php_version: "{{ app_config.native.capabilities.php.version | default(None) }}"
-    remote_php_version: "{{ ansible_local['versions']['php']['version'] | default(None) }}"
-
-- name: "StackHead::Project || Check if PHP version matches"
-  assert:
-    that:
-      - remote_php_version is not none
-      - php_version is version(remote_php_version|default('')| regex_replace('(\.\d+)$', ''), operator='==')
-    fail_msg: "App requires PHP {{ php_version }} which the target server does not provide. Version on target server: {{ remote_php_version | default('none') }}"
-  when: native_php_enabled == true
