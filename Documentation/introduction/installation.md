@@ -6,7 +6,7 @@ title: Installation
 
 The following software has to already be installed on your system to use StackHead:
 
-* Ansible
+* Ansible (>= 2.10)
 * Python 3
 
 ## Installing StackHead
