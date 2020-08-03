@@ -8,15 +8,6 @@ module.exports = {
     ],
     Configuration: [
       'configuration/project-definition',
-      {
-        type: 'category',
-        label: 'Project types',
-        items: [
-          'configuration/project-definition/container',
-          'configuration/project-definition/native'
-        ]
-      },
-      'configuration/capabilities',
       'configuration/security'
     ],
     'Technical Documentation': [

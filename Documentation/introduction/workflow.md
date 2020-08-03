@@ -20,9 +20,8 @@ Also it is usually served on a Top Level Domain by some kind of webserver.
 
 This information is stored inside a [**project definition** file](../configuration/project-definition.md).
 
-There you can either set up container-based applications (recommended) or also run you application natively.
-
-Based on the project definition file, StackHead will take care setting up the required configurations.
+Based on the project definition file, StackHead will take care setting up the required configuration.
+It will start up the specified Docker containers and set up the required web server configuration.
 
 ## Ansible inventory
 
