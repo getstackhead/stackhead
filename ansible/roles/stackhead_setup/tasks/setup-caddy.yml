@@ -1,0 +1,15 @@
+---
+- name: Setup Caddy
+  vars:
+    caddy_user: "stackhead"
+    caddy_group: "stackhead"
+  include_role:
+    name: samdoran.caddy
+- name: Check content after provisioning
+  uri:
+    url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+    return_content: yes
+  register: uri_result
+  until: '"Caddy web server" in uri_result.content'
+  retries: 5
+  delay: 1
