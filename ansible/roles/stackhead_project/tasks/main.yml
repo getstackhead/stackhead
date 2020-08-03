@@ -20,11 +20,7 @@
   when: ensure == 'present'
 
 # Setup project by type
-- block:
-  - import_tasks: "roles/stackhead_project/tasks/setup-nativeapp.yml"
-    when: app_config.type == 'native'
-  - import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
-    when: app_config.type == 'container'
+- import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
   when: ensure == 'present'
 
 - import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
