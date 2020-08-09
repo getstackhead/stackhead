@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install passlib bcrypt
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
