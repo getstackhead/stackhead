@@ -1,5 +1,10 @@
+{% if stackhead__webserver == 'nginx' %}
 provider "nginx" {
 }
+{% elif stackhead__webserver == 'caddy' %}
+provider "caddy" {
+}
+{% endif %}
 
 provider "acme" {
   server_url = "{% if lookup('env','TEST') == '1' %}https://acme-staging-v02.api.letsencrypt.org/directory{% else %}https://acme-v02.api.letsencrypt.org/directory{% endif %}"
