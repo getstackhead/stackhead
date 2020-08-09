@@ -15,7 +15,7 @@ resource "caddy_server_block" "caddy-{{ project_name }}" {
 {%- for expose in domainConfig.expose if expose.external_port != 443 %}
 {% set port_index = all_ports|selectattr('service', 'equalto', expose.service)|selectattr('internal_port', 'equalto', expose.internal_port)|map(attribute='index')|first %}
 
-{{ domainConfig.domain }}:{{ expose.external_port }} {
+{{ domainConfig.domain }}{% if expose.external_port != 80 %}:{{ expose.external_port }}{% endif %} {
     reverse_proxy localhost:{~ docker_ports[{{ port_index }}] ~}
 {%- if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
     basicauth * {
