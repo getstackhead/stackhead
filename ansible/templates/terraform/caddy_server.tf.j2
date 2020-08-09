@@ -16,11 +16,11 @@ resource "caddy_server_block" "caddy-{{ project_name }}" {
 {% set port_index = all_ports|selectattr('service', 'equalto', expose.service)|selectattr('internal_port', 'equalto', expose.internal_port)|map(attribute='index')|first %}
 
 {{ domainConfig.domain }}:{{ expose.external_port }} {
-	reverse_proxy localhost:{~ docker_ports[{{ port_index }}] ~}
+    reverse_proxy localhost:{~ docker_ports[{{ port_index }}] ~}
 {%- if domainConfig.security.authentication is defined and domainConfig.security.authentication|selectattr("type", "equalto", "basic")|list | length > 0 %}
     basicauth * {
         {%- for item in domainConfig.security.authentication if item.type == 'basic' %}
-        {{ item.username }}:{{ item.password|password_hash('sha512') }}
+        {{ item.username }} {{ item.password | password_hash('blowfish') | b64encode }}
         {%- endfor %}
     }
 {%- endif %}
@@ -29,18 +29,17 @@ resource "caddy_server_block" "caddy-{{ project_name }}" {
 {%- endfor %}
 EOF
 
-{% for domainConfig in app_config.domains %}
-{%- for expose in domainConfig.expose if expose.external_port != 443 %}
   depends_on = [
 {% for expose in containerapp__expose if expose.external_port != 443 %}
 {% if not loop.first %},{% endif %}docker_container.stackhead-{{ project_name }}-{{ expose.service }}
 {% endfor %}
   ]
-{%- endfor %}
-{%- endfor %}
 
   provisioner "local-exec" {
+    command = "caddy reload -config /etc/caddy/Caddyfile"
+  }
+  provisioner "local-exec" {
     when = destroy
-    command = "caddy reload"
+    command = "caddy reload -config /etc/caddy/Caddyfile"
   }
 }

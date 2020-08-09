@@ -3,8 +3,22 @@
   vars:
     caddy_user: "stackhead"
     caddy_group: "stackhead"
+    caddy_version: "2.1.1"
+    caddy_install_source: package
   include_role:
-    name: samdoran.caddy
+    #name: samdoran.caddy
+    name: ansible-role-caddy
+
+#- name: Ensure python-setuptools is installed
+#  package:
+#    name: "python-setuptools"
+#    state: present
+- name: Install Python and pip
+  import_role:
+    name: robertdebock.python_pip
+  vars:
+    python_pip_modules:
+        - name: passlib # for password hashing (BasicAuth)
 - name: Check content after provisioning
   uri:
     url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"

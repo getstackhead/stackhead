@@ -9,13 +9,6 @@
   when: item.security is defined and item.security.authentication is defined
   with_items: "{{ app_config.domains }}"
 
-- name: Generate htpasswd Terraform file
-  template:
-    src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
-    dest: "{{ stackhead__tf_project_folder }}/htpasswd.tf"
-    force: true
-  when: auths_basic is defined and auths_basic | length > 0
-
 - name: Generate Caddy Terraform file
   template:
     src: "{{ stackhead__templates }}/terraform/caddy_server.tf.j2"
