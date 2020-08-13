@@ -19,6 +19,7 @@
   vars:
     python_pip_modules:
         - name: passlib # for password hashing (BasicAuth)
+        - name: bcrypt # for password hashing (BasicAuth)
 - name: Check content after provisioning
   uri:
     url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
