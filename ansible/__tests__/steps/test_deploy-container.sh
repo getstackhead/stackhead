@@ -25,7 +25,6 @@ sed -e "s/\${ipaddress}/${IP}/" -e "s/\${webserver}/${WEBSERVER}/" -e "s/\${appl
 sed -e "s/\${domain}/${DOMAIN}/" ansible/__tests__/projects/container.dist.yml > ansible/__tests__/projects/container.yml
 TEST=1 ansible-playbook ansible/application-deploy.yml -i $INVENTORY_PATH -vv
 
-DOMAIN=pr-208943212-caddy.test.stackhead.io
 http_check "https://${DOMAIN}" "Hello world!"
 http_check "https://${DOMAIN}:81" "phpMyAdmin"
 http_check "https://sub.${DOMAIN}" "phpMyAdmin" "user" "pass"
