@@ -8,7 +8,12 @@
   include_role:
     #name: samdoran.caddy
     name: ansible-role-caddy
-
+- name: Overwrite Caddyfile
+  template:
+    src: "{{ stackhead__templates }}/terraform/Caddyfile.j2"
+    dest: "/etc/caddy/Caddyfile"
+  notify:
+    - restart caddy
 - name: Check content after provisioning
   uri:
     url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"

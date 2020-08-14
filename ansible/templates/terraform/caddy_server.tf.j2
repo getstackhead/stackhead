@@ -11,10 +11,6 @@ resource "caddy_server_block" "caddy-{{ project_name }}" {
   }
 
   content = <<EOF
-{
-{%- if lookup('env','TEST') == '1' %}    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory{%- endif %}
-    email certificate@saitho.me
-}
 {% for domainConfig in app_config.domains %}
 {%- for expose in domainConfig.expose if expose.external_port != 443 %}
 {% set port_index = all_ports|selectattr('service', 'equalto', expose.service)|selectattr('internal_port', 'equalto', expose.internal_port)|map(attribute='index')|first %}
