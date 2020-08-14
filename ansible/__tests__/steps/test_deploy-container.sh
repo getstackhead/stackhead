@@ -9,9 +9,9 @@ INVENTORY_PATH=ansible/__tests__/inventory.yml
 function http_check() {
   echo "Checking HTTP content on ${1}"
   if [[ "${3}" != "" && "${4}" != "" ]]; then
-    CONTENT=$(curl --insecure -u "${3}:${4}" "${1}")
+    CONTENT=$(curl --insecure -v -u "${3}:${4}" "${1}")
   else
-    CONTENT=$(curl --insecure "${1}")
+    CONTENT=$(curl --insecure -v "${1}")
   fi
   if [[ $CONTENT != *"${2}"* ]]; then
     echo "HTTP content check failed: ${CONTENT}" 1>&2
