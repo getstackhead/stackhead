@@ -114,6 +114,11 @@
         src: "{{ stackhead__templates }}/terraform/caddy_server.tf.j2"
         dest: "./caddy.tf"
         force: true
+    - name: Generate Caddyfile
+      template:
+        src: "{{ stackhead__templates }}/terraform/Caddyfile.j2"
+        dest: "./Caddyfile"
+        force: true
     - name: "Test SSL Terraform file generation"
       template:
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
