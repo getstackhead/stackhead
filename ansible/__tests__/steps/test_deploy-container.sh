@@ -9,9 +9,9 @@ INVENTORY_PATH=ansible/__tests__/inventory.yml
 function http_check() {
   echo "Checking HTTP content on ${1}"
   if [[ "${3}" != "" && "${4}" != "" ]]; then
-    CONTENT=$(wget --no-check-certificate --https-only --http-user="${3}" --http-password="${4}" -q -O - "${1}")
+    CONTENT=$(curl --insecure -u "${3}:${4}" "${1}")
   else
-    CONTENT=$(wget --no-check-certificate --https-only -q -O - "${1}")
+    CONTENT=$(curl --insecure "${1}")
   fi
   if [[ $CONTENT != *"${2}"* ]]; then
     echo "HTTP content check failed: ${CONTENT}" 1>&2
@@ -25,9 +25,7 @@ sed -e "s/\${ipaddress}/${IP}/" -e "s/\${webserver}/${WEBSERVER}/" -e "s/\${appl
 sed -e "s/\${domain}/${DOMAIN}/" ansible/__tests__/projects/container.dist.yml > ansible/__tests__/projects/container.yml
 TEST=1 ansible-playbook ansible/application-deploy.yml -i $INVENTORY_PATH -vv
 
-# wait some time for server to finish
-sleep 5s
-
+DOMAIN=pr-208943212-caddy.test.stackhead.io
 http_check "https://${DOMAIN}" "Hello world!"
 http_check "https://${DOMAIN}:81" "phpMyAdmin"
 http_check "https://sub.${DOMAIN}" "phpMyAdmin" "user" "pass"
