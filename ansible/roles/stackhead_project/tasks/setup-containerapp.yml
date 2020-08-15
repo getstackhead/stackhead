@@ -12,11 +12,5 @@
     containerapp__services: "{{ app_config.container.services }}"
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
-- name: "StackHead::Project || Update Nginx reverse proxy configuration"
-  include_tasks: "roles/config_nginx/tasks/deploy.yml"
-  when: _stackhead__webserver == 'nginx'
-
-- name: "StackHead::Project || Update Caddy reverse proxy configuration"
-  include_role:
-    name: config_caddy
-  when: _stackhead__webserver == 'caddy'
+- name: "StackHead::Project || Update {{ _stackhead__webserver }} reverse proxy configuration"
+  include_tasks: "roles/config_{{ _stackhead__webserver }}/tasks/deploy.yml"
