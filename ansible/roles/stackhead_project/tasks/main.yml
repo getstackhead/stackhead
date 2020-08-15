@@ -28,10 +28,9 @@
     - name: "StackHead::Project || Setup Container app"
       import_tasks: "{{ role_path }}/tasks/setup-containerapp.yml"
     - name: "StackHead::Project || Update {{ _stackhead__webserver }} reverse proxy configuration"
-      include_tasks: "{{ roleinclude_path }}/tasks/deploy.yml"
+      include_tasks: "roles/stackhead_webserver_{{ _stackhead__webserver }}/tasks/deploy.yml"
       vars:
-        roleinclude_path: "roles/stackhead_webserver_{{ _stackhead__webserver }}"
-        role_path: "{{ roleinclude_path }}"
+        role_path: "roles/stackhead_webserver_{{ _stackhead__webserver }}"
   when: ensure == 'present'
 
 # Symlink Terraform configurations from project to main folder and execute them
