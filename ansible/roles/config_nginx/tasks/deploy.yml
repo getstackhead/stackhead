@@ -1,3 +1,4 @@
+# This task list generates the Nginx configuration for a project
 ---
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"

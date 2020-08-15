@@ -13,12 +13,7 @@
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
 - name: "StackHead::Project || Update Nginx reverse proxy configuration"
-  include_role:
-    name: config_nginx
-  vars:
-    nginx_dockerapp: 1
-    nginx_usehttps: 1
-    nginx_tf_template: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
+  include_tasks: "roles/config_nginx/tasks/deploy.yml"
   when: _stackhead__webserver == 'nginx'
 
 - name: "StackHead::Project || Update Caddy reverse proxy configuration"

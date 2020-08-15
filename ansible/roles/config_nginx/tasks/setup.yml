@@ -1,3 +1,4 @@
+# This task list sets up Nginx during server setup
 ---
 - name: Deploy additional h5bp Nginx files
   synchronize:
