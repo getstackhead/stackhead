@@ -13,6 +13,7 @@ module.exports = {
     ],
     'Technical Documentation': [
       'technical-documentation/terraform',
+      'technical-documentation/modules',
       'technical-documentation/ssl-certificates'
     ]
   }

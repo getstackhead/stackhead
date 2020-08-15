@@ -1,5 +1,5 @@
 ---
-title: Modules
+title: StackHead modules
 ---
 
 StackHead is organized in components which are interexchangable.
