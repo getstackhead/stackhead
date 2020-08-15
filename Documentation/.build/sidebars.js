@@ -8,7 +8,8 @@ module.exports = {
     ],
     Configuration: [
       'configuration/project-definition',
-      'configuration/security'
+      'configuration/security',
+      'configuration/modules'
     ],
     'Technical Documentation': [
       'technical-documentation/terraform',
