@@ -9,15 +9,13 @@ on:
       - ansible/**
       - .github/workflows/test-ansible.yml
 
-env:
-  DOMAIN: pr-${{ github.run_id }}.test.stackhead.io
-
 jobs:
   smoke:
     name: Smoketest test-tf-generation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: pip install -r ./ansible/requirements/pip.txt
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
@@ -32,6 +30,14 @@ jobs:
     needs: checkLabel
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        webserver: ['nginx', 'caddy']
+      fail-fast: false
+    env:
+      INVENTORY_PATH: ansible/__tests__/inventory.yml
+      DOMAIN: pr-${{ github.run_id }}-${{ matrix.webserver }}.test.stackhead.io
+      WEBSERVER: ${{ matrix.webserver }}
     steps:
     - uses: actions/checkout@v2
     - name: Initialize submodules
@@ -46,7 +52,7 @@ jobs:
       uses: saitho/hetzner-cloud-action@v1.1.0
       with:
         action: create
-        server_name: "pr-${{ github.run_id }}"
+        server_name: "pr-${{ github.run_id }}-${{ matrix.webserver }}"
         server_image: ubuntu-18.04
         server_location: fsn1
         server_ssh_key_name: gh-actions
@@ -80,10 +86,16 @@ jobs:
       run: ./ansible/__tests__/steps/test_provision.sh
       env:
         IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
-    - name: "Test step: Deploy container application"
-      run: ./ansible/__tests__/steps/test_deploy-container.sh
+    - name: "Test step: Deploy application"
+      run: ./ansible/__tests__/steps/test_deploy.sh
       env:
         IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
+    - name: "Test step: Validate deployment"
+      run: ./ansible/__tests__/steps/test_validate-deployment.sh
+    - name: "Test step: Destroy deployment"
+      run: ./ansible/__tests__/steps/test_destroy.sh
+    #- uses: mxschmitt/action-tmate@v2
+    #  if: always() && matrix.webserver == 'caddy'
     - name: Remove DNS record
       uses: saitho/delete-dns-record@saitho-patch-1
       if: always()

@@ -34,6 +34,9 @@
               - type: basic
                 username: user1
                 password: pass1
+              - type: basic
+                username: user2
+                password: pass2
     containerapp__services:
       - name: data
         image: mycontainer:latest
@@ -106,6 +109,16 @@
         stackhead__acme_folder: ""
         nginx_htpasswd_path: /etc/nginx/passwd
         nginx_basicauth_title: "Restricted area"
+    - name: Generate Caddy Terraform file
+      template:
+        src: "{{ stackhead__templates }}/terraform/caddy_server.tf.j2"
+        dest: "./caddy.tf"
+        force: true
+    - name: Generate Caddyfile
+      template:
+        src: "{{ stackhead__templates }}/terraform/Caddyfile.j2"
+        dest: "./Caddyfile"
+        force: true
     - name: "Test SSL Terraform file generation"
       template:
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
