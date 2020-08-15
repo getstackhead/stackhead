@@ -11,7 +11,7 @@
     name: ansible-role-caddy
 - name: Overwrite Caddyfile
   template:
-    src: "{{ stackhead__templates }}/terraform/Caddyfile.j2"
+    src: "{{ role_path }}/templates/caddy/Caddyfile.j2"
     dest: "/etc/caddy/Caddyfile"
   notify:
     - restart caddy
