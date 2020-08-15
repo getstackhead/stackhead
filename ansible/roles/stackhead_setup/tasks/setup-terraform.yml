@@ -13,24 +13,21 @@
     group: stackhead
 - include_role:
     name: andrewrothstein.terraform
-- name: Download Nginx provider
+
+# Setup Terraform components of modules
+- include_vars:
+    file: "{{ role_path }}/../{{ _stackhead__webserver }}/stackhead-module.yml"
+    name: webserver_module
+- name: "Download Terraform provider for {{ _stackhead__webserver }} webserver"
   get_url:
-    url: https://github.com/getstackhead/terraform-nginx/releases/download/v1.3.0/terraform-provider-nginx
-    dest: "{{ terraform_plugin_directory }}/terraform-provider-nginx"
+    url: "{{ webserver_module.terraform.provider.url }}"
+    dest: "{{ terraform_plugin_directory }}/terraform-provider-{{ webserver_module.terraform.provider.name }}"
     mode: '0755'
     owner: stackhead
     group: stackhead
     force: yes
-  when: _stackhead__webserver == 'nginx'
-- name: Download Caddy provider
-  get_url:
-    url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
-    dest: "{{ terraform_plugin_directory }}/terraform-provider-caddy"
-    mode: '0755'
-    owner: stackhead
-    group: stackhead
-    force: yes
-  when: _stackhead__webserver == 'caddy'
+  when: webserver_module.terraform is defined and webserver_module.terraform.provider is defined and webserver_module.terraform.provider.name is defined and webserver_module.terraform.provider.url is defined
+
 - name: Copy patched acme-provider
   get_url:
     url: https://github.com/getstackhead/terraform-provider-acme/releases/download/v1.5.0-patched/terraform-provider-acme

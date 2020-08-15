@@ -1,8 +1,5 @@
-{% if stackhead__webserver == 'nginx' %}
-provider "nginx" {
-}
-{% elif stackhead__webserver == 'caddy' %}
-provider "caddy" {
+{% if webserver_module.terraform is defined and webserver_module.terraform.provider is defined and webserver_module.terraform.provider.name is defined %}
+provider "{{ webserver_module.terraform.provider.name }}" {
 }
 {% endif %}
 
