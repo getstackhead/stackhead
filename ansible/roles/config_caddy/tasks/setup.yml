@@ -1,3 +1,4 @@
+# This task list sets up Caddy during server setup
 ---
 - name: Setup Caddy
   vars:
