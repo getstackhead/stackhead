@@ -23,7 +23,7 @@
     - name: "StackHead::Project || Collect exposed services"
       set_fact:
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
-      when: item.expose is defined and item.expose not in containerapp__expose
+      when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
     - name: "StackHead::Project || Setup Container app"
       import_tasks: "{{ role_path }}/tasks/setup-containerapp.yml"
