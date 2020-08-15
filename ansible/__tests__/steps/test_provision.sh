@@ -10,4 +10,4 @@ pip install -r ansible/requirements/pip.txt
 ansible-galaxy install -r ansible/requirements/requirements.yml
 
 # Provision server
-TEST=1 ansible-playbook ansible/server-provision.yml -i $INVENTORY_PATH -vv
+TEST=1 ansible-playbook ansible/server-provision.yml -i "${INVENTORY_PATH}" -vv
