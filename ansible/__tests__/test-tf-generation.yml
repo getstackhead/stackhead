@@ -100,11 +100,11 @@
       with_items: "{{ app_config.domains }}"
     - block:
         - name: Generate Nginx Server Block Terraform file
-          import_tasks: "{{ role_path }}/tasks/steps/generate-serverblock-tf.yml"
+          import_tasks: "{{ this_role_path }}/tasks/steps/generate-serverblock-tf.yml"
         - name: Generate htpasswd Terraform file
-          import_tasks: "{{ role_path }}/tasks/steps/generate-htpasswd-tf.yml"
+          import_tasks: "{{ this_role_path }}/tasks/steps/generate-htpasswd-tf.yml"
       vars:
-        role_path: "../roles/stackhead_webserver_nginx"
+        this_role_path: "../roles/stackhead_webserver_nginx"
         nginx_usehttps: 1
         nginx_servername: "test_project"
         stackhead__acme_folder: ""
@@ -112,11 +112,11 @@
         nginx_basicauth_title: "Restricted area"
     - block:
       - name: Generate Caddy Terraform file
-        import_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
+        import_tasks: "{{ this_role_path }}/tasks/steps/generate-serverconfig-tf.yml"
       - name: Generate Caddyfile
-        import_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
+        import_tasks: "{{ this_role_path }}/tasks/steps/generate-caddyfile-tf.yml"
       vars:
-        role_path: "../roles/stackhead_webserver_caddy"
+        this_role_path: "../roles/stackhead_webserver_caddy"
         caddy_root: "."
     - name: "Test SSL Terraform file generation"
       template:

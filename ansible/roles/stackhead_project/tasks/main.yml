@@ -4,33 +4,33 @@
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
 - block:
-    - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
+    - name: "Check if project directory exists | Project: {{ project_name }}"
       stat:
         path: "{{ stackhead__tf_project_folder }}"
       register: project_folder
-    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
+    - name: "Create project directory if not exists | Project: {{ project_name }}"
       file:
         path: "{{ stackhead__tf_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false and ensure == 'present'
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
-- name: "StackHead::Project || Prepare certificates directory | Project: {{ project_name }}"
+- name: "Prepare certificates directory | Project: {{ project_name }}"
   import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
   when: ensure == 'present'
 
 - block:
-    - name: "StackHead::Project || Collect exposed services"
+    - name: "Collect exposed services"
       set_fact:
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
-    - name: "StackHead::Project || Setup Container app"
-      import_tasks: "{{ role_path }}/tasks/setup-containerapp.yml"
-    - name: "StackHead::Project || Update {{ _stackhead__webserver }} reverse proxy configuration"
-      include_tasks: "roles/stackhead_webserver_{{ _stackhead__webserver }}/tasks/deploy.yml"
+    - name: "Setup Container app"
+      include_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
+    - name: "Update {{ _stackhead__webserver }} reverse proxy configuration"
+      include_tasks: "{{ this_role_path }}/tasks/deploy.yml"
       vars:
-        role_path: "roles/stackhead_webserver_{{ _stackhead__webserver }}"
+        this_role_path: "roles/stackhead_webserver_{{ _stackhead__webserver }}"
   when: ensure == 'present'
 
 # Symlink Terraform configurations from project to main folder and execute them

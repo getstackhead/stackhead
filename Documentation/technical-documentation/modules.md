@@ -50,3 +50,15 @@ terraform:
     name: caddy # binary created will be called terraform-provider-caddy
     url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
 ```
+
+## Module tasks
+
+StackHead includes task files from the module and executes them during the respective step.
+
+* `tasks/setup.yml`: Expected to contain instructions that will install the software. Executed during server setup.
+* `tasks/deploy.yml`: Expected to contain instructions that will configure the software for a project. Executed during project deployment.
+
+:::note  
+As the tasks are included `role_path` and other role-related Ansible variables will not work.
+Please use `this_role_path` which is set by StackHead before executing the task.
+:::  
