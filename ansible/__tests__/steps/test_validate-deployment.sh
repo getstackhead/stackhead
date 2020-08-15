@@ -24,8 +24,8 @@ function http_check() {
 
 openssl version
 curl -V
-ping -c 5 ${DOMAIN}
-ping -c 5 sub.${DOMAIN}
+ping -c 5 "${DOMAIN}"
+ping -c 5 "sub.${DOMAIN}"
 
 ssl_check "${DOMAIN}"
 ssl_check "sub.${DOMAIN}"
