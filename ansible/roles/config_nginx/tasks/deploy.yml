@@ -23,3 +23,5 @@
     dest: "{{ stackhead__tf_project_folder }}/nginx_server_block.tf"
     force: true
 
+# Generate SSL certificate configurations
+- import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
