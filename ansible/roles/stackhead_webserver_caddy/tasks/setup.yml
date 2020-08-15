@@ -10,9 +10,7 @@
     #name: samdoran.caddy
     name: ansible-role-caddy
 - name: Overwrite Caddyfile
-  template:
-    src: "{{ role_path }}/templates/caddy/Caddyfile.j2"
-    dest: "/etc/caddy/Caddyfile"
+  import_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
   notify:
     - restart caddy
 - name: Check content after provisioning
