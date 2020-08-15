@@ -16,7 +16,7 @@
 
 # Setup Terraform components of modules
 - include_vars:
-    file: "{{ role_path }}/../{{ _stackhead__webserver }}/stackhead-module.yml"
+    file: "roles/stackhead_webserver_{{ _stackhead__webserver }}/stackhead-module.yml"
     name: webserver_module
 - name: "Download Terraform provider for {{ _stackhead__webserver }} webserver"
   get_url:

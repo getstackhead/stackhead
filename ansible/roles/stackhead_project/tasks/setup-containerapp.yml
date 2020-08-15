@@ -13,4 +13,4 @@
     containerapp__registries: "{{ app_config.container.registries | default([]) }}"
 
 - name: "StackHead::Project || Update {{ _stackhead__webserver }} reverse proxy configuration"
-  include_tasks: "roles/config_{{ _stackhead__webserver }}/tasks/deploy.yml"
+  include_tasks: "roles/stackhead_webserver_{{ _stackhead__webserver }}/tasks/deploy.yml"
