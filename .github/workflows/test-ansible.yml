@@ -33,6 +33,7 @@ jobs:
     strategy:
       matrix:
         webserver: ['nginx', 'caddy']
+      fail-fast: false
     env:
       INVENTORY_PATH: ansible/__tests__/inventory.yml
       DOMAIN: pr-${{ github.run_id }}-${{ matrix.webserver }}.test.stackhead.io
@@ -94,7 +95,7 @@ jobs:
     - name: "Test step: Destroy deployment"
       run: ./ansible/__tests__/steps/test_destroy.sh
     #- uses: mxschmitt/action-tmate@v2
-    #  if: always()
+    #  if: always() && matrix.webserver == 'caddy'
     - name: Remove DNS record
       uses: saitho/delete-dns-record@saitho-patch-1
       if: always()
