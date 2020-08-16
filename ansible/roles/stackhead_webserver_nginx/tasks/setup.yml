@@ -7,7 +7,7 @@
 - name: Setup Nginx
   vars:
     nginx_ppa_use: true
-    nginx_conf_template: "{{ stackhead__templates }}/nginx.conf.j2"
+    nginx_conf_template: "{{ this_role_path }}/templates/nginx/nginx.conf.j2"
     nginx_vhosts: []
     __nginx_user: "stackhead"
     root_group: "stackhead"
