@@ -15,8 +15,9 @@
 - import_tasks: "roles/stackhead_setup/tasks/setup-terraform.yml"
 
 - name: "Setup {{ _stackhead__webserver }} webserver"
-  include_tasks: "{{ this_role_path }}/tasks/setup.yml"
+  include_role:
+    name: "stackhead_webserver_{{ _stackhead__webserver }}"
   vars:
-    this_role_path: "roles/stackhead_webserver_{{ _stackhead__webserver }}"
+    stackhead_action: "setup"
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-docker.yml"

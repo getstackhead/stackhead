@@ -1,0 +1,2 @@
+---
+- include_tasks: "{{ role_path }}/tasks/{{ stackhead_action }}.yml"

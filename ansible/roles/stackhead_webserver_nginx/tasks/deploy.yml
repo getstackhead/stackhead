@@ -1,8 +1,6 @@
 # This task list generates the Nginx configuration for a project
 ---
-- name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
-  ignore_errors: yes
+- include_tasks: "{{ role_path }}/tasks/include_vars.yml"
 
 - name: Check if authentications are defined
   set_fact:
@@ -10,10 +8,10 @@
   when: item.security is defined and item.security.authentication is defined
   with_items: "{{ app_config.domains }}"
 
-- include_tasks: "{{ this_role_path }}/tasks/steps/generate-htpasswd-tf.yml"
+- include_tasks: "{{ role_path }}/tasks/steps/generate-htpasswd-tf.yml"
   when: auths_basic is defined and auths_basic | length > 0
 
-- include_tasks: "{{ this_role_path }}/tasks/steps/generate-serverblock-tf.yml"
+- include_tasks: "{{ role_path }}/tasks/steps/generate-serverblock-tf.yml"
 
 # Generate SSL certificate configurations
 - include_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"

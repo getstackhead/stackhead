@@ -51,14 +51,20 @@ terraform:
     url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
 ```
 
-## Module tasks
+## How StackHead uses modules
 
-StackHead includes task files from the module and executes them during the respective step.
+StackHead modules are included as role during setup and deployment process.
+The variable `stackhead_action` will correspond to the respective action that is performed (`setup` or `deploy`).
+Please make sure your role executes the correct tasks for each action.
 
-* `tasks/setup.yml`: Expected to contain instructions that will install the software. Executed during server setup.
-* `tasks/deploy.yml`: Expected to contain instructions that will configure the software for a project. Executed during project deployment.
+We recommend creating two separate task files:
 
-:::note  
-As the tasks are included `role_path` and other role-related Ansible variables will not work.
-Please use `this_role_path` which is set by StackHead before executing the task.
-:::  
+* `tasks/setup.yml`: Instructions that will install the software.
+* `tasks/deploy.yml`: Instructions that will configure the software for a project.
+
+Then in your `tasks/main.yml`, simply include them based on the action:
+
+```yaml
+---
+- include_tasks: "{{ role_path }}/tasks/{{ stackhead_action }}.yml"
+```

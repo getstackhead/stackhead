@@ -10,7 +10,7 @@
     #name: samdoran.caddy
     name: ansible-role-caddy
 - name: Overwrite Caddyfile
-  include_tasks: "{{ this_role_path }}/tasks/steps/generate-caddyfile-tf.yml"
+  include_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
 - name: Restart Caddy
   command: /bin/true
   notify:

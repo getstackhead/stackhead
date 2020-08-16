@@ -1,4 +1,4 @@
 ---
 - template:
-    src: "{{ this_role_path }}/templates/caddy/Caddyfile.j2"
+    src: "{{ role_path }}/templates/caddy/Caddyfile.j2"
     dest: "{{ caddy_root|default('/etc/caddy') }}/Caddyfile"

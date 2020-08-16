@@ -11,5 +11,5 @@
   with_items: "{{ app_config.domains }}"
 
 - name: Generate Caddy Terraform file
-  include_tasks: "{{ this_role_path }}/tasks/steps/generate-serverconfig-tf.yml"
+  include_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
 

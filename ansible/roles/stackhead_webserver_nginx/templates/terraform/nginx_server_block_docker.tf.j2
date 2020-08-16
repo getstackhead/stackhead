@@ -18,10 +18,10 @@ resource "nginx_server_block" "nginx-{{ project_name }}" {
 {%- for nginx_expose in domainConfig.expose if nginx_expose.external_port != 443 %}
 {% set port_index = all_ports|selectattr('service', 'equalto', nginx_expose.service)|selectattr('internal_port', 'equalto', nginx_expose.internal_port)|map(attribute='index')|first %}
 {% if nginx_expose.external_port == 80 %}
-{{ lookup('template', "{{ this_role_path }}/templates/nginx/serverblock.http.j2", template_vars=dict(domainConfig=ns.domainCfg)) }}
-{{ lookup('template', "{{ this_role_path }}/templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(port_index=port_index,domainConfig=ns.domainCfg)) }}
+{{ lookup('template', "{{ role_path }}/templates/nginx/serverblock.http.j2", template_vars=dict(domainConfig=ns.domainCfg)) }}
+{{ lookup('template', "{{ role_path }}/templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(port_index=port_index,domainConfig=ns.domainCfg)) }}
 {% else %}
-{{ lookup('template', "{{ this_role_path }}/templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(port_index=port_index,port=nginx_expose.external_port,domainConfig=ns.domainCfg)) }}
+{{ lookup('template', "{{ role_path }}/templates/nginx/serverblock.container-reverseproxy.j2", template_vars=dict(port_index=port_index,port=nginx_expose.external_port,domainConfig=ns.domainCfg)) }}
 {% endif %}
 {%- endfor %}
 {%- endfor %}
