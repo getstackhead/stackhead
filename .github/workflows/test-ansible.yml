@@ -94,8 +94,8 @@ jobs:
       run: ./ansible/__tests__/steps/test_validate-deployment.sh
     - name: "Test step: Destroy deployment"
       run: ./ansible/__tests__/steps/test_destroy.sh
-    #- uses: mxschmitt/action-tmate@v2
-    #  if: always() && matrix.webserver == 'caddy'
+    - uses: mxschmitt/action-tmate@v2
+      if: always() && matrix.webserver == 'caddy'
     - name: Remove DNS record
       uses: saitho/delete-dns-record@saitho-patch-1
       if: always()
