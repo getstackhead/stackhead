@@ -1,7 +1,5 @@
 # This task list generates the Nginx configuration for a project
 ---
-- include_tasks: "{{ role_path }}/tasks/include_vars.yml"
-
 - name: Check if authentications are defined
   set_fact:
     auths_basic: "{{ auths_basic|default([]) + item.security.authentication }}"
