@@ -1,0 +1,15 @@
+# This task list generates the Nginx configuration for a project
+---
+- name: Check if authentications are defined
+  set_fact:
+    auths_basic: "{{ auths_basic|default([]) + item.security.authentication }}"
+  when: item.security is defined and item.security.authentication is defined
+  with_items: "{{ app_config.domains }}"
+
+- include_tasks: "{{ role_path }}/tasks/steps/generate-htpasswd-tf.yml"
+  when: auths_basic is defined and auths_basic | length > 0
+
+- include_tasks: "{{ role_path }}/tasks/steps/generate-serverblock-tf.yml"
+
+# Generate SSL certificate configurations
+- include_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"

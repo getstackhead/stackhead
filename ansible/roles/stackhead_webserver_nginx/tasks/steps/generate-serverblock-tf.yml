@@ -1,0 +1,6 @@
+---
+- name: Generate nginx server block Terraform file
+  template:
+    src: "{{ role_path }}/templates/terraform/nginx_server_block_docker.tf.j2"
+    dest: "{{ stackhead__tf_project_folder }}/nginx_server_block.tf"
+    force: true

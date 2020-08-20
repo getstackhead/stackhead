@@ -14,10 +14,10 @@
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-terraform.yml"
 
-- import_tasks: "roles/stackhead_setup/tasks/setup-nginx.yml"
-  when: _stackhead__webserver == 'nginx'
-
-- import_tasks: "roles/stackhead_setup/tasks/setup-caddy.yml"
-  when: _stackhead__webserver == 'caddy'
+- name: "Setup {{ _stackhead__webserver }} webserver"
+  include_role:
+    name: "stackhead_webserver_{{ _stackhead__webserver }}"
+  vars:
+    stackhead_action: "setup"
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-docker.yml"

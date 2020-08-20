@@ -1,0 +1,5 @@
+---
+terraform:
+  provider:
+    name: nginx
+    url: https://github.com/getstackhead/terraform-nginx/releases/download/v1.3.0/terraform-provider-nginx

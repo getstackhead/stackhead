@@ -1,3 +1,4 @@
+# This task list generates the Caddy configuration for a project
 ---
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
@@ -10,8 +11,5 @@
   with_items: "{{ app_config.domains }}"
 
 - name: Generate Caddy Terraform file
-  template:
-    src: "{{ stackhead__templates }}/terraform/caddy_server.tf.j2"
-    dest: "{{ stackhead__tf_project_folder }}/caddy_server.tf"
-    force: true
+  include_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
 

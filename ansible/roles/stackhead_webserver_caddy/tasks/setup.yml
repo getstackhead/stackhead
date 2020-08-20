@@ -1,3 +1,4 @@
+# This task list sets up Caddy during server setup
 ---
 - name: Setup Caddy
   vars:
@@ -9,9 +10,9 @@
     #name: samdoran.caddy
     name: ansible-role-caddy
 - name: Overwrite Caddyfile
-  template:
-    src: "{{ stackhead__templates }}/terraform/Caddyfile.j2"
-    dest: "/etc/caddy/Caddyfile"
+  include_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
+- name: Restart Caddy
+  command: /bin/true
   notify:
     - restart caddy
 - name: Check content after provisioning

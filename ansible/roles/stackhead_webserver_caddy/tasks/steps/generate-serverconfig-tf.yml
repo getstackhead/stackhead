@@ -1,0 +1,5 @@
+---
+- template:
+    src: "{{ role_path }}/templates/terraform/caddy_server.tf.j2"
+    dest: "{{ stackhead__tf_project_folder }}/caddy_server.tf"
+    force: true

@@ -1,3 +1,4 @@
+# This task list sets up Nginx during server setup
 ---
 - name: Deploy additional h5bp Nginx files
   synchronize:
@@ -6,7 +7,7 @@
 - name: Setup Nginx
   vars:
     nginx_ppa_use: true
-    nginx_conf_template: "{{ stackhead__templates }}/nginx.conf.j2"
+    nginx_conf_template: "roles/stackhead_webserver_nginx/templates/nginx/nginx.conf.j2"
     nginx_vhosts: []
     __nginx_user: "stackhead"
     root_group: "stackhead"
