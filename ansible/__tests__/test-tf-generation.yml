@@ -99,18 +99,6 @@
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
     - block:
-        - name: Generate Nginx Server Block Terraform file
-          import_tasks: "{{ role_path }}/tasks/steps/generate-serverblock-tf.yml"
-        - name: Generate htpasswd Terraform file
-          import_tasks: "{{ role_path }}/tasks/steps/generate-htpasswd-tf.yml"
-      vars:
-        role_path: "../roles/stackhead_webserver_nginx"
-        nginx_usehttps: 1
-        nginx_servername: "test_project"
-        stackhead__acme_folder: ""
-        nginx_htpasswd_path: /etc/nginx/passwd
-        nginx_basicauth_title: "Restricted area"
-    - block:
       - name: Generate Caddy Terraform file
         import_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
       - name: Generate Caddyfile
