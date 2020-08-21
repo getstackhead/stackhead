@@ -1,0 +1,15 @@
+---
+deployment:
+  - ansible/roles/stackhead_project/
+  - ansible/roles/stackhead_webserver_*/tasks/deploy.yml
+  - ansible/roles/project_containerapp/
+  - ansible/roles/config_terraform/
+  - ansible/application-*.yml
+setup:
+  - ansible/roles/stackhead_setup/
+  - ansible/server-*.yml
+  - ansible/roles/stackhead_webserver_*/tasks/setup.yml
+dependencies:
+  - ansible/requirements/
+documentation:
+  - Documentation/**/*.md
