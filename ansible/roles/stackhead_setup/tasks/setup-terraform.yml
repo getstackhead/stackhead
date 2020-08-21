@@ -15,9 +15,12 @@
     name: andrewrothstein.terraform
 
 # Setup Terraform components of modules
-- include_vars:
-    file: "roles/{{ _stackhead__webserver }}/stackhead-module.yml"
-    name: webserver_module
+- name: "load plugin config"
+  include_role:
+    name: "{{ _stackhead__webserver }}"
+  vars:
+    stackhead_action: "load-config"
+    include_varname: "webserver_module"
 - name: "Download Terraform provider for {{ _stackhead__webserver }} webserver"
   get_url:
     url: "{{ webserver_module.terraform.provider.url }}"

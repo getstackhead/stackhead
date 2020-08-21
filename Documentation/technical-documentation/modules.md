@@ -61,6 +61,13 @@ We recommend creating two separate task files:
 
 * `tasks/setup.yml`: Instructions that will install the software.
 * `tasks/deploy.yml`: Instructions that will configure the software for a project.
+* `tasks/load-config.yml`: Load stackhead-module.yml vars into variable given by *include_varname*
+    ```yaml
+    ---
+    - include_vars:
+        file: "{{ role_path }}/stackhead-module.yml"
+        name: "{{ include_varname }}"
+    ```
 
 Then in your `tasks/main.yml`, simply include them based on the action:
 
