@@ -29,7 +29,7 @@
       include_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
     - name: "Update {{ _stackhead__webserver }} reverse proxy configuration"
       include_role:
-        name: "stackhead_webserver_{{ _stackhead__webserver }}"
+        name: "{{ _stackhead__webserver }}"
       vars:
         stackhead_action: "deploy"
   when: ensure == 'present'
