@@ -1,4 +1,0 @@
----
-nginx_basicauth_title: "Restricted area"
-nginx_usehttps: 1
-nginx_servername: "{{ app_config.domains[0].domain }}"
