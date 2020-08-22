@@ -1,6 +1,7 @@
 ---
 - import_tasks: "roles/stackhead_setup/tasks/facts-load.yml"
 
+# the variable "app_config" is part of the StackHead module API (update documentation if changed)
 - name: "StackHead::Project || Extract application information"
   include_vars:
     file: "{{ stackhead__local_config_file }}"
