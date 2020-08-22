@@ -1,5 +1,6 @@
 ---
-- include_vars: "{{ playbook_dir }}/../config.yaml"
+- include_vars: "{{ playbook_dir }}/../vars/internal.yml"
+- include_vars: "{{ playbook_dir }}/../roles/stackhead_module_api/vars/main.yml"
 
 - import_tasks: "roles/stackhead_setup/tasks/facts-load.yml"
   ignore_errors: yes
@@ -14,6 +15,6 @@
 
 - import_tasks: "roles/stackhead_setup/tasks/setup-terraform.yml"
 
-- import_tasks: "roles/stackhead_setup/tasks/setup-nginx.yml"
-
 - import_tasks: "roles/stackhead_setup/tasks/setup-docker.yml"
+
+- import_tasks: "roles/stackhead_module_api/tasks_internal/setup.yml"

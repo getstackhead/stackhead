@@ -1,0 +1,25 @@
+# This task list sets up Caddy during server setup
+---
+- name: Setup Caddy
+  vars:
+    caddy_user: "stackhead"
+    caddy_group: "stackhead"
+    caddy_version: "2.1.1"
+    caddy_install_source: package
+  include_role:
+    #name: samdoran.caddy
+    name: ansible-role-caddy
+- name: Overwrite Caddyfile
+  include_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
+- name: Restart Caddy
+  command: /bin/true
+  notify:
+    - restart caddy
+- name: Check content after provisioning
+  uri:
+    url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+    return_content: yes
+  register: uri_result
+  until: '"Caddy web server" in uri_result.content'
+  retries: 5
+  delay: 1

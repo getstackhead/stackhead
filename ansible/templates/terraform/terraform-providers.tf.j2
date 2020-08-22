@@ -1,5 +1,7 @@
-provider "nginx" {
+{% if webserver_module.terraform is defined and webserver_module.terraform.provider is defined and webserver_module.terraform.provider.name is defined %}
+provider "{{ webserver_module.terraform.provider.name }}" {
 }
+{% endif %}
 
 provider "acme" {
   server_url = "{% if lookup('env','TEST') == '1' %}https://acme-staging-v02.api.letsencrypt.org/directory{% else %}https://acme-v02.api.letsencrypt.org/directory{% endif %}"

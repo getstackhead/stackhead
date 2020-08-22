@@ -1,0 +1,2 @@
+---
+- include_tasks: "{{ stackhead__roles }}/stackhead_project/tasks/ssl/ssl-config.yml"

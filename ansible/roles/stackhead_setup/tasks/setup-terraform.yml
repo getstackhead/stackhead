@@ -13,14 +13,10 @@
     group: stackhead
 - include_role:
     name: andrewrothstein.terraform
-- name: Download Nginx provider
-  get_url:
-    url: https://github.com/getstackhead/terraform-nginx/releases/download/v1.3.0/terraform-provider-nginx
-    dest: "{{ terraform_plugin_directory }}/terraform-provider-nginx"
-    mode: '0755'
-    owner: stackhead
-    group: stackhead
-    force: yes
+
+# Setup Terraform components of modules
+- import_tasks: "roles/stackhead_module_api/tasks_internal/terraform.yml"
+
 - name: Copy patched acme-provider
   get_url:
     url: https://github.com/getstackhead/terraform-provider-acme/releases/download/v1.5.0-patched/terraform-provider-acme

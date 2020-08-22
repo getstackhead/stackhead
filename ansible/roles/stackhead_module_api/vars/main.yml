@@ -1,0 +1,18 @@
+# Global variable configurations accessible by all roles and StackHead modules
+# Make sure to update the documentation when making changes to this file!
+---
+
+# Path to local StackHead template directory
+stackhead__templates: "{{ playbook_dir }}/../templates"
+
+# Path to local StackHead role directory
+stackhead__roles: "{{ playbook_dir }}/roles"
+
+###
+# SSL certificates
+###
+
+# path to snakeoil private key file
+stackhead__snakeoil_privkey: "{{ stackhead__certificates_folder }}/privkey_snakeoil.pem"
+# path to snakeoil fullchain file
+stackhead__snakeoil_fullchain: "{{ stackhead__certificates_folder }}/fullchain_snakeoil.pem"

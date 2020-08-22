@@ -1,0 +1,3 @@
+---
+- import_tasks: "{{ stackhead__roles }}/config_terraform/tasks/update-project-symlinks.yml"
+- import_tasks: "{{ stackhead__roles }}/config_terraform/tasks/execute.yml"

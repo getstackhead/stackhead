@@ -1,29 +1,35 @@
 ---
-- include_vars: "{{ playbook_dir }}/../config.yaml"
+- include_vars: "{{ playbook_dir }}/../vars/internal.yml"
+- include_vars: "{{ playbook_dir }}/../roles/stackhead_module_api/vars/main.yml"
 
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
 - block:
-    - name: "StackHead::Project || Check if project directory exists | Project: {{ project_name }}"
+    - name: "Check if project directory exists | Project: {{ project_name }}"
       stat:
         path: "{{ stackhead__tf_project_folder }}"
       register: project_folder
-    - name: "StackHead::Container || Create project directory if not exists | Project: {{ project_name }}"
+    - name: "Create project directory if not exists | Project: {{ project_name }}"
       file:
         path: "{{ stackhead__tf_project_folder }}"
         state: directory
       when: project_folder.stat.exists == false and ensure == 'present'
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
-- name: "StackHead::Project || Prepare certificates directory | Project: {{ project_name }}"
+- name: "Prepare certificates directory | Project: {{ project_name }}"
   import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
   when: ensure == 'present'
 
-# Setup project by type
-- import_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
+- block:
+    - name: "Collect exposed services"
+      set_fact:
+        containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
+      when: item.expose is defined and item.expose not in containerapp__expose|default([])
+      with_items: "{{ app_config.domains }}"
+    - name: "Setup Container app"
+      include_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
+    - import_tasks: "roles/stackhead_module_api/tasks_internal/deployment.yml"
   when: ensure == 'present'
-
-- import_tasks: "roles/stackhead_project/tasks/ssl/ssl-config.yml"
 
 # Symlink Terraform configurations from project to main folder and execute them
 - import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"

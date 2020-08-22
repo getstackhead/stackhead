@@ -2,13 +2,8 @@
 - hosts: localhost
   connection: local
   vars:
+    stackhead__tf_project_folder: "./"
     project_name: test
-    containerapp__registries:
-      - username: dockerhub-user
-        password: dockerhub-pass
-      - username: myregistry-user
-        password: myregistry-pass
-        url: myregistry.com
     app_config:
       domains:
         - domain: example.com
@@ -34,78 +29,84 @@
               - type: basic
                 username: user1
                 password: pass1
-    containerapp__services:
-      - name: data
-        image: mycontainer:latest
-      - name: nginx
-        image: getstackhead/nginx:php
-        environment:
-          NGINX_PUBLIC_DIRECTORY: public
-          DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
-        volumes:
-          - type: global
-            src: data
-            dest: /var/www/public/data
-            mode: ro
-          - type: global
-            src: uploads
-            dest: /var/www/public/uploads
-            mode: ro
-        volumes_from:
-          - data:ro
-      - name: php
-        image: getstackhead/php:7.2
-        volumes_from:
-          - data
-        volumes:
-          - type: global
-            src: fileadmin
-            dest: /var/www/public/fileadmin
-          - type: global
-            src: uploads
-            dest: /var/www/public/uploads
-          - type: global
-            src: typo3temp
-            dest: /var/www/public/typo3temp
-          - type: global
-            src: var
-            dest: /var/www/var
-      - name: db
-        image: mariadb
-        environment:
-          MYSQL_ROOT_PASSWORD: db
-          MYSQL_DATABASE: db
-          MYSQL_USER: db
-          MYSQL_PASSWORD: db
-        volumes:
-          - type: local
-            src: data
-            dest: /var/lib/mysql
-    containerapp__project_name: "{{ project_name }}"
-    containerapp__data_location_global: "/docker/global/%s"
-    containerapp__data_location_services: "/docker/services/%s/%s"
+              - type: basic
+                username: user2
+                password: pass2
+      container:
+        registries:
+          - username: dockerhub-user
+            password: dockerhub-pass
+          - username: myregistry-user
+            password: myregistry-pass
+            url: myregistry.com
+        services:
+          - name: data
+            image: mycontainer:latest
+          - name: nginx
+            image: getstackhead/nginx:php
+            environment:
+              NGINX_PUBLIC_DIRECTORY: public
+              DOCKER_PROXY_SERVICE_NAME: "$DOCKER_SERVICE_NAME['php']"
+            volumes:
+              - type: global
+                src: data
+                dest: /var/www/public/data
+                mode: ro
+              - type: global
+                src: uploads
+                dest: /var/www/public/uploads
+                mode: ro
+            volumes_from:
+              - data:ro
+          - name: php
+            image: getstackhead/php:7.2
+            volumes_from:
+              - data
+            volumes:
+              - type: global
+                src: fileadmin
+                dest: /var/www/public/fileadmin
+              - type: global
+                src: uploads
+                dest: /var/www/public/uploads
+              - type: global
+                src: typo3temp
+                dest: /var/www/public/typo3temp
+              - type: global
+                src: var
+                dest: /var/www/var
+          - name: db
+            image: mariadb
+            environment:
+              MYSQL_ROOT_PASSWORD: db
+              MYSQL_DATABASE: db
+              MYSQL_USER: db
+              MYSQL_PASSWORD: db
+            volumes:
+              - type: local
+                src: data
+                dest: /var/lib/mysql
+    stackhead__containerdata_location_global: "/docker/global/%s"
+    stackhead__containerdata_location_services: "/docker/services/%s/%s"
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
     stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
   tasks:
-    - include_vars: "{{ playbook_dir }}/../../config.yaml"
+    - include_vars: "{{ playbook_dir }}/../../vars/internal.yml"
+    - include_vars: "{{ playbook_dir }}/../../roles/stackhead_module_api/vars/main.yml"
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../../templates"
     - set_fact:
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
-    - name: Generate nginx container Terraform file
-      template:
-        src: "{{ stackhead__templates }}/terraform/nginx_server_block_docker.tf.j2"
-        dest: "./nginx_vhost-container.tf"
-        force: true
+    - block:
+      - name: Generate Caddy Terraform file
+        import_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
+      - name: Generate Caddyfile
+        import_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
       vars:
-        nginx_dockerapp: 1
-        nginx_usehttps: 1
-        nginx_servername: "test_project"
-        stackhead__acme_folder: ""
-        nginx_htpasswd_path: /etc/nginx/passwd
-        nginx_basicauth_title: "Restricted area"
+        role_path: "../roles/stackhead_webserver_caddy"
+        caddy_root: "."
     - name: "Test SSL Terraform file generation"
       template:
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
@@ -117,10 +118,3 @@
       template:
         src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
         dest: "./docker.tf"
-    - name: Generate htpasswd Terraform file
-      template:
-        src: "{{ stackhead__templates }}/terraform/htpasswd.tf.j2"
-        dest: "./htpasswd.tf"
-        force: true
-      vars:
-        nginx_htpasswd_path: "./htpasswd/path"

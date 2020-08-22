@@ -1,6 +1,14 @@
 ---
 stackhead__project_folder: "/stackhead/projects/{{ project_name }}"
 stackhead__project_config_file: "{{ stackhead__project_folder }}/project.yml"
+
+# path to project's Terraform folder
 stackhead__tf_project_folder: "{{ stackhead__project_folder }}/terraform"
+
+# path to project's SSL certificate folder
 stackhead__certificates_project_folder: "/stackhead/certificates/{{ project_name }}"
+
 stackhead__project_certificates_folder: "{{ stackhead__project_folder }}/certificates"
+stackhead__containerdata_location: "{{ stackhead__project_folder }}/container_data"
+stackhead__containerdata_location_global: "{{ stackhead__containerdata_location }}/global/%s" # %s = src
+stackhead__containerdata_location_services: "{{ stackhead__containerdata_location }}/services/%s/%s" # %s = service name, %s = src
