@@ -8,9 +8,6 @@ stackhead__templates: "{{ playbook_dir }}/templates"
 # Path to local StackHead role directory
 stackhead__roles: "{{ playbook_dir }}/roles"
 
-# todo: deprecate?
-stackhead__bin_location: "{{ stackhead__root_folder }}/bin"
-
 ###
 # SSL certificates
 ###
