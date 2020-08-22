@@ -82,6 +82,8 @@ jobs:
     - name: Add IP to known_hosts
       run: |
         ssh-keyscan -v -T 30 ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} >> ~/.ssh/known_hosts
+    - name: "Test step: Build and install"
+      run: ./ansible/__tests__/steps/test_build.sh
     - name: "Test step: Provision server"
       run: ./ansible/__tests__/steps/test_provision.sh
       env:

@@ -3,10 +3,6 @@ name: "stackhead"
 version: "0.0.0"
 authors:
   - "Mario Lubenka <mario.lubenka@googlemail.com>"
-dependencies:
-  "geerlingguy.docker": ">=2.8.1,<3.0.0"
-  "geerlingguy.nginx": ">=2.8.0,<3.0.0"
-  "andrewrothstein.terraform": ">=2.2.43,<3.0.0"
 tags:
   - demo
   - collection
@@ -14,5 +10,5 @@ readme: "README.md"
 license: "GPL-2.0"
 repository: "https://github.com/getstackhead/stackhead"
 documentation: "http://docs.stackhead.io/"
-#build_ignore:
-#  - __tests__
+build_ignore:
+  - __tests__
