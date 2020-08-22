@@ -91,10 +91,10 @@
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
     stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
   tasks:
-    - include_vars: "{{ playbook_dir }}/../../vars/internal.yml"
-    - include_vars: "{{ playbook_dir }}/../../roles/stackhead_module_api/vars/main.yml"
+    - include_vars: "{{ playbook_dir }}/../vars/internal.yml"
+    - include_vars: "{{ playbook_dir }}/../roles/stackhead_module_api/vars/main.yml"
     - set_fact:
-        stackhead__templates: "{{ playbook_dir }}/../../templates"
+        stackhead__templates: "{{ playbook_dir }}/../templates"
     - set_fact:
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
