@@ -12,6 +12,7 @@ sed -e "s/\${ipaddress}/${IP}/" -e "s/\${webserver}/${WEBSERVER}/" ansible/__tes
 # Install dependencies
 STACKHEAD_COLLECTION_PATH=~/.ansible/collections/ansible_collections/getstackhead/stackhead
 pip install -r "$STACKHEAD_COLLECTION_PATH"/requirements/pip.txt
+ansible-galaxy install -r "$STACKHEAD_COLLECTION_PATH"/requirements/requirements.yml
 
 # Provision server
 TEST=1 ansible-playbook  "$STACKHEAD_COLLECTION_PATH"/playbooks/server-provision.yml -i "${INVENTORY_PATH}" -vv
