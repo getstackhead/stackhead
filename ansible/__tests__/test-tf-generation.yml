@@ -91,7 +91,8 @@
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
     stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
   tasks:
-    - include_vars: "{{ playbook_dir }}/../config.yaml"
+    - include_vars: "{{ playbook_dir }}/../vars/internal.yml"
+    - include_vars: "{{ playbook_dir }}/../vars/global.yml"
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../templates"
     - set_fact:
