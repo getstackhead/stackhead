@@ -1,0 +1,6 @@
+---
+- name: "Update {{ _stackhead__webserver }} reverse proxy configuration"
+  include_role:
+    name: "{{ _stackhead__webserver }}"
+  vars:
+    stackhead_action: "deploy"

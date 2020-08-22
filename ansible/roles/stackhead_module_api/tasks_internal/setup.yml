@@ -1,0 +1,6 @@
+---
+- name: "Setup {{ _stackhead__webserver }} webserver"
+  include_role:
+    name: "{{ _stackhead__webserver }}"
+  vars:
+    stackhead_action: "setup"

@@ -104,8 +104,7 @@ The following variables are set by StackHead and can be used by the role:
 If you need to apply your written Terraform configuration within your task, please use the following tasks:
 
 ```yaml
-- import_tasks: "{{ stackhead__roles }}/config_terraform/tasks/update-project-symlinks.yml"
-- import_tasks: "{{ stackhead__roles }}/config_terraform/tasks/execute.yml"
+- import_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/terraform.yml"
 ```
 
 ### Generate SSL certificates
@@ -113,8 +112,7 @@ If you need to apply your written Terraform configuration within your task, plea
 If you want to generate a SSL certificate for the project, run the following task:
 
 ```yaml
-# Generate SSL certificate configurations
-- include_tasks: "{{ stackhead__roles }}/stackhead_project/tasks/ssl/ssl-config.yml"
+- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/ssl-certificate.yml"
 ```
 
 This will prepare a Terraform configuration file for generating SSL certificates.
