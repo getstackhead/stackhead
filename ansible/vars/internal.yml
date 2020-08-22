@@ -1,0 +1,27 @@
+# These variables are used by StackHead internals and are not supposed to be used by StackHead modules!
+---
+
+# internal: Path to remote main StackHead directory
+stackhead__root_folder: "/stackhead"
+
+# internal: Path to remote where Terraform files (and symlinks) are stored
+stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
+
+# internal: Name of the Ansible role that is used as webserver
+_stackhead__webserver: "{{ stackhead__webserver | default('getstackhead.stackhead_webserver_nginx')}}"
+
+# internal: Python interpreter
+ansible_python_interpreter: /usr/bin/python3
+
+###
+# SSL certificates
+###
+
+# internal: main directory for SSL certificates
+stackhead__certificates_folder: "{{ stackhead__root_folder }}/certificates"
+
+# internal: path where snakeoil certrequest is being generated (temporarily!)
+stackhead__snakeoil_certrequest_tmp: "{{ stackhead__certificates_folder }}/certrequest_snakeoil.pem"
+
+# internal: path to where acme-challenges are stored
+stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"

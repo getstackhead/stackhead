@@ -5,8 +5,12 @@ title: StackHead modules
 StackHead is organized in components which are interexchangable.
 They can be configured by setting the respective variable in Ansible inventory definition.
 
-## Settings
+## Webservers
 
-| Setting                | Description                           | Allowed Values | Default |
-| -----                  | ------------------------------------- | -------------- | ------- |
-| `_stackhead__webserver`| Webserver to use for reverse proxying | nginx, caddy   | nginx   |
+Webserver modules provide configuration in order to set up a webserver software to use as reverse proxy onto containers.
+You can set a webserver to use by overriding the setting _stackhead__webserver_ in your inventory file.
+
+### List of webserver modules
+
+* [Nginx (getstackhead.stackhead_module_webserver_nginx)](https://github.com/getstackhead/module-webserver-nginx)
+* Caddy (stackhead_webserver_caddy), built-in

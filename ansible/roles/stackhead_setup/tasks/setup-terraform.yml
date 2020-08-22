@@ -15,18 +15,7 @@
     name: andrewrothstein.terraform
 
 # Setup Terraform components of modules
-- include_vars:
-    file: "roles/stackhead_webserver_{{ _stackhead__webserver }}/stackhead-module.yml"
-    name: webserver_module
-- name: "Download Terraform provider for {{ _stackhead__webserver }} webserver"
-  get_url:
-    url: "{{ webserver_module.terraform.provider.url }}"
-    dest: "{{ terraform_plugin_directory }}/terraform-provider-{{ webserver_module.terraform.provider.name }}"
-    mode: '0755'
-    owner: stackhead
-    group: stackhead
-    force: yes
-  when: webserver_module.terraform is defined and webserver_module.terraform.provider is defined and webserver_module.terraform.provider.name is defined and webserver_module.terraform.provider.url is defined
+- import_tasks: "roles/stackhead_module_api/tasks_internal/terraform.yml"
 
 - name: Copy patched acme-provider
   get_url:

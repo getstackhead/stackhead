@@ -1,5 +1,6 @@
 ---
-- include_vars: "{{ playbook_dir }}/config.yaml"
+- include_vars: "{{ playbook_dir }}/vars/internal.yml"
+- include_vars: "roles/stackhead_module_api/vars/main.yml"
 
 - import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
 
@@ -27,11 +28,7 @@
       with_items: "{{ app_config.domains }}"
     - name: "Setup Container app"
       include_tasks: "roles/stackhead_project/tasks/setup-containerapp.yml"
-    - name: "Update {{ _stackhead__webserver }} reverse proxy configuration"
-      include_role:
-        name: "stackhead_webserver_{{ _stackhead__webserver }}"
-      vars:
-        stackhead_action: "deploy"
+    - import_tasks: "roles/stackhead_module_api/tasks_internal/deployment.yml"
   when: ensure == 'present'
 
 # Symlink Terraform configurations from project to main folder and execute them

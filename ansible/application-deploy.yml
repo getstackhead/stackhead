@@ -6,6 +6,7 @@
         name: stackhead_project
       loop_control:
         loop_var: project_name
+        # the variable "project_name" is part of the StackHead module API (update documentation if changed)
       with_items: "{{ stackhead.applications }}"
       vars:
         ensure: 'present'
