@@ -16,10 +16,8 @@ the role has also to adhere to this specification.
 
 There are the following module types:
 
-* webserver
-** Configuration for reverse proxy webserver
-* container
-** Configuration for launching containers
+* **webserver**: Configuration for reverse proxy webserver
+* **container**: Configuration for launching containers
 
 ### Role name
 
@@ -51,27 +49,35 @@ terraform:
     url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
 ```
 
-## How StackHead uses modules
+## Structure requirements
 
-StackHead modules are included as role during setup and deployment process.
-The variable `stackhead_action` will correspond to the respective action that is performed (`setup` or `deploy`).
+StackHead modules are included as role during setup and deployment processes.
+As StackHead modules combine logics for both setup and configuration, the variable `stackhead_action` is used to tell the role what it should do.
 Please make sure your role executes the correct tasks for each action.
 
-We recommend creating two separate task files:
+| `stackhead_action` value | Expected behaviour                                                                  | Used in step       |
+| ------------------------ | ----------------------------------------------------------------------------------- | ------------------ |
+| setup                    | The software is installed.                                                          | Server setup       |
+| deploy                   | The software is configured for the given project.                                   | Project deployment |
+| load-config              | Load stackhead-module.yml vars into variable given by *include_varname* (see below) | ? |
 
-* `tasks/setup.yml`: Instructions that will install the software.
-* `tasks/deploy.yml`: Instructions that will configure the software for a project.
-* `tasks/load-config.yml`: Load stackhead-module.yml vars into variable given by *include_varname*
-    ```yaml
-    ---
-    - include_vars:
-        file: "{{ role_path }}/stackhead-module.yml"
-        name: "{{ include_varname }}"
-    ```
+### Recommended structure
 
-Then in your `tasks/main.yml`, simply include them based on the action:
+We recommend setting up task files named like the `stackhead_action` value (`tasks/[stackhead_action value].yml`)
+and include them in the `tasks/main.yml` like so:
 
 ```yaml
 ---
 - include_tasks: "{{ role_path }}/tasks/{{ stackhead_action }}.yml"
+```
+
+The `load-config` action is needed as we can't determine the role location.
+So we need a task that assigns the contents of the _stackhead-module.yml_ to where StackHead wants it.
+Going by the recommended structure, set this inside your `tasks/load-config.yml` file:
+
+```yaml
+---
+- include_vars:
+    file: "{{ role_path }}/stackhead-module.yml"
+    name: "{{ include_varname }}"
 ```
