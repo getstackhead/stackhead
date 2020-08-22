@@ -98,7 +98,7 @@ ansible-galaxy install -r <LOCAL_STACKHEAD_PATH>/ansible/requirements/requiremen
 Then run the following command to provision your server:
 
 ```shell script
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/server-provision.yml -i my-inventory.yml
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/server-provision.yml -i my-inventory.yml
 ```
 
 ### Deploying the project
@@ -109,7 +109,7 @@ Make sure the A record points to the server IP, as this is required for SSL cert
 Then deploy the project with:
 
 ```shell script
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/application-deploy.yml -i my-inventory.yml
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-deploy.yml -i my-inventory.yml
 ```
 
 After deployment, open the domain in your web browser.
@@ -120,5 +120,5 @@ It should display content and have a valid SSL certificate.
 Now let's remove all configurations we created during deployment.
 
 ```shell script
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
 ```

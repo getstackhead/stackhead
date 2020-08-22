@@ -2,6 +2,7 @@
 - hosts: localhost
   connection: local
   vars:
+    stackhead__roles: "{{ playbook_dir }}/../roles"
     stackhead__tf_project_folder: "./"
     project_name: test
     app_config:
@@ -91,8 +92,8 @@
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
     stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
   tasks:
-    - include_vars: "{{ playbook_dir }}/../vars/internal.yml"
-    - include_vars: "{{ playbook_dir }}/../roles/stackhead_module_api/vars/main.yml"
+    - include_vars: "../vars/internal.yml"
+    - include_vars: "../roles/stackhead_module_api/vars/main.yml"
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../templates"
     - set_fact:
@@ -101,9 +102,9 @@
       with_items: "{{ app_config.domains }}"
     - block:
       - name: Generate Caddy Terraform file
-        import_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
+        include_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
       - name: Generate Caddyfile
-        import_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
+        include_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
       vars:
         role_path: "../roles/stackhead_webserver_caddy"
         caddy_root: "."

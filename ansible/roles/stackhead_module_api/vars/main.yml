@@ -6,7 +6,7 @@
 stackhead__templates: "{{ playbook_dir }}/../templates"
 
 # Path to local StackHead role directory
-stackhead__roles: "{{ playbook_dir }}/roles"
+stackhead__roles: "{{ playbook_dir }}/../roles"
 
 ###
 # SSL certificates
