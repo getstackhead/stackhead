@@ -12,5 +12,13 @@ You can set a webserver to use by overriding the setting _stackhead__webserver_ 
 
 ### List of webserver modules
 
-* [Nginx (getstackhead.stackhead_module_webserver_nginx)](https://github.com/getstackhead/module-webserver-nginx)
+* [Nginx (getstackhead.stackhead_webserver_nginx)](https://github.com/getstackhead/module-webserver-nginx)
 * Caddy (stackhead_webserver_caddy), built-in
+
+## Container managers
+
+Container managers are applications like Docker that provide container technologies.
+
+### List of container managers
+
+* [Docker (getstackhead.stackhead_container_docker)](https://github.com/getstackhead/module-container-docker)
