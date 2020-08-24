@@ -1,4 +1,9 @@
 ---
+- name: "Setup {{ _stackhead__container }} container management"
+  include_role:
+    name: "{{ _stackhead__container }}"
+  vars:
+    stackhead_action: "setup"
 - name: "Setup {{ _stackhead__webserver }} webserver"
   include_role:
     name: "{{ _stackhead__webserver }}"

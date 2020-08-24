@@ -1,4 +1,9 @@
 ---
+- name: "Prepare containers with {{ _stackhead__container }}"
+  include_role:
+    name: "{{ _stackhead__container }}"
+  vars:
+    stackhead_action: "deploy"
 - name: "Update {{ _stackhead__webserver }} reverse proxy configuration"
   include_role:
     name: "{{ _stackhead__webserver }}"
