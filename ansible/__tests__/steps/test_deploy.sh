@@ -8,7 +8,7 @@
 
 # map webserver name to role name
 if [ "$WEBSERVER" == 'nginx' ]; then WEBSERVER='getstackhead.stackhead_webserver_nginx'; fi
-if [ "$WEBSERVER" == 'caddy' ]; then WEBSERVER='stackhead_webserver_caddy'; fi
+if [ "$WEBSERVER" == 'caddy' ]; then WEBSERVER='getstackhead.stackhead_webserver_caddy'; fi
 
 sed -e "s/\${ipaddress}/${IP}/" -e "s/\${webserver}/${WEBSERVER}/" -e "s/\${application}/container/" ansible/__tests__/inventory.dist.yml > ansible/__tests__/inventory.yml
 sed -e "s/\${domain}/${DOMAIN}/" ansible/__tests__/projects/container.dist.yml > ansible/__tests__/projects/container.yml

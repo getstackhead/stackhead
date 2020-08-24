@@ -1,5 +1,0 @@
----
-terraform:
-  provider:
-    name: caddy # [name] from Terraform naming convention: terraform-provider-[name]
-    url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
