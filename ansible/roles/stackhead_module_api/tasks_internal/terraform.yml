@@ -1,3 +1,21 @@
+# Container
+- name: "load plugin config"
+  include_role:
+    name: "{{ _stackhead__container }}"
+  vars:
+    stackhead_action: "load-config"
+    include_varname: "container_module"
+- name: "Download Terraform provider for {{ _stackhead__container }} webserver"
+  get_url:
+    url: "{{ container_module.terraform.provider.url }}"
+    dest: "{{ terraform_plugin_directory }}/terraform-provider-{{ container_module.terraform.provider.name }}"
+    mode: '0755'
+    owner: stackhead
+    group: stackhead
+    force: yes
+  when: container_module.terraform is defined and container_module.terraform.provider is defined and container_module.terraform.provider.name is defined and webserver_module.terraform.provider.url is defined
+
+# Webserver
 - name: "load plugin config"
   include_role:
     name: "{{ _stackhead__webserver }}"

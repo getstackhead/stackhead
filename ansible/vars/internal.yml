@@ -10,6 +10,9 @@ stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
 # internal: Name of the Ansible role that is used as webserver
 _stackhead__webserver: "{{ stackhead__webserver | default('getstackhead.stackhead_webserver_nginx')}}"
 
+# internal: Name of the Ansible role that is used as container manager
+_stackhead__container: "{{ stackhead__container | default('getstackhead.stackhead_container_docker')}}"
+
 # internal: Python interpreter
 ansible_python_interpreter: /usr/bin/python3
 

@@ -94,6 +94,7 @@ The following variables are set by StackHead and can be used by the role:
 | `stackhead__templates`                   | Path to local StackHead template directory          | global     | string    |
 | `stackhead__snakeoil_privkey`            | Path to the fake SSL certificate's privkey file     | global     | string    |
 | `stackhead__snakeoil_fullchain`          | Path to the fake SSL certificate's fullchain file   | global     | string    |
+| `stackhead__project_folder`              | Path to project's folder                            | deployment | string    |
 | `stackhead__tf_project_folder`           | Path to project's Terraform folder                  | deployment | string    |
 | `stackhead__certificates_project_folder` | Path to project's SSL certificate folder            | deployment | string    |
 | `project_name`                           | Name of the project that is being deployed          | deployment | string    |
