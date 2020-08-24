@@ -86,8 +86,6 @@
               - type: local
                 src: data
                 dest: /var/lib/mysql
-    stackhead__containerdata_location_global: "/docker/global/%s"
-    stackhead__containerdata_location_services: "/docker/services/%s/%s"
     stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
     stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
   tasks:
@@ -114,7 +112,3 @@
       vars:
         stackhead__acme_folder: ""
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
-    - name: "Test Docker Terraform file generation"
-      template:
-        src: "{{ stackhead__templates }}/terraform/docker.tf.j2"
-        dest: "./docker.tf"
