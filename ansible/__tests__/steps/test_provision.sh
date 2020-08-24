@@ -15,7 +15,7 @@ pip install -r "$STACKHEAD_COLLECTION_PATH"/requirements/pip.txt
 
 # Install requirements
 ansible-galaxy install -r "$STACKHEAD_COLLECTION_PATH"/requirements/requirements.yml
-ansible-galaxy install getstackhead.stackhead_webserver_nginx
+ansible-galaxy install getstackhead.stackhead_webserver_nginx --force-with-deps
 
 # Provision server
 TEST=1 ansible-playbook  "$STACKHEAD_COLLECTION_PATH"/playbooks/server-provision.yml -i "${INVENTORY_PATH}" -vv
