@@ -2,8 +2,9 @@
 title: Security
 ---
 
-These options can be used to add further security to your projects.
-Add these to the domain definitions in project definition file.
+# Security
+
+These options can be used to add further security to your projects. Add these to the domain definitions in project definition file.
 
 ## Authentication
 
@@ -28,6 +29,7 @@ domains:
           password: pass2
 ```
 
-:::note
+{% hint style="info" %}
 Right now, removing a single entry from the list and redeploying the project will NOT remove the user settings from the authentication file.
-:::
+{% endhint %}
+
