@@ -1,4 +1,4 @@
-# StackHead modules
+# Modules
 
 ## Specification
 

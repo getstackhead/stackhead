@@ -1,8 +1,8 @@
-# SSL certificates
+# SSL Certificates
 
 SSL certificates are generated before the Nginx server is reloaded. Since we require a Nginx configuration in order to be able to create SSL certificates, a self-signed certificate \(snakeoil\) is used until the real certificates are ready.
 
-![SSL certificate organization](../.gitbook/assets/ssl-certificates.png)
+![SSL certificate organization](../.gitbook/assets/ssl-certificates%20%281%29.png)
 
 The figure above shows the organisation of SSL certificates and how they are used by Nginx.
 

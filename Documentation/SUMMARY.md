@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Initial page](README.md)
+* [StackHead](README.md)
 * [Introduction](introduction/README.md)
   * [Workflow](introduction/workflow.md)
   * [Plays](introduction/plays.md)

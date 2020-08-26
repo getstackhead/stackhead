@@ -22,8 +22,6 @@ That means we have the following file structure:
 * stackhead
   * example\_app.yml
 
-
-
 {% hint style="info" %}
 Per default StackHead looks for project definition files in the _stackhead_ directory which is in the same directory as the inventory file.
 {% endhint %}
