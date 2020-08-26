@@ -1,20 +1,14 @@
----
-title: Project definition
----
+# Project definition
 
-Project definitions are stored at `./stackhead/[projectname].yml` (per default).
-However that can be overwritten by setting the `stackhead__remote_config_folder` in inventory file.
-Each file consists of a **domain** and an **application configuration**.
+Project definitions are stored at `./stackhead/[projectname].yml` \(per default\). However that can be overwritten by setting the `stackhead__remote_config_folder` in inventory file. Each file consists of a **domain** and an **application configuration**.
 
-Applications run in one or multiple Docker containers.
-While the settings are based on Docker Compose version 2.4, some may require a different syntax.
-Please have a closer look at the list below.
+Applications run in one or multiple Docker containers. While the settings are based on Docker Compose version 2.4, some may require a different syntax. Please have a closer look at the list below.
 
-:::note
+{% hint style="warning" %}
 Not all options from Docker Compose are supported right now.
-:::
+{% endhint %}
 
-The example below consists of two services (app and db).
+The example below consists of two services \(app and db\).
 
 ```yaml
 ---
@@ -35,7 +29,7 @@ container:
         MYSQL_ROOT_PASSWORD: example
 ```
 
-## domains.*.expose
+## domains.\*.expose
 
 The Nginx webserver will proxy all web traffic to the service and port specified in `expose` setting.
 
@@ -45,21 +39,21 @@ In the example above, Nginx will proxy web requests to the "app" container's por
 
 Name of the Container service to receive the web request.
 
-### internal_port
+### internal\_port
 
 Port of the given container service to receive the web request.
 
-### external_port
+### external\_port
 
 Port that Nginx listens to.
 
-:::caution  
-Setting _external_port_ to 443 is not allowed, as HTTPS forwarding is automatically enabled for exposes with `external_port=80`.  
-:::
+{% hint style="danger" %}
+Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatically enabled for exposes with `external_port=80`.
+{% endhint %}
 
-:::note  
-Make sure to define the different _external_port_ within one project definition, so that each port is only used once!  
-:::
+{% hint style="warning" %}
+Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
+{% endhint %}
 
 ## container.services
 
@@ -69,7 +63,7 @@ The following configuration options are available inside a service definition:
 
 Internal name of your service. Used as service name in generated docker-compose file.
 
-### image (required)
+### image \(required\)
 
 See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
 
@@ -78,31 +72,21 @@ See [docker-compose documentation on image](https://docs.docker.com/compose/comp
 StackHead saves mounted data in the project directory at project or service level. You can also define a custom location on the server.
 
 | Configuration | Description | Allowed values |
-| ------------- | ----------- | -------------- |
-| type<br/>(required) | Determines the data storage location | "global", "local" or "custom" |
-|                 | **global**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/global/` | |
-|                 | **local**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/services/[service_name]/` | |
-|                 |  **custom**: No data storage location. You have to set it yourself using the _src_ setting below (absolute path!). | |
-| src <br/>(required for type=custom)            | Relative path inside data storage location that should be mounted.<br/><br/>Note: When type=custom this is has to be an absolute path! | any string |
-| dest            | Absolute path inside the Docker container where the mount should be applied | any string |
-| mode            | Defines if the volume should be read-write (rw) or readonly (ro) | "rw" (default) or "ro"|
+| :--- | :--- | :--- |
+| type \(required\) | Determines the data storage location | "global", "local" or "custom" |
+|  | **global**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/global/` |  |
+|  | **local**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/services/[service_name]/` |  |
+|  | **custom**: No data storage location. You have to set it yourself using the _src_ setting below \(absolute path!\). |  |
+| src  \(required for type=custom\) | Relative path inside data storage location that should be mounted.  Note: When type=custom this is has to be an absolute path! | any string |
+| dest | Absolute path inside the Docker container where the mount should be applied | any string |
+| mode | Defines if the volume should be read-write \(rw\) or readonly \(ro\) | "rw" \(default\) or "ro" |
 
+Below you can see a comparison of the project definition \(left\) and the equivalent docker-compose definition:
 
-Below you can see a comparison of the project definition (left) and the equivalent docker-compose definition:
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs
-  defaultValue="stackhead"
-  values={[
-    { label: 'StackHead', value: 'stackhead', },
-    { label: 'Docker Compose', value: 'dockercompose', },
-  ]
-}>
-<TabItem value="stackhead">
-
-```yaml title="example_project.yml"
+{% tabs %}
+{% tab title="StackHead" %}
+{% code title="example\_project.yml" %}
+```yaml
 services:
   - name: nginx
     # ...
@@ -118,11 +102,12 @@ services:
         dest: /var/www/secrets.txt
         mode: ro
 ```
+{% endcode %}
+{% endtab %}
 
-</TabItem>
-<TabItem value="dockercompose">
-
-```yaml title="docker-compose.yml"
+{% tab title="Docker Compose" %}
+{% code title="docker-compose.yml" %}
+```yaml
 services:
   nginx:
     # ...
@@ -131,13 +116,13 @@ services:
       - /stackhead/projects/example_project/container_data/services/nginx/log:/var/www/public/log:rw
       - /etc/secrets.txt:/var/www/secrets.txt:ro
 ```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
 
-</TabItem>
-</Tabs>
+### volumes\_from
 
-### volumes_from
-
-See [docker-compose documentation on volumes_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
+See [docker-compose documentation on volumes\_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
 
 ### environment
 
@@ -146,3 +131,4 @@ See [docker-compose documentation on environment](https://docs.docker.com/compos
 ### user
 
 See [docker-compose documentation on user](https://docs.docker.com/compose/compose-file/compose-file-v2/#user).
+
