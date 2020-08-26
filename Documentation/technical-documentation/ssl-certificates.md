@@ -1,8 +1,4 @@
----
-title: SSL certificates
----
-
-# SSL Certificates
+# SSL certificates
 
 SSL certificates are generated before the Nginx server is reloaded. Since we require a Nginx configuration in order to be able to create SSL certificates, a self-signed certificate \(snakeoil\) is used until the real certificates are ready.
 

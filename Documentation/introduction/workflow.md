@@ -1,7 +1,3 @@
----
-title: Workflow
----
-
 # Workflow
 
 StackHead utilizes Ansible and Terraform to set up your projects.

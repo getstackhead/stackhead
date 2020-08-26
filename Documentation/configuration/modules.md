@@ -1,8 +1,4 @@
----
-title: StackHead modules
----
-
-# StackHead Modules
+# StackHead modules
 
 StackHead is organized in components which are interexchangable. They can be configured by setting the respective variable in Ansible inventory definition.
 

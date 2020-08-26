@@ -1,8 +1,4 @@
----
-title: StackHead modules
----
-
-# Modules
+# StackHead modules
 
 ## Specification
 

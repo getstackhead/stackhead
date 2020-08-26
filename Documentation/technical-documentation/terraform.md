@@ -1,7 +1,3 @@
----
-title: Terraform
----
-
 # Terraform
 
 [Terraform](https://www.terraform.io/) is a tool for provisioning and managing server resources.

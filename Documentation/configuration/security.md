@@ -1,7 +1,3 @@
----
-title: Security
----
-
 # Security
 
 These options can be used to add further security to your projects. Add these to the domain definitions in project definition file.
