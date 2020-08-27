@@ -14,5 +14,7 @@ if [[ $INPUT_ROLENAME != '' ]]; then
   ln -s "$(pwd)" "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
 fi
 
+cat "${INVENTORY_PATH}"
+
 # Provision server
 TEST=1 ansible-playbook ./ansible/server-provision.yml -i "${INVENTORY_PATH}" -vv
