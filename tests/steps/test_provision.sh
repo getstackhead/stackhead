@@ -8,7 +8,7 @@ sed -e "s/\${ipaddress}/${INPUT_IPADDRESS}/" -e "s/\${webserver}/${INPUT_WEBSERV
 echo "${GITHUB_ACTION_PATH} - ${ACTION_PATH}"
 
 # Install dependencies
-ansible-galaxy install -r ${ACTION_PATH}/ansible/requirements/requirements.yml --force-with-deps
+ansible-galaxy install -r "${ACTION_PATH}/ansible/requirements/requirements.yml" --force-with-deps
 
 if [[ $INPUT_ROLENAME != '' ]]; then
   # Remove this role and set symlink
@@ -17,4 +17,4 @@ if [[ $INPUT_ROLENAME != '' ]]; then
 fi
 
 # Provision server
-TEST=1 ansible-playbook ${ACTION_PATH}/ansible/server-provision.yml -i "${INVENTORY_PATH}" -vv
+TEST=1 ansible-playbook "${ACTION_PATH}/ansible/server-provision.yml" -i "${INVENTORY_PATH}" -vv
