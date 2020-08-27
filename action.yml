@@ -1,0 +1,33 @@
+name: 'StackHead Acceptance Test'
+description: 'Perform StackHead acceptance test'
+inputs:
+  ipaddress:
+    description: 'IP address of the server'
+    required: true
+  domain:
+    description: 'Domain'
+    required: true
+  webserver:
+    description: 'Webserver module to use'
+    required: true
+  rolename:
+    description: 'Name of role that is being tested'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Add IP to known_hosts
+      shell: bash
+      run: "ssh-keyscan -v -T 30 ${{ inputs.ipaddress }} >> ~/.ssh/known_hosts"
+    - name: "Test step: Provision server"
+      shell: bash
+      run: tests/steps/test_provision.sh
+    - name: "Test step: Deploy application"
+      shell: bash
+      run: tests/steps/test_deploy.sh
+    - name: "Test step: Validate deployment"
+      shell: bash
+      run: tests/steps/test_validate-deployment.sh
+    - name: "Test step: Destroy deployment"
+      shell: bash
+      run: tests/steps/test_destroy.sh
