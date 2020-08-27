@@ -82,21 +82,6 @@ jobs:
         ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
         domain: '${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
-    - name: Add IP to known_hosts
-      run: |
-        ssh-keyscan -v -T 30 ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} >> ~/.ssh/known_hosts
-    - name: "Test step: Provision server"
-      run: ./ansible/__tests__/steps/test_provision.sh
-      env:
-        IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
-    - name: "Test step: Deploy application"
-      run: ./ansible/__tests__/steps/test_deploy.sh
-      env:
-        IP: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
-    - name: "Test step: Validate deployment"
-      run: ./ansible/__tests__/steps/test_validate-deployment.sh
-    - name: "Test step: Destroy deployment"
-      run: ./ansible/__tests__/steps/test_destroy.sh
     #- uses: mxschmitt/action-tmate@v2
     #  if: always() && matrix.webserver == 'caddy'
     - name: Remove DNS record
