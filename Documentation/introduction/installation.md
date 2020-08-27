@@ -1,6 +1,4 @@
----
-title: Installation
----
+# Installation
 
 ## Prerequisities
 
@@ -13,9 +11,9 @@ The following software has to already be installed on your system to use StackHe
 
 StackHead consists of multiple Ansible playbooks which you can install using several package managers.
 
-:::important   
-When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.  
-:::
+{% hint style="warning" %}
+When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.
+{% endhint %}
 
 ### Using Ansible
 
@@ -23,10 +21,10 @@ TBD
 
 ### Using Composer
 
-As of right now there is no stable release of StackHead.
-Please install it directly from the repository as below:
+As of right now there is no stable release of StackHead. Please install it directly from the repository as below:
 
-```json title="composer.json"
+{% code title="composer.json" %}
+```javascript
 {
     "repositories": [
         { "type": "vcs", "url": "git@github.com:getstackhead/stackhead.git" }
@@ -47,11 +45,13 @@ Please install it directly from the repository as below:
     }
 }
 ```
-:::tip  
-StackHead is installed into `vendor/getstackhead/stackhead`.  
-:::
+{% endcode %}
 
+{% hint style="success" %}
+StackHead is installed into `vendor/getstackhead/stackhead` directory.
+{% endhint %}
 
 ### Using NPM
 
 TBD
+
