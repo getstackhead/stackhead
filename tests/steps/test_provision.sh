@@ -8,9 +8,11 @@ sed -e "s/\${ipaddress}/${INPUT_IPADDRESS}/" -e "s/\${webserver}/${INPUT_WEBSERV
 # Install dependencies
 ansible-galaxy install -r ./ansible/requirements/requirements.yml --force-with-deps
 
-# Remove this role and set symlink
-rm -rf "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
-ln -s "$(pwd)" "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
+if [[ $INPUT_ROLENAME != '' ]]; then
+  # Remove this role and set symlink
+  rm -rf "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
+  ln -s "$(pwd)" "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
+fi
 
 # Provision server
 TEST=1 ansible-playbook ./ansible/server-provision.yml -i "${INVENTORY_PATH}" -vv
