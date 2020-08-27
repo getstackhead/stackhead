@@ -3,7 +3,7 @@
 # Domain in environment "DOMAIN"
 INVENTORY_PATH=${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.yml
 
-sed -e "s/\${ipaddress}/${INPUT_IPADDRESS}/" -e "s/\${webserver}/${INPUT_WEBSERVER}/" "${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.dist.yml" > $INVENTORY_PATH
+sed -e "s/\${ipaddress}/${INPUT_IPADDRESS}/" -e "s/\${webserver}/${INPUT_WEBSERVER}/" "${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.dist.yml" > "${INVENTORY_PATH}"
 
 # Install dependencies
 ansible-galaxy install -r "${GITHUB_ACTION_PATH}/ansible/requirements/requirements.yml" --force-with-deps
