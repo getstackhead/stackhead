@@ -80,7 +80,7 @@ jobs:
       uses: ./
       with:
         ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
-        domain: '${{ env.DOMAIN_NAME }}.${{ env.DOMAIN_SUFFIX }}'
+        domain: '${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
         rolename: ''
     - name: Add IP to known_hosts
