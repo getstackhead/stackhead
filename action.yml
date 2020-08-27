@@ -25,24 +25,19 @@ runs:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
-        ACTION_PATH: ${{ github.action_path }}
-      run: ${{ github.action_path }}/tests/steps/test_provision.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/test_provision.sh
     - name: "Test step: Deploy application"
       shell: bash
-      run: ${{ github.action_path }}/tests/steps/test_deploy.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/test_deploy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
-        ACTION_PATH: ${{ github.action_path }}
     - name: "Test step: Validate deployment"
       shell: bash
-      run: ${{ github.action_path }}/tests/steps/test_validate-deployment.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/test_validate-deployment.sh
       env:
         INPUT_DOMAIN: ${{ inputs.domain }}
-        ACTION_PATH: ${{ github.action_path }}
     - name: "Test step: Destroy deployment"
       shell: bash
-      run: ${{ github.action_path }}/tests/steps/test_destroy.sh
-      env:
-        ACTION_PATH: ${{ github.action_path }}
+      run: ${{ github.action_path }}/ansible/__tests__/steps/test_destroy.sh
