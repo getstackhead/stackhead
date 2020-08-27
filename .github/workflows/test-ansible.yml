@@ -82,7 +82,6 @@ jobs:
         ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
         domain: '${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
-        rolename: ''
     - name: Add IP to known_hosts
       run: |
         ssh-keyscan -v -T 30 ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} >> ~/.ssh/known_hosts

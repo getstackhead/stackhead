@@ -21,13 +21,23 @@ runs:
       run: "ssh-keyscan -v -T 30 ${{ inputs.ipaddress }} >> ~/.ssh/known_hosts"
     - name: "Test step: Provision server"
       shell: bash
+      env:
+        INPUT_IPADDRESS: ${{ inputs.ipaddress }}
+        INPUT_WEBSERVER: ${{ inputs.webserver }}
+        INPUT_ROLENAME: ${{ inputs.rolename }}
       run: tests/steps/test_provision.sh
     - name: "Test step: Deploy application"
       shell: bash
       run: tests/steps/test_deploy.sh
+      env:
+        INPUT_IPADDRESS: ${{ inputs.ipaddress }}
+        INPUT_DOMAIN: ${{ inputs.domain }}
+        INPUT_WEBSERVER: ${{ inputs.webserver }}
     - name: "Test step: Validate deployment"
       shell: bash
       run: tests/steps/test_validate-deployment.sh
+      env:
+        INPUT_DOMAIN: ${{ inputs.domain }}
     - name: "Test step: Destroy deployment"
       shell: bash
       run: tests/steps/test_destroy.sh
