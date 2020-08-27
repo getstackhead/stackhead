@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: pip install -r ./ansible/requirements/pip.txt
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
@@ -32,7 +31,7 @@ jobs:
     if: github.event.pull_request.draft == false
     strategy:
       matrix:
-        webserver: ['nginx', 'caddy']
+        webserver: ['nginx']
       fail-fast: false
     env:
       INVENTORY_PATH: ansible/__tests__/inventory.yml
@@ -40,8 +39,6 @@ jobs:
       WEBSERVER: ${{ matrix.webserver }}
     steps:
     - uses: actions/checkout@v2
-    - name: Initialize submodules
-      run: git submodule sync && git submodule update --init
     - name: Print Ansible version
       run: ansible --version
     - uses: webfactory/ssh-agent@v0.2.0

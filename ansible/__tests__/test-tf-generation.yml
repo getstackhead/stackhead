@@ -93,18 +93,6 @@
     - include_vars: "{{ playbook_dir }}/../roles/stackhead_module_api/vars/main.yml"
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../templates"
-    - set_fact:
-        containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
-      when: item.expose is defined and item.expose not in containerapp__expose|default([])
-      with_items: "{{ app_config.domains }}"
-    - block:
-      - name: Generate Caddy Terraform file
-        import_tasks: "{{ role_path }}/tasks/steps/generate-serverconfig-tf.yml"
-      - name: Generate Caddyfile
-        import_tasks: "{{ role_path }}/tasks/steps/generate-caddyfile-tf.yml"
-      vars:
-        role_path: "../roles/stackhead_webserver_caddy"
-        caddy_root: "."
     - name: "Test SSL Terraform file generation"
       template:
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
