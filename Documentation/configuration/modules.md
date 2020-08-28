@@ -13,8 +13,7 @@ Webserver modules provide configuration in order to set up a webserver software 
 
 ## Container managers
 
-Container managers are applications like Docker that provide container technologies.
-You can set a webserver to use by overriding the setting _stackhead__container_ in your inventory file.
+Container managers are applications like Docker that provide container technologies. You can set a webserver to use by overriding the setting _stackhead\_\_container_ in your inventory file.
 
 ### List of container managers
 

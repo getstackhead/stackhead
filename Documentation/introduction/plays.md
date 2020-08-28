@@ -1,4 +1,4 @@
-# Plays
+# Playbooks
 
 The playbooks below are available to be run via `ansible-playbook`:
 

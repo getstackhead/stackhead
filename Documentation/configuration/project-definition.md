@@ -1,3 +1,9 @@
+---
+description: >-
+  Project definitions contain everything that is needed to set up your web
+  application.
+---
+
 # Project definition
 
 Project definitions are stored at `./stackhead/[projectname].yml` \(per default\). However that can be overwritten by setting the `stackhead__remote_config_folder` in inventory file. Each file consists of a **domain** and an **application configuration**.

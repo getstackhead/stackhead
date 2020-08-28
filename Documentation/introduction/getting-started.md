@@ -1,6 +1,10 @@
-# Getting started
+---
+description: >-
+  This guide will explain how to setup a server for usage with StackHead and
+  deploy a basic Docker-based application.
+---
 
-This guide will explain how to **setup** a server for usage with StackHead and **deploy** a basic Docker-based application.
+# Getting started
 
 You will require:
 
