@@ -13,6 +13,10 @@ inputs:
   webserver:
     description: 'Webserver module to use'
     required: true
+  container:
+    description: 'Container module to use'
+    required: false
+    default: getstackhead.stackhead_container_docker
   rolename:
     description: 'Name of role that is being tested'
     required: false
@@ -27,6 +31,7 @@ runs:
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
+        INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
       run: ${{ github.action_path }}/ansible/__tests__/steps/test_provision.sh
     - name: "Test step: Deploy application"
@@ -37,6 +42,7 @@ runs:
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
+        INPUT_CONTAINER: ${{ inputs.container }}
     - name: "Test step: Validate deployment"
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/test_validate-deployment.sh
