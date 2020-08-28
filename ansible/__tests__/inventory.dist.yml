@@ -4,6 +4,7 @@ all:
   vars:
     stackhead__config_folder: "{{ inventory_dir }}/projects"
     stackhead__webserver: ${webserver}
+    stackhead__container: ${container}
     ansible_user: root
     ansible_connection: ssh
   hosts:
