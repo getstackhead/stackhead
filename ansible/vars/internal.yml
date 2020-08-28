@@ -25,6 +25,3 @@ stackhead__certificates_folder: "{{ stackhead__root_folder }}/certificates"
 
 # internal: path where snakeoil certrequest is being generated (temporarily!)
 stackhead__snakeoil_certrequest_tmp: "{{ stackhead__certificates_folder }}/certrequest_snakeoil.pem"
-
-# internal: path to where acme-challenges are stored
-stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"

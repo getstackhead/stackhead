@@ -82,6 +82,7 @@ The following variables are set by StackHead and can be used by the role:
 | :--- | :--- | :--- | :--- |
 | `stackhead__roles` | Path to local StackHead roles directory | global | string |
 | `stackhead__templates` | Path to local StackHead template directory | global | string |
+| `stackhead__acme_folder` | Path to remote ACME challenge directory | global | string |
 | `stackhead__snakeoil_privkey` | Path to the fake SSL certificate's privkey file | global | string |
 | `stackhead__snakeoil_fullchain` | Path to the fake SSL certificate's fullchain file | global | string |
 | `stackhead__project_folder` | Path to project's folder | deployment | string |
