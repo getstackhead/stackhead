@@ -8,6 +8,9 @@ stackhead__templates: "{{ playbook_dir }}/templates"
 # Path to local StackHead role directory
 stackhead__roles: "{{ playbook_dir }}/roles"
 
+# Path to where acme-challenges are stored
+stackhead__acme_folder: "{{ stackhead__root_folder }}/acme-challenges"
+
 ###
 # SSL certificates
 ###
