@@ -81,6 +81,7 @@ jobs:
       with:
         ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
         domain: '${{ env.DOMAIN }}'
+        domain2: 'sub.${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
     #- uses: mxschmitt/action-tmate@v2
     #  if: always() && matrix.webserver == 'caddy'

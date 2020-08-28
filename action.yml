@@ -7,6 +7,9 @@ inputs:
   domain:
     description: 'Domain'
     required: true
+  domain2:
+    description: 'Second domain'
+    required: true
   webserver:
     description: 'Webserver module to use'
     required: true
@@ -32,12 +35,14 @@ runs:
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
+        INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
     - name: "Test step: Validate deployment"
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/test_validate-deployment.sh
       env:
         INPUT_DOMAIN: ${{ inputs.domain }}
+        INPUT_DOMAIN2: ${{ inputs.domain2 }}
     - name: "Test step: Destroy deployment"
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/test_destroy.sh

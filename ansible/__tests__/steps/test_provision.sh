@@ -1,6 +1,5 @@
 #!/bin/bash
 # IP address in environment "INPUT_IPADDRESS"
-# Domain in environment "DOMAIN"
 INVENTORY_PATH=${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.yml
 
 sed -e "s/\${ipaddress}/${INPUT_IPADDRESS}/" -e "s/\${webserver}/${INPUT_WEBSERVER}/" "${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.dist.yml" > "${INVENTORY_PATH}"
