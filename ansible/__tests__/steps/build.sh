@@ -1,5 +1,5 @@
 #!/bin/bash
-ansible-galaxy collection build -f ansible
+ansible-galaxy collection build -f "${GITHUB_ACTION_PATH}/ansible"
 ansible-galaxy collection install "$(find getstackhead-stackhead-*)" -f
 
 # Install dependencies
