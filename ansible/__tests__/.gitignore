@@ -3,3 +3,4 @@
 *.cfg
 !*.dist.cfg
 *.tf
+*.txt
