@@ -3,7 +3,7 @@
   become_user: stackhead
   tasks:
     - include_role:
-        name: stackhead_project
+        name: getstackhead.stackhead.stackhead_project
       loop_control:
         loop_var: project_name
         # the variable "project_name" is part of the StackHead module API (update documentation if changed)

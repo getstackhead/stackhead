@@ -3,6 +3,6 @@
   become_user: stackhead
   tasks:
     - include_role:
-        name: stackhead_project
+        name: getstackhead.stackhead.stackhead_project
       vars:
         ensure: 'absent'
