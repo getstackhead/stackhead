@@ -1,6 +1,0 @@
-dependencies:
-  - name: ansible-role-caddy
-    src: git+https://github.com/saitho/ansible-role-caddy.git
-    version: caddy-v2
-  #- role: samdoran.caddy
-  #  version: v1.0.0
