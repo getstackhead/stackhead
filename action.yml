@@ -26,29 +26,34 @@ runs:
     - name: Add IP to known_hosts
       shell: bash
       run: "ssh-keyscan -v -T 30 ${{ inputs.ipaddress }} >> ~/.ssh/known_hosts"
-    - name: "Test step: Provision server"
+    - name: "Build collection and install dependencies"
+      shell: bash
+      env:
+        INPUT_ROLENAME: ${{ inputs.rolename }}
+      run: ${{ github.action_path }}/ansible/__tests__/steps/build.sh
+    - name: "Setup server"
       shell: bash
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
-      run: ${{ github.action_path }}/ansible/__tests__/steps/test_provision.sh
-    - name: "Test step: Deploy application"
+      run: ${{ github.action_path }}/ansible/__tests__/steps/setup.sh
+    - name: "Deploy application"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/test_deploy.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/deploy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
-    - name: "Test step: Validate deployment"
+    - name: "Validate deployment"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/test_validate-deployment.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/validate.sh
       env:
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
-    - name: "Test step: Destroy deployment"
+    - name: "Destroy deployment"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/test_destroy.sh
+      run: ${{ github.action_path }}/ansible/__tests__/steps/destroy.sh
