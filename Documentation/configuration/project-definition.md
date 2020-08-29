@@ -6,7 +6,7 @@ description: >-
 
 # Project definition
 
-Project definitions are stored at `./stackhead/[projectname].yml` \(per default\). However that can be overwritten by setting the `stackhead__remote_config_folder` in inventory file. Each file consists of a **domain** and an **application configuration**.
+Project definitions are stored at `./stackhead/[projectname].yml` Each file consists of a **domain** and an **application configuration**.
 
 Applications run in one or multiple Docker containers. While the settings are based on Docker Compose version 2.4, some may require a different syntax. Please have a closer look at the list below.
 
@@ -36,9 +36,9 @@ container:
 
 ## domains.\*.expose
 
-The Nginx webserver will proxy all web traffic to the service and port specified in `expose` setting.
+The web server will proxy all web traffic to the service and port specified in `expose` setting.
 
-In the example above, Nginx will proxy web requests to the "app" container's port 80.
+In the example above, the web server will proxy web requests to the "app" container's port 80.
 
 ### service
 
@@ -78,13 +78,13 @@ StackHead saves mounted data in the project directory at project or service leve
 
 | Configuration | Description | Allowed values |
 | :--- | :--- | :--- |
-| type \(required\) | Determines the data storage location | "global", "local" or "custom" |
+| `type` \(required\) | Determines the data storage location | "global", "local" or "custom" |
 |  | **global**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/global/` |  |
 |  | **local**: Data storage location is located at `/stackhead/projects/[project_name]/container_data/services/[service_name]/` |  |
 |  | **custom**: No data storage location. You have to set it yourself using the _src_ setting below \(absolute path!\). |  |
-| src  \(required for type=custom\) | Relative path inside data storage location that should be mounted.  Note: When type=custom this is has to be an absolute path! | any string |
-| dest | Absolute path inside the Docker container where the mount should be applied | any string |
-| mode | Defines if the volume should be read-write \(rw\) or readonly \(ro\) | "rw" \(default\) or "ro" |
+| `src`  \(required for type=custom\) | Relative path inside data storage location that should be mounted.  Note: When type=custom this is has to be an absolute path! | any string |
+| `dest` | Absolute path inside the Docker container where the mount should be applied | any string |
+| `mode` | Defines if the volume should be read-write \(rw\) or readonly \(ro\) | "rw" \(default\) or "ro" |
 
 Below you can see a comparison of the project definition \(left\) and the equivalent docker-compose definition:
 

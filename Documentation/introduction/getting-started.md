@@ -13,7 +13,7 @@ You will require:
 * a webserver with SSH root access
 
 {% hint style="info" %}
-In this guide `<LOCAL_STACKHEAD_PATH>` will refer to the location where you installed StackHead. This path usually depends on how you installed StackHead.
+In this guide `<ANSIBLE_COLLECTION_PATH>` will refer to the location where your Ansible collections are installed. Per default this should be `~/.ansible/collections/ansible_collections/`.
 {% endhint %}
 
 ## File structure
@@ -54,7 +54,7 @@ Make sure to replace _example.com_ with your own domain.
 
 ## Provisioning the server
 
-Let's create an inventory file and provision our first server. We recommend provisioning only newly created servers to minify the side effects of already installed packages.
+Let's create an inventory file and provision our first server. We recommend provisioning only newly created servers to minimize the side effects of already installed packages.
 
 ### Inventory file
 
@@ -86,13 +86,13 @@ Now we should be ready to go to provision our server.
 Make sure you have all Ansible dependencies installed using:
 
 ```bash
-ansible-galaxy install -r /ansible/requirements/requirements.yml
+ansible-galaxy install -r <ANSIBLE_COLLECTION_PATH>/getstackhead/stackhead/requirements/requirements.yml
 ```
 
 Then run the following command to provision your server:
 
 ```bash
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/server-provision.yml -i my-inventory.yml
+ansible-playbook <ANSIBLE_COLLECTION_PATH>/getstackhead/stackhead/playbooks/server-provision.yml -i my-inventory.yml
 ```
 
 ### Deploying the project
@@ -102,7 +102,7 @@ Before deploying the project, check your domain's DNS settings. Make sure the A 
 Then deploy the project with:
 
 ```bash
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-deploy.yml -i my-inventory.yml
+ansible-playbook <ANSIBLE_COLLECTION_PATH>/getstackhead/stackhead/playbooks/application-deploy.yml -i my-inventory.yml
 ```
 
 After deployment, open the domain in your web browser. It should display content and have a valid SSL certificate.
@@ -112,5 +112,6 @@ After deployment, open the domain in your web browser. It should display content
 Now let's remove all configurations we created during deployment. This will remove the webserver configuration and Docker containers.
 
 ```bash
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
+ansible-playbook <ANSIBLE_COLLECTION_PATH>/getstackhead/stackhead/playbooks/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
 ```
+
