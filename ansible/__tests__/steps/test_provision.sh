@@ -14,4 +14,4 @@ if [[ $INPUT_ROLENAME != '' ]]; then
 fi
 
 # Provision server
-TEST=1 ansible-playbook "${GITHUB_ACTION_PATH}/ansible/server-provision.yml" -i "${INVENTORY_PATH}" -vv
+TEST=1 ansible-playbook "${GITHUB_ACTION_PATH}/ansible/playbooks/server-provision.yml" -i "${INVENTORY_PATH}" -vv
