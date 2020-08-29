@@ -36,7 +36,6 @@ Create a new project definitions file at `./stackhead/example_app.yml` and the f
 
 ```yaml
 ---
-type: container
 domains:
   - domain: example.com
     expose:
