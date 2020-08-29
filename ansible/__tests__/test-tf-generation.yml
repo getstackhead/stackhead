@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   tasks:
-    - include_vars: "./variables.yml"
+    - include_vars: "../roles/stackhead_module_api/testdata/variables.yml"
     - include_vars: "../vars/internal.yml"
     - include_vars: "../roles/stackhead_module_api/vars/main.yml"
     - set_fact:
