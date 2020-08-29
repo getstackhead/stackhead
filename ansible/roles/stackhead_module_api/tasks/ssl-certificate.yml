@@ -1,2 +1,2 @@
 ---
-- import_tasks: "../roles/stackhead_project/tasks/ssl/ssl-config.yml"
+- include_tasks: "{{ stackhead__roles }}/stackhead_project/tasks/ssl/ssl-config.yml"
