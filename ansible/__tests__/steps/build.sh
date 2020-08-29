@@ -1,6 +1,6 @@
 #!/bin/bash
 ansible-galaxy collection build -f ansible
-ansible-galaxy collection install getstackhead-stackhead-*
+ansible-galaxy collection install "$(find getstackhead-stackhead-*)" -f
 
 # Install dependencies
 ansible-galaxy install -r "${GITHUB_ACTION_PATH}/ansible/requirements/requirements.yml" --force-with-deps
