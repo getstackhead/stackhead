@@ -26,8 +26,6 @@
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
-    - name: "Setup Container app"
-      import_tasks: "../roles/stackhead_project/tasks/setup-containerapp.yml"
     - import_tasks: "../roles/stackhead_module_api/tasks_internal/deployment.yml"
   when: ensure == 'present'
 

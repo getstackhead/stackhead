@@ -1,4 +1,0 @@
----
-- include_vars:
-    file: "{{ role_path }}/stackhead-module.yml"
-    name: "{{ include_varname }}"

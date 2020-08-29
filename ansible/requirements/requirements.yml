@@ -1,8 +1,7 @@
 - name: geerlingguy.docker
   version: 2.8.1
-#- name: samdoran.caddy
-#  version: v1.0.0
-- src: git+https://github.com/saitho/ansible-role-caddy.git
-  version: caddy-v2
 - name: andrewrothstein.terraform
   version: v2.2.43
+- name: getstackhead.stackhead_container_docker
+- name: getstackhead.stackhead_webserver_nginx
+- name: getstackhead.stackhead_webserver_caddy

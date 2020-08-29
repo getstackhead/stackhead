@@ -1,6 +1,4 @@
----
-title: Installation
----
+# Installation
 
 ## Prerequisities
 
@@ -17,6 +15,6 @@ StackHead consists of multiple Ansible playbooks which you can install as Ansibl
 ansible-galaxy collection install git+https://github.com/getstackhead/stackhead.git#/ansible/
 ```
 
-:::important   
-When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.  
-:::
+{% hint style="warning" %}
+When cloning from Git make sure to also initialize the submodules by running the command `git submodule update --init` afterwards.
+{% endhint %}

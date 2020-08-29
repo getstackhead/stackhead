@@ -1,5 +1,4 @@
 #!/bin/bash
-# Domain in environment "DOMAIN"
 # IMPORTANT: This must run after test_deploy.sh!
 
 function ssl_check() {
@@ -24,11 +23,11 @@ function http_check() {
 
 openssl version
 curl -V
-ping -c 5 "${DOMAIN}"
-ping -c 5 "sub.${DOMAIN}"
+ping -c 5 "${INPUT_DOMAIN}"
+ping -c 5 "${INPUT_DOMAIN2}"
 
-ssl_check "${DOMAIN}"
-ssl_check "sub.${DOMAIN}"
-http_check "${DOMAIN}" "Hello world!"
-http_check "${DOMAIN}:81" "phpMyAdmin"
-http_check "sub.${DOMAIN}" "phpMyAdmin" "user" "pass"
+ssl_check "${INPUT_DOMAIN}"
+ssl_check "${INPUT_DOMAIN2}"
+http_check "${INPUT_DOMAIN}" "Hello world!"
+http_check "${INPUT_DOMAIN}:81" "phpMyAdmin"
+http_check "${INPUT_DOMAIN2}" "phpMyAdmin" "user" "pass"
