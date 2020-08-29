@@ -1,0 +1,5 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - getstackhead.stackhead.stackhead_setup

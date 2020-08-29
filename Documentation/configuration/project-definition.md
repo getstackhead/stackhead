@@ -18,7 +18,6 @@ The example below consists of two services \(app and db\).
 
 ```yaml
 ---
-type: container
 domains:
   - domain: example.com
     expose:

@@ -36,7 +36,6 @@ Create a new project definitions file at `./stackhead/example_app.yml` and the f
 
 ```yaml
 ---
-type: container
 domains:
   - domain: example.com
     expose:
@@ -92,8 +91,8 @@ ansible-galaxy install -r /ansible/requirements/requirements.yml
 
 Then run the following command to provision your server:
 
-```text
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/server-provision.yml -i my-inventory.yml
+```bash
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/server-provision.yml -i my-inventory.yml
 ```
 
 ### Deploying the project
@@ -103,7 +102,7 @@ Before deploying the project, check your domain's DNS settings. Make sure the A 
 Then deploy the project with:
 
 ```bash
-ansible-playbook /ansible/application-deploy.yml -i my-inventory.yml
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-deploy.yml -i my-inventory.yml
 ```
 
 After deployment, open the domain in your web browser. It should display content and have a valid SSL certificate.
@@ -113,6 +112,5 @@ After deployment, open the domain in your web browser. It should display content
 Now let's remove all configurations we created during deployment. This will remove the webserver configuration and Docker containers.
 
 ```bash
-ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
+ansible-playbook <LOCAL_STACKHEAD_PATH>/ansible/playbooks/application-destroy.yml -i my-inventory.yml --extra-vars "project_name=example_app"
 ```
-

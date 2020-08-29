@@ -1,8 +1,8 @@
 ---
-- include_vars: "{{ playbook_dir }}/vars/internal.yml"
-- include_vars: "roles/stackhead_module_api/vars/main.yml"
+- include_vars: "../vars/internal.yml"
+- include_vars: "../roles/stackhead_module_api/vars/main.yml"
 
-- import_tasks: "roles/stackhead_project/tasks/projectconfig-load.yml"
+- import_tasks: "../roles/stackhead_project/tasks/projectconfig-load.yml"
 
 - block:
     - name: "Check if project directory exists | Project: {{ project_name }}"
@@ -17,7 +17,7 @@
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
 - name: "Prepare certificates directory | Project: {{ project_name }}"
-  import_tasks: "roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
+  import_tasks: "../roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
   when: ensure == 'present'
 
 - block:
@@ -26,15 +26,15 @@
         containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
       when: item.expose is defined and item.expose not in containerapp__expose|default([])
       with_items: "{{ app_config.domains }}"
-    - import_tasks: "roles/stackhead_module_api/tasks_internal/deployment.yml"
+    - import_tasks: "../roles/stackhead_module_api/tasks_internal/deployment.yml"
   when: ensure == 'present'
 
 # Symlink Terraform configurations from project to main folder and execute them
-- import_tasks: "roles/config_terraform/tasks/update-project-symlinks.yml"
+- import_tasks: "../roles/config_terraform/tasks/update-project-symlinks.yml"
   when: ensure == 'present'
-- include_tasks: "roles/config_terraform/tasks/remove-project-symlinks.yml"
+- import_tasks: "../roles/config_terraform/tasks/remove-project-symlinks.yml"
   when: ensure == 'absent'
-- import_tasks: "roles/config_terraform/tasks/execute.yml"
+- import_tasks: "../roles/config_terraform/tasks/execute.yml"
 - file:
     path: "{{ item }}"
     state: absent

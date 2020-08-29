@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - import_tasks: "../roles/stackhead_setup/tasks/facts-load.yml"
+    - name: "Get versions"
+      debug:
+        msg: "{{ ansible_local['versions'] }}"

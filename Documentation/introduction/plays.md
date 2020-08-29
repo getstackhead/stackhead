@@ -3,7 +3,7 @@
 The playbooks below are available to be run via `ansible-playbook`:
 
 ```bash
-ansible-playbook ansible/[file] -i path/to/inventory.yml
+ansible-playbook ansible/playbooks/[file] -i path/to/inventory.yml
 ```
 
 | File | Description |

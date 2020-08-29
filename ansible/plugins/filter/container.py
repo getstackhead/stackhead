@@ -27,7 +27,8 @@ class FilterModule(object):
                 'index': len(output),
                 'service': service_name,
                 'internal_port': internal_port,
-                'tfstring': "${docker_container.stackhead-" + project_name + "-" + service_name + ".ports[" + str(index) + "].external}"
+                'tfstring': "${docker_container.stackhead-" + project_name + "-" +
+                            service_name + ".ports[" + str(index) + "].external}"
             })
             previous_service = service_name
             index += 1
