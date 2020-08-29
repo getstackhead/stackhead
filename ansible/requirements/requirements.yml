@@ -3,5 +3,9 @@
 - name: andrewrothstein.terraform
   version: v2.2.43
 - name: getstackhead.stackhead_container_docker
+  src: https://github.com/getstackhead/module-container-docker
+  version: feature/stackhead-ansible-collection
 - name: getstackhead.stackhead_webserver_nginx
+  src: https://github.com/getstackhead/module-webserver-nginx
+  version: feature/stackhead-ansible-collection
 - name: getstackhead.stackhead_webserver_caddy
