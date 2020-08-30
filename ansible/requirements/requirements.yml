@@ -1,9 +1,9 @@
-- name: geerlingguy.docker
-  version: 2.8.1
-- name: andrewrothstein.terraform
-  version: v2.2.43
-- name: getstackhead.stackhead_container_docker
-  src: https://github.com/getstackhead/module-container-docker
-- name: getstackhead.stackhead_webserver_nginx
-  src: https://github.com/getstackhead/module-webserver-nginx
-- name: getstackhead.stackhead_webserver_caddy
+roles:
+  - name: andrewrothstein.terraform
+    version: v2.2.43
+  - name: getstackhead.stackhead_container_docker
+  - name: getstackhead.stackhead_webserver_nginx
+  - name: getstackhead.stackhead_webserver_caddy
+
+collections:
+  - name: crivetimihai.virtualization
