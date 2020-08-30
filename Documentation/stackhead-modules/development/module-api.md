@@ -1,3 +1,7 @@
+---
+description: 'Variables, Processes and filters available to use for StackHead plugins.'
+---
+
 # Module API
 
 ## Variables
@@ -45,4 +49,87 @@ You'll find the files inside the project's certificate directory:
 {% hint style="info" %}
 The certificate files will be created after your role was executed. If you need to access the certificate files within your role, please execute Terraform as described above.
 {% endhint %}
+
+## Filters
+
+{% hint style="info" %}
+All filters provided have to be addressed with the prefix `getstackhead.stackhead`.
+{% endhint %}
+
+{% hint style="danger" %}
+These filters are pretty specific for the Docker container provider. With the introduction of more container providers these filters may change.
+{% endhint %}
+
+### containerPorts
+
+The `containerPorts` filter is used to map the entries from the exposed service configuration \(`containerapp__expose`\) into a more processable format, including the reference to the external port of the Terraform object. The output will be an array of objects with the following structure:
+
+```yaml
+{
+  # position in output list
+  'index': integer,
+  # name of exposed service
+  'service': string,
+  # internal container port that is being exposed
+  'internal_port': internal_port,
+  # reference to external Docker container port (which is chosen by system)
+  'tfstring': "${docker_container.stackhead-" + project_name + "-" + service_name + ".ports[" + str(index) + "].external}"
+}
+```
+
+Syntax: `containerapp__expose|getstackhead.stackhead.containerPorts(string projectName)`
+
+```yaml
+# Given the following expose list:
+containerapp__expose:
+  - service: pma
+    internal_port: 80
+    external_port: 81
+  - service: nginx
+    internal_port: 80
+    external_port: 80
+  - service: pma
+    internal_port: 80
+    external_port: 80
+
+# Example usage
+{% set all_ports = containerapp__expose|getstackhead.stackhead.containerPorts('myproject') %}
+
+# Output (value of all_ports):
+
+[{
+  'index': 0,
+  'service': 'nginx',
+  'internal_port': 80,
+  # reference to external Docker container port (which is chosen by system)
+  'tfstring': "${docker_container.stackhead-myproject-nginx.ports[0].external}"
+},{
+  'index': 1,
+  'service': 'pma',
+  'internal_port': 80,
+  # reference to external Docker container port (which is chosen by system)
+  'tfstring': "${docker_container.stackhead-myproject-pma.ports[0].external}"
+},{
+  'index': 2,
+  'service': 'pma',
+  'internal_port': 80,
+  # reference to external Docker container port (which is chosen by system)
+  'tfstring': "${docker_container.stackhead-myproject-pma.ports[1].external}"
+}]
+```
+
+### TFreplace\(string projectName\)
+
+The `TFreplace` filter is used to replace `$DOCKER_SERVICE_NAME` placeholder variables with the actual reference to the Terraform container object.
+
+Syntax: `"any string"|getstackhead.stackhead.TFreplace(string projectName)`
+
+```yaml
+# Example usage
+{{ "$DOCKER_SERVICE_NAME['0'] - $DOCKER_SERVICE_NAME['1']"|getstackhead.stackhead.TFreplace('myproject') }}
+
+# Result:
+
+${docker_container.stackhead-myproject-0.name} - ${docker_container.stackhead-myproject-1.name}
+```
 

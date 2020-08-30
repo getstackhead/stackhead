@@ -1,3 +1,7 @@
+---
+description: The specification describes how StackHead modules have to be structured.
+---
+
 # Specification
 
 A StackHead module is an Ansible role that contains all steps and templates to:

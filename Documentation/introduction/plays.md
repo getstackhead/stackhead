@@ -3,7 +3,7 @@
 The playbooks below are available to be run via `ansible-playbook`:
 
 ```bash
-ansible-playbook <ANSIBLE_COLLECTION_PATH>/getstackhead/stackhead/playbooks/[file] -i path/to/inventory.yml
+ansible-playbook $ANSIBLE_COLLECTION_PATH/getstackhead/stackhead/playbooks/[file] -i path/to/inventory.yml
 ```
 
 | File | Description |

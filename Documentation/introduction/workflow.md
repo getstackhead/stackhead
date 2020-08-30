@@ -2,7 +2,7 @@
 
 StackHead utilizes Ansible and Terraform to set up your projects.
 
-![StackHead process](../.gitbook/assets/stackhead-process%20%281%29%20%281%29.png)
+![StackHead process](../.gitbook/assets/stackhead-process%20%281%29%20%281%29%20%281%29.png)
 
 The figure above illustrates the general StackHead workflow. StackHead provides custom Ansible playbooks for installing required software on a remote server \(setup\) and configuring your projects \(deployment\).
 
@@ -24,13 +24,13 @@ For each host you can define which projects should run there. Also, using [capab
 
 ## Server setup
 
-During server setup all software and utilities that are required to set up your projects with StackHead are installed. Such include Terraform, Docker and Nginx. You'll have to run the server setup before you can deploy projects onto it.
+During server setup all software and utilities that are required to set up your projects with StackHead are installed. Such may include Terraform, container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
 
 The server setup is executed by running the respective Ansible playbook.
 
 ## Project deployment
 
-Setting up a project is called deployment and is done by running the respective Ansible playbook. This will create all project-related resources such as Nginx configuration, SSL certificates and start up containers.
+Setting up a project is called deployment and is done by running the respective Ansible playbook. This will create all project-related resources such as web server configuration, SSL certificates and start up containers.
 
 {% hint style="info" %}
 Only servers that have been set up using the StackHead **server setup** can be deployed onto!

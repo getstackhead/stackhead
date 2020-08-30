@@ -1,3 +1,7 @@
+---
+description: A list of all available StackHead modules.
+---
+
 # List of modules
 
 ## Webserver
