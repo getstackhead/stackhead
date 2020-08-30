@@ -1,0 +1,14 @@
+{
+    "name": "getstackhead/project-validator",
+    "description": "Validates your project definition files",
+    "type": "library",
+    "license": "GPLv3",
+    "bin": ["bin/project-validator"],
+    "authors": [
+        {
+            "name": "Mario Lubenka",
+            "email": "mario.lubenka@googlemail.com"
+        }
+    ],
+    "require": {}
+}
