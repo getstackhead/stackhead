@@ -4,7 +4,8 @@ name: Lint Code Base
 on:
   push:
     branches-ignore:
-      - 'master'
+      - master
+      - next
 
 jobs:
   build:
