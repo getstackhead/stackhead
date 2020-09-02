@@ -1,3 +1,3 @@
 dependencies:
   - role: andrewrothstein.terraform
-    version: v2.2.43
+    version: v2.2.47
