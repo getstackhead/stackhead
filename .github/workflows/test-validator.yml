@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - next
     paths:
       - validation/**
       - .github/workflows/test-validator.yml

@@ -5,6 +5,7 @@ on:
     types: [opened, labeled, unlabeled, synchronize]
     branches:
       - master
+      - next
     paths:
       - ansible/**
       - .github/workflows/test-ansible.yml
