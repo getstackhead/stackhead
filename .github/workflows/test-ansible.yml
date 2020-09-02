@@ -85,6 +85,7 @@ jobs:
         domain: '${{ env.DOMAIN }}'
         domain2: 'sub.${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
+        selftest: '1'
     #- uses: mxschmitt/action-tmate@v2
     #  if: always() && matrix.webserver == 'caddy'
     - name: Remove DNS record
