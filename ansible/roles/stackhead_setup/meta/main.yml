@@ -1,3 +1,0 @@
-dependencies:
-  - role: andrewrothstein.terraform
-    version: v2.2.47
