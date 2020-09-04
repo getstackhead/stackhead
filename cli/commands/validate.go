@@ -9,6 +9,7 @@ import (
 	"github.com/getstackhead/stackhead/cli/jsonschema"
 )
 
+// Validate is a command object for Cobra that provides the validate command
 var Validate = &cobra.Command{
 	Use:     "validate [path to project definition file]",
 	Example: "validate ./my-project-definition.yml",

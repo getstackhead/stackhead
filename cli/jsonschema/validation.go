@@ -41,11 +41,11 @@ func ValidateFile(filePath string) (*gojsonschema.Result, error) {
 	}
 
 	// YAML to JSON
-	configJson, err := yaml.YAMLToJSON(configData)
+	configJSON, err := yaml.YAMLToJSON(configData)
 	if err != nil {
 		return nil, err
 	}
-	documentLoader := gojsonschema.NewBytesLoader(configJson)
+	documentLoader := gojsonschema.NewBytesLoader(configJSON)
 
 	return gojsonschema.Validate(schemaLoader, documentLoader)
 }
