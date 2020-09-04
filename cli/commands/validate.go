@@ -10,10 +10,11 @@ import (
 )
 
 var Validate = &cobra.Command{
-	Use:   "validate [path to project definition file]",
-	Short: "Validate a project definition file",
-	Long:  `validate is used to make sure your project definition file meets the StackHead project definition syntax.`,
-	Args:  cobra.ExactArgs(1),
+	Use:     "validate [path to project definition file]",
+	Example: "validate ./my-project-definition.yml",
+	Short:   "Validate a project definition file",
+	Long:    `validate is used to make sure your project definition file meets the StackHead project definition syntax.`,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		result, err := jsonschema.ValidateFile(args[0])
 
