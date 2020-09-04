@@ -6,6 +6,11 @@ The playbooks below are available to be run via `ansible-playbook`:
 ansible-playbook $ANSIBLE_COLLECTION_PATH/getstackhead/stackhead/playbooks/[file] -i path/to/inventory.yml
 ```
 
+{% hint style="info" %}
+`$ANSIBLE_COLLECTION_PATH` refers to the location where your Ansible collections are being installed to.
+Per default this should be `~/.ansible/collections/ansible_collections/`.
+{% endhint %}
+
 | File | Description |
 | :--- | :--- |
 | server-provision.yml | Perform [server setup](workflow.md) on all servers in inventory file |
