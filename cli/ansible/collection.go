@@ -1,14 +1,38 @@
 package ansible
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
+
+func GetAnsibleVersion() (string, error) {
+	cmd := exec.Command("ansible", "--version")
+	var stdoutBuffer = new(bytes.Buffer)
+	cmd.Stdout = stdoutBuffer
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	return extractAnsibleVersion(stdoutBuffer.String()), nil
+}
+
+// extractAnsibleVersion extracts the version from version output
+func extractAnsibleVersion(versionCmdOutput string) string {
+	lines := strings.Split(versionCmdOutput, "\n")
+	versionLine := lines[0]
+
+	// First line outputs e.g. "ansible 2.10.0"
+	r, _ := regexp.Compile("\\w+ (\\d+.\\d+.\\d+)")
+	return r.FindStringSubmatch(versionLine)[1]
+}
 
 func GetCollectionDirs() ([]string, error) {
 	var customCollectionPath = viper.GetString("ansible.collection_path")

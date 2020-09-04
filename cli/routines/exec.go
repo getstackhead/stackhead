@@ -1,6 +1,7 @@
 package routines
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,12 +14,18 @@ import (
 
 func Exec(name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
+	var errBuffer = new(bytes.Buffer)
 	if viper.GetBool("verbose") {
 		fmt.Fprintln(os.Stdout, fmt.Sprintf("Executing command: %s", strings.Join(append([]string{name}, arg...), " ")))
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stdout
+	} else {
+		cmd.Stderr = errBuffer
 	}
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf(errBuffer.String())
+	}
+	return nil
 }
 
 func ExecAnsibleGalaxy(args ...string) error {

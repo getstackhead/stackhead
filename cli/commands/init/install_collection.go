@@ -1,6 +1,7 @@
 package commands_init
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/getstackhead/stackhead/cli/ansible"
@@ -28,8 +29,17 @@ var InstallCollection = []routines.TaskOption{
 	routines.Text("Installing StackHead Ansible collection"),
 	routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
 		defer wg.Done()
+		var err error
 
-		err := installCollection()
+		// Check if Ansible is installed
+		_, err = ansible.GetAnsibleVersion()
+		if err != nil {
+			err = fmt.Errorf("Ansible could not be found on your system. Please install it.")
+		}
+
+		if err == nil {
+			err = installCollection()
+		}
 		if err == nil {
 			err = installCollectionDependencies()
 		}
