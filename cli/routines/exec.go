@@ -36,3 +36,11 @@ func ExecAnsibleGalaxy(args ...string) error {
 	args = append(args, "-p "+collectionDir[0])
 	return Exec("ansible-galaxy", args...)
 }
+
+func ExecAnsiblePlaybook(playbookName string, inventoryPath string) error {
+	stackHeadLocation, err := ansible.GetStackHeadCollectionLocation()
+	if err != nil {
+		return err
+	}
+	return Exec("ansible-playbook", stackHeadLocation+"/playbooks/"+playbookName+".yml", "-i", inventoryPath)
+}
