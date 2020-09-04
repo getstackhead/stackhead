@@ -9,9 +9,10 @@ The following software has to already be installed on your system to use StackHe
 
 ## Installing StackHead
 
-StackHead consists of multiple Ansible playbooks which you can install as Ansible collection:
+Get the latest StackHead binary from our GitHub repository.
+
+Then run the following command to install the StackHead Ansible collection and dependencies.
 
 ```bash
-ansible-galaxy collection install git+https://github.com/getstackhead/stackhead.git
+stackhead-cli init
 ```
-
