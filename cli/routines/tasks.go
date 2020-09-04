@@ -11,19 +11,19 @@ import (
 )
 
 const (
-	InfoColor    = "\033[1;34m%s\033[0m%s"
-	NoticeColor  = "\033[1;36m%s\033[0m%s"
-	WarningColor = "\033[1;33m%s\033[0m%s"
-	ErrorColor   = "\033[1;31m%s\033[0m%s"
+	// ErrorColor colors the first text red and the second text default color
+	ErrorColor = "\033[1;31m%s\033[0m%s"
+	// SuccessColor colors the first text green and the second text default color
 	SuccessColor = "\033[1;32m%s\033[0m%s"
-	DebugColor   = "\033[0;36m%s\033[0m%s"
 )
 
+// TaskOptions is a configuration used to define the behaviour of tasks and processing functions
 type TaskOptions struct {
 	Text    string
 	Execute func(wg *sync.WaitGroup, results chan TaskResult)
 }
 
+// TaskResult is the result of a task execution and expected to be returned into the respective channel
 type TaskResult struct {
 	// internal name
 	Name    string
@@ -31,20 +31,24 @@ type TaskResult struct {
 	Error   bool
 }
 
+// Text assigns the given text to TaskOption.Text
 func Text(text string) TaskOption {
 	return func(args *TaskOptions) {
 		args.Text = text
 	}
 }
 
+// Execute assigns the given execution function to TaskOption.Execute
 func Execute(executeFunc func(wg *sync.WaitGroup, results chan TaskResult)) TaskOption {
 	return func(args *TaskOptions) {
 		args.Execute = executeFunc
 	}
 }
 
+// TaskOption is a single task setting
 type TaskOption func(*TaskOptions)
 
+// RunTask executes a task that can be configured using task options
 func RunTask(options ...TaskOption) {
 	t := &TaskOptions{
 		Text: "Processing...",

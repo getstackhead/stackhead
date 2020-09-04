@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// GetAnsibleVersion returns the installed Ansible version. Returns error if not installed
 func GetAnsibleVersion() (string, error) {
 	cmd := exec.Command("ansible", "--version")
 	var stdoutBuffer = new(bytes.Buffer)
@@ -34,6 +35,7 @@ func extractAnsibleVersion(versionCmdOutput string) string {
 	return r.FindStringSubmatch(versionLine)[1]
 }
 
+// GetCollectionDirs returns a list of Ansible collection paths from config or environment
 func GetCollectionDirs() ([]string, error) {
 	var customCollectionPath = viper.GetString("ansible.collection_path")
 	if customCollectionPath != "" {
@@ -63,6 +65,7 @@ func GetCollectionDirs() ([]string, error) {
 	return pathList, nil
 }
 
+// GetStackHeadCollectionLocation returns the exact path of where the StackHead collection has been installed to
 func GetStackHeadCollectionLocation() (string, error) {
 	collectionDirs, err := GetCollectionDirs()
 	if err != nil {

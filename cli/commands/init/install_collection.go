@@ -1,4 +1,4 @@
-package commands_init
+package commandsinit
 
 import (
 	"fmt"
@@ -25,6 +25,7 @@ func installCollectionDependencies() error {
 	)
 }
 
+// InstallCollection is a list of task options that provide the actual workflow being run
 var InstallCollection = []routines.TaskOption{
 	routines.Text("Installing StackHead Ansible collection"),
 	routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
@@ -34,7 +35,7 @@ var InstallCollection = []routines.TaskOption{
 		// Check if Ansible is installed
 		_, err = ansible.GetAnsibleVersion()
 		if err != nil {
-			err = fmt.Errorf("Ansible could not be found on your system. Please install it.")
+			err = fmt.Errorf(fmt.Sprintf("Ansible could not be found on your system. Please install it."))
 		}
 
 		if err == nil {

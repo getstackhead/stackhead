@@ -1,4 +1,4 @@
-package commands_init
+package commandsinit
 
 import (
 	"fmt"
@@ -70,6 +70,7 @@ func installStackHeadModules() error {
 	return nil
 }
 
+// InstallModules is a list of task options that provide the actual workflow being run
 var InstallModules = []routines.TaskOption{
 	routines.Text("Installing StackHead modules"),
 	routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {

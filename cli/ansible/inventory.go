@@ -7,18 +7,23 @@ import (
 	"text/template"
 )
 
+// InventoryOptions is a configuration used during creation of the temporary inventory file
 type InventoryOptions struct {
-	IpAddress string
+	IPAddress string
 }
 
-func IpAddress(text string) InventoryOption {
+// IPAddress sets the corresponding inventory option
+func IPAddress(ipAddress string) InventoryOption {
 	return func(args *InventoryOptions) {
-		args.IpAddress = text
+		args.IPAddress = ipAddress
 	}
 }
 
+// InventoryOption is a single inventory setting
 type InventoryOption func(*InventoryOptions)
 
+// CreateInventoryFile creates a temporary inventory file with the given settings and returns an absolute file path.
+// Note: make sure to remove the file when you don't need it anymore!
 func CreateInventoryFile(options ...InventoryOption) (string, error) {
 	opts := &InventoryOptions{}
 	for _, setter := range options {
@@ -44,7 +49,7 @@ all:
     ansible_connection: ssh
   hosts:
     mackerel:
-      ansible_host: {{ .IpAddress }}
+      ansible_host: {{ .IPAddress }}
 `)
 
 	if err = t.Execute(tmpFile, opts); err != nil {

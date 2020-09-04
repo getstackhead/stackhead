@@ -12,6 +12,7 @@ import (
 	"github.com/getstackhead/stackhead/cli/ansible"
 )
 
+// Exec is a wrapper function around exec.Command with additional settings for this CLI
 func Exec(name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
 	var errBuffer = new(bytes.Buffer)
@@ -28,6 +29,7 @@ func Exec(name string, arg ...string) error {
 	return nil
 }
 
+// ExecAnsibleGalaxy is shortcut for executing a command via ansible-galaxy binary
 func ExecAnsibleGalaxy(args ...string) error {
 	collectionDir, err := ansible.GetCollectionDirs()
 	if err != nil {
@@ -37,6 +39,7 @@ func ExecAnsibleGalaxy(args ...string) error {
 	return Exec("ansible-galaxy", args...)
 }
 
+// ExecAnsiblePlaybook is shortcut for executing a playbook within the StackHead collection via ansible-playbook binary
 func ExecAnsiblePlaybook(playbookName string, inventoryPath string) error {
 	stackHeadLocation, err := ansible.GetStackHeadCollectionLocation()
 	if err != nil {

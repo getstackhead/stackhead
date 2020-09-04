@@ -7,6 +7,7 @@ import (
 	"github.com/getstackhead/stackhead/cli/routines"
 )
 
+// Init is a command object for Cobra that provides the init command
 var Init = &cobra.Command{
 	Use:   "init",
 	Short: "Install StackHead dependencies according to configuration file",
@@ -14,7 +15,7 @@ var Init = &cobra.Command{
 If no configuration file exists, it will start a wizard to create one.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		routines.RunTask(commands_init.InstallCollection...)
-		routines.RunTask(commands_init.InstallModules...)
+		routines.RunTask(commandsinit.InstallCollection...)
+		routines.RunTask(commandsinit.InstallModules...)
 	},
 }

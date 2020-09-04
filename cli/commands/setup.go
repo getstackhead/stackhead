@@ -11,6 +11,7 @@ import (
 	"github.com/getstackhead/stackhead/cli/routines"
 )
 
+// SetupServer is a command object for Cobra that provides the setup command
 var SetupServer = &cobra.Command{
 	Use:     "setup [ipv4 address]",
 	Example: "setup 192.168.178.14",
@@ -24,7 +25,7 @@ var SetupServer = &cobra.Command{
 				defer wg.Done()
 
 				// Generate Inventory file
-				inventoryFile, err := ansible.CreateInventoryFile(ansible.IpAddress(args[0]))
+				inventoryFile, err := ansible.CreateInventoryFile(ansible.IPAddress(args[0]))
 				if err == nil {
 					defer os.Remove(inventoryFile)
 					err = routines.ExecAnsiblePlaybook("server-provision", inventoryFile)
