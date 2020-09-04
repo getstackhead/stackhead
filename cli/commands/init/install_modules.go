@@ -2,9 +2,10 @@ package commands_init
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"strings"
 	"sync"
+
+	"github.com/spf13/viper"
 
 	"github.com/getstackhead/stackhead/cli/routines"
 	"github.com/getstackhead/stackhead/cli/stackhead"

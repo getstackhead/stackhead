@@ -25,6 +25,8 @@ type TaskOptions struct {
 }
 
 type TaskResult struct {
+	// internal name
+	Name    string
 	Message string
 	Error   bool
 }
