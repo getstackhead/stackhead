@@ -43,7 +43,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show more output")
 
 	rootCmd.AddCommand(commands.Validate)
-	rootCmd.AddCommand(commands.Init)
+	rootCmd.AddCommand(commands.Init())
 	rootCmd.AddCommand(commands.SetupServer)
 }
 

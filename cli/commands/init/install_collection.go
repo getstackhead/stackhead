@@ -8,9 +8,13 @@ import (
 	"github.com/getstackhead/stackhead/cli/routines"
 )
 
-func installCollection() error {
+func installCollection(version string) error {
+	repoPath := "git+https://github.com/getstackhead/stackhead.git"
+	if len(version) > 0 {
+		repoPath += "," + version
+	}
 	return routines.ExecAnsibleGalaxy(
-		"collection", "install", "git+https://github.com/getstackhead/stackhead.git",
+		"collection", "install", repoPath,
 	)
 }
 
@@ -26,32 +30,38 @@ func installCollectionDependencies() error {
 }
 
 // InstallCollection is a list of task options that provide the actual workflow being run
-var InstallCollection = []routines.TaskOption{
-	routines.Text("Installing StackHead Ansible collection"),
-	routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
-		defer wg.Done()
-		var err error
+func InstallCollection(version string) []routines.TaskOption {
+	text := "Installing StackHead Ansible collection"
+	if len(version) > 0 {
+		text += " (version: " + version + ")"
+	}
+	return []routines.TaskOption{
+		routines.Text(text),
+		routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
+			defer wg.Done()
+			var err error
 
-		// Check if Ansible is installed
-		_, err = ansible.GetAnsibleVersion()
-		if err != nil {
-			err = fmt.Errorf(fmt.Sprintf("Ansible could not be found on your system. Please install it."))
-		}
+			// Check if Ansible is installed
+			_, err = ansible.GetAnsibleVersion()
+			if err != nil {
+				err = fmt.Errorf(fmt.Sprintf("Ansible could not be found on your system. Please install it."))
+			}
 
-		if err == nil {
-			err = installCollection()
-		}
-		if err == nil {
-			err = installCollectionDependencies()
-		}
+			if err == nil {
+				err = installCollection(version)
+			}
+			if err == nil {
+				err = installCollectionDependencies()
+			}
 
-		taskResult := routines.TaskResult{
-			Error: err != nil,
-		}
-		if err != nil {
-			taskResult.Message = err.Error()
-		}
+			taskResult := routines.TaskResult{
+				Error: err != nil,
+			}
+			if err != nil {
+				taskResult.Message = err.Error()
+			}
 
-		result <- taskResult
-	}),
+			result <- taskResult
+		}),
+	}
 }
