@@ -21,7 +21,7 @@ func SplitModuleName(moduleName string) (string, string, string) {
 func GetModuleBaseName(moduleName string) string {
 	moduleName = RemoveVendor(moduleName)
 	moduleType := GetModuleType(moduleName)
-	return strings.TrimPrefix(moduleName, moduleType + "_")
+	return strings.TrimPrefix(moduleName, moduleType+"_")
 }
 
 // ExtractVendor returns the vendor name of a given module name (e.g. getstackhead in getstackhead.stackhead_webserver_nginx)
