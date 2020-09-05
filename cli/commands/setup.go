@@ -20,7 +20,7 @@ var SetupServer = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		routines.RunTask(
-			routines.Text(fmt.Sprintf("Deploying to server at IP \"%s\"", args[0])),
+			routines.Text(fmt.Sprintf("Setting up server at IP \"%s\"", args[0])),
 			routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
 				defer wg.Done()
 
