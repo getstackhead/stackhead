@@ -35,8 +35,8 @@ jobs:
           name: stackhead-cli
           path: cli/bin/stackhead-cli
 
-  test:
-    name: Test
+  test-unit:
+    name: Unit Test
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -52,3 +52,100 @@ jobs:
       - name: Test
         working-directory: cli
         run: go test ./...
+
+  checkLabel:
+    needs: build
+    name: Please request integration test and review
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - run: if [ ${{ contains( github.event.pull_request.labels.*.name, 'action/integration-test') }} == false ]; then exit 1; else exit 0; fi
+
+  test-integration:
+    name: Integration Test
+    needs: checkLabel
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    env:
+      INVENTORY_PATH: ansible/__tests__/inventory.yml
+      DOMAIN: pr-${{ github.run_id }}-cli.test.stackhead.io
+    steps:
+      - uses: actions/checkout@v2
+      - name: Print Ansible version
+        run: ansible --version
+      - uses: webfactory/ssh-agent@v0.2.0
+        with:
+          ssh-private-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Setup Hetzner server
+        id: setup_server
+        uses: saitho/hetzner-cloud-action@v1.1.0
+        with:
+          action: create
+          server_name: "pr-${{ github.run_id }}-cli"
+          server_image: ubuntu-18.04
+          server_location: fsn1
+          server_ssh_key_name: gh-actions
+          wait_for_ssh: 1
+        env:
+          API_TOKEN: ${{ secrets.HETZNER_TOKEN }}
+      - name: Add DNS record
+        uses: saitho/create-dns-record@patch-1
+        with:
+          type: "A"
+          name: "${{ env.DOMAIN }}"
+          content: "${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}"
+          ttl: 1
+          proxied: 0
+          token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+          zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+      - name: Add DNS record for subdomain
+        uses: saitho/create-dns-record@patch-1
+        with:
+          type: "A"
+          name: "sub.${{ env.DOMAIN }}"
+          content: "${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}"
+          ttl: 1
+          proxied: 0
+          token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+          zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+      - name: Download StackHead CLI artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: stackhead-cli
+          path: /home/runner/bin
+      - name: Set execution permission on binary
+        run: chmod +x /home/runner/bin/stackhead-cli
+        working-directory: /home/runner/bin
+      - name: Perform integration test
+        uses: ./
+        with:
+          ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
+          domain: '${{ env.DOMAIN }}'
+          domain2: 'sub.${{ env.DOMAIN }}'
+          webserver: nginx # when using cli "getstackhead.stackhead_webserver_" prefix is added automatically
+          selftest: 1
+          cli: 1
+          cli_bin_path: /home/runner/bin/stackhead-cli
+          version: "${{ github.ref }}"
+      - name: Remove DNS record
+        uses: saitho/delete-dns-record@saitho-patch-1
+        if: always()
+        with:
+          name: "${{ env.DOMAIN }}"
+          token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+          zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+      - name: Remove DNS record for subdomain
+        uses: saitho/delete-dns-record@saitho-patch-1
+        if: always()
+        with:
+          name: "sub.${{ env.DOMAIN }}"
+          token: "${{ secrets.CLOUDFLARE_TOKEN }}"
+          zone: "${{ secrets.CLOUDFLARE_ZONE }}"
+      - name: Remove Hetzner server
+        uses: saitho/hetzner-cloud-action@v1.1.0
+        if: always()
+        with:
+          action: remove
+          server_id: "${{ steps.setup_server.outputs.hcloud_server_id }}"
+        env:
+          API_TOKEN: ${{ secrets.HETZNER_TOKEN }}

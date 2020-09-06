@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: fauguste/auto-cancellation-running-action@0.1.2
         with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          githubToken: ${{ secrets.GH_TOKEN }}

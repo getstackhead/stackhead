@@ -12,7 +12,8 @@ inputs:
     required: true
   webserver:
     description: 'Webserver module to use'
-    required: true
+    required: false
+    default: getstackhead.stackhead_webserver_nginx
   container:
     description: 'Container module to use'
     required: false
@@ -22,6 +23,12 @@ inputs:
     required: false
   selftest:
     description: 'Set if this test is run on the StackHead main repository'
+    required: false
+  cli:
+    description: 'Set if this test should be run with StackHead CLI instead of Ansible'
+    required: false
+  cli_bin_path:
+    description: 'Path to CLI binary'
     required: false
 runs:
   using: "composite"
@@ -33,6 +40,9 @@ runs:
       shell: bash
       env:
         INPUT_ROLENAME: ${{ inputs.rolename }}
+        INPUT_WEBSERVER: ${{ inputs.webserver }}
+        INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
       run: ${{ github.action_path }}/ansible/__tests__/steps/build.sh
     - name: "Setup server"
       shell: bash
@@ -42,6 +52,9 @@ runs:
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
+        INPUT_CLI: ${{ inputs.cli }}
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
       run: ${{ github.action_path }}/ansible/__tests__/steps/setup.sh
     - name: "Deploy application"
       shell: bash
@@ -52,12 +65,20 @@ runs:
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_CLI: ${{ inputs.cli }}
+        INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Validate deployment"
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/validate.sh
       env:
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
+        INPUT_CLI: ${{ inputs.cli }}
+        INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Destroy deployment"
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/destroy.sh
+      env:
+        INPUT_IPADDRESS: ${{ inputs.ipaddress }}
+        INPUT_CLI: ${{ inputs.cli }}
+        INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
