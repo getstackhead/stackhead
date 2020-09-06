@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/getstackhead/stackhead/cli/ansible"
 	"github.com/getstackhead/stackhead/cli/jsonschema"
 )
 
@@ -17,7 +18,11 @@ var Validate = &cobra.Command{
 	Long:    `validate is used to make sure your project definition file meets the StackHead project definition syntax.`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		result, err := jsonschema.ValidateFile(args[0])
+		var collectionDir, err = ansible.GetStackHeadCollectionLocation()
+		if err != nil {
+			panic(err.Error())
+		}
+		result, err := jsonschema.ValidateFile(collectionDir, args[0])
 
 		if err != nil {
 			panic(err.Error())

@@ -7,8 +7,6 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/xeipuuv/gojsonschema"
-
-	"github.com/getstackhead/stackhead/cli/ansible"
 )
 
 // isInternalError determines if a given error message is related to the schema requirements itself
@@ -28,12 +26,13 @@ func isInternalError(errorType string) bool {
 }
 
 // ValidateFile validates the contents of filePath with the schema
-func ValidateFile(filePath string) (*gojsonschema.Result, error) {
-	var collectionDir, err = ansible.GetStackHeadCollectionLocation()
+func ValidateFile(collectionDir string, filePath string) (*gojsonschema.Result, error) {
+	collectionAbsDir, err := filepath.Abs(collectionDir)
 	if err != nil {
 		return nil, err
 	}
-	schemaLoader := gojsonschema.NewReferenceLoader("file://" + filepath.Join(collectionDir, "schema", "project-definition.schema.json"))
+
+	schemaLoader := gojsonschema.NewReferenceLoader("file://" + filepath.Join(collectionAbsDir, "schema", "project-definition.schema.json"))
 
 	configData, err := ioutil.ReadFile(filePath)
 	if err != nil {
