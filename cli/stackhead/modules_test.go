@@ -142,7 +142,7 @@ func TestIsContainerModule(t *testing.T) {
 	})
 }
 
-func GetModuleType(t *testing.T) {
+func TestGetModuleType(t *testing.T) {
 	Convey("get module type of module name", t, func() {
 		Convey("webserver module", func() {
 			moduleType := stackhead.GetModuleType("getstackhead.stackhead_webserver_nginx")

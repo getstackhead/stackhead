@@ -22,17 +22,17 @@ func GetAnsibleVersion() (string, error) {
 		return "", err
 	}
 
-	return extractAnsibleVersion(stdoutBuffer.String()), nil
+	return extractAnsibleVersion(stdoutBuffer.String())
 }
 
 // extractAnsibleVersion extracts the version from version output
-func extractAnsibleVersion(versionCmdOutput string) string {
+func extractAnsibleVersion(versionCmdOutput string) (string, error) {
 	lines := strings.Split(versionCmdOutput, "\n")
 	versionLine := lines[0]
 
 	// First line outputs e.g. "ansible 2.10.0"
-	r, _ := regexp.Compile("\\w+ (\\d+.\\d+.\\d+)")
-	return r.FindStringSubmatch(versionLine)[1]
+	r := regexp.MustCompile(`\w+ (\d+.\d+.\d+)`)
+	return r.FindStringSubmatch(versionLine)[1], nil
 }
 
 // GetCollectionDirs returns a list of Ansible collection paths from config or environment

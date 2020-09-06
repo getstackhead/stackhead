@@ -12,9 +12,9 @@ import (
 
 const (
 	// ErrorColor colors the first text red and the second text default color
-	ErrorColor = "\033[1;31m%s\033[0m%s"
+	ErrorColor = "\033[1;31m%s\033[0m%s\n"
 	// SuccessColor colors the first text green and the second text default color
-	SuccessColor = "\033[1;32m%s\033[0m%s"
+	SuccessColor = "\033[1;32m%s\033[0m%s\n"
 )
 
 // TaskOptions is a configuration used to define the behaviour of tasks and processing functions
@@ -60,9 +60,10 @@ func RunTask(options ...TaskOption) {
 	// Disable spinner when verbose mode is enabled as it does not like additional stdout messages
 	var s *spinner.Spinner
 	if viper.GetBool("verbose") {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf("⌛ %s", t.Text))
+		_, _ = fmt.Fprintf(os.Stdout, "⌛ %s\n", t.Text)
 	} else {
 		s = spinner.New(spinner.CharSets[11], 150*time.Millisecond)
+		//s.ShowTimeElapsed = true
 		s.Reverse()
 		s.Suffix = " " + t.Text
 		s.Start()
@@ -82,8 +83,8 @@ func RunTask(options ...TaskOption) {
 		result.Message = t.Text
 	}
 	if result.Error {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf(ErrorColor, "✗ ", result.Message))
+		fmt.Fprintf(os.Stdout, ErrorColor, "✗ ", result.Message)
 	} else {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf(SuccessColor, "✓ ", result.Message))
+		fmt.Fprintf(os.Stdout, SuccessColor, "✓ ", result.Message)
 	}
 }

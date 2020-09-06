@@ -44,7 +44,7 @@ func InstallCollection(version string) []routines.TaskOption {
 			// Check if Ansible is installed
 			_, err = ansible.GetAnsibleVersion()
 			if err != nil {
-				err = fmt.Errorf(fmt.Sprintf("Ansible could not be found on your system. Please install it."))
+				err = fmt.Errorf("I could not find Ansible on your system. Please install it")
 			}
 
 			if err == nil {

@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/getstackhead/stackhead/cli/commands/init"
+	commandsinit "github.com/getstackhead/stackhead/cli/commands/init"
 	"github.com/getstackhead/stackhead/cli/routines"
 )
 

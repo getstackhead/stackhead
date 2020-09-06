@@ -17,7 +17,10 @@ func Exec(name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
 	var errBuffer = new(bytes.Buffer)
 	if viper.GetBool("verbose") {
-		fmt.Fprintln(os.Stdout, fmt.Sprintf("Executing command: %s", strings.Join(append([]string{name}, arg...), " ")))
+		_, err := fmt.Fprintf(os.Stdout, "Executing command: %s\n", strings.Join(append([]string{name}, arg...), " "))
+		if err != nil {
+			return err
+		}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stdout
 	} else {

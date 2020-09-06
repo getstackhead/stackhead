@@ -30,9 +30,12 @@ var Validate = &cobra.Command{
 
 		errorMessage := jsonschema.ShouldValidate(result)
 		if len(errorMessage) == 0 {
-			_, err = fmt.Fprintln(os.Stdout, "The project definition is valid")
+			_, err = fmt.Fprintf(os.Stdout, "The project definition is valid.\n")
 		} else {
-			_, err = fmt.Fprintln(os.Stderr, errorMessage)
+			_, err = fmt.Fprintf(os.Stderr, errorMessage+"\n")
+			if err != nil {
+				panic(err.Error())
+			}
 			os.Exit(1)
 		}
 		if err != nil {

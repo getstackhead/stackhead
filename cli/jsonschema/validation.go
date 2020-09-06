@@ -53,10 +53,10 @@ func ValidateFile(collectionDir string, filePath string) (*gojsonschema.Result, 
 // signature uses interface{} and unused paremter because this method is also used in tests with Convey
 func ShouldValidate(actual interface{}, _ ...interface{}) string {
 	result := actual.(*gojsonschema.Result)
-	if result.Valid() == true {
+	if result.Valid() {
 		return ""
 	}
-	errorMessage := fmt.Sprintf("The project definition is not valid. see errors:\n")
+	errorMessage := "The project definition is not valid. see errors:\n"
 
 	for _, desc := range result.Errors() {
 		if isInternalError(desc.Type()) {

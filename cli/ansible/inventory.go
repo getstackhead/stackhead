@@ -39,7 +39,7 @@ func copyFile(srcPath string, destPath string) error {
 		return err
 	}
 
-	if err = ioutil.WriteFile(destPath, input, 0644); err != nil {
+	if err = ioutil.WriteFile(destPath, input, 0600); err != nil {
 		return err
 	}
 	return nil
@@ -73,6 +73,9 @@ func CreateInventoryFile(options ...InventoryOption) (string, error) {
 
 		// Copy project definition file
 		err = copyFile(opts.ProjectDefinitionFile, filepath.Join(opts.TmpProjectDefinitionFolder, projectDefinitionFile))
+		if err != nil {
+			return "", err
+		}
 
 		opts.ProjectDefinitionFileName = projectDefinitionFile
 		opts.ProjectDefinitionFileName = strings.TrimSuffix(opts.ProjectDefinitionFileName, ".yml")
@@ -93,13 +96,16 @@ all:
         applications:
           - {{ .ProjectDefinitionFileName }}
 `)
+	if err != nil {
+		return "", err
+	}
 
 	if err = t.Execute(tmpFile, opts); err != nil {
 		return "", err
 	}
 
 	// Close the file
-	if err := tmpFile.Close(); err != nil {
+	if err = tmpFile.Close(); err != nil {
 		return "", err
 	}
 
