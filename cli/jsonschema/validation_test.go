@@ -28,9 +28,9 @@ func collectYamlFiles(folder string) []string {
 
 func TestValidDefinitions(t *testing.T) {
 	Convey("test valid definitions", t, func() {
-		for _, file := range collectYamlFiles("../../validation/examples/valid") {
+		for _, file := range collectYamlFiles(filepath.Join("..", "..", "validation", "examples", "valid")) {
 			Convey(fmt.Sprintf("file %s should validate", file), func() {
-				result, err := jsonschema.ValidateFile(file)
+				result, err := jsonschema.ValidateFile(filepath.Join("..", "..", "ansible"), file)
 				So(err, ShouldBeNil)
 				So(result, jsonschema.ShouldValidate)
 			})
@@ -40,9 +40,9 @@ func TestValidDefinitions(t *testing.T) {
 
 func TestInvalidDefinitions(t *testing.T) {
 	Convey("test invalid definitions", t, func() {
-		for _, file := range collectYamlFiles("../../validation/examples/invalid") {
+		for _, file := range collectYamlFiles(filepath.Join("..", "..", "validation", "examples", "invalid")) {
 			Convey(fmt.Sprintf("file %s should not validate", file), func() {
-				result, err := jsonschema.ValidateFile(file)
+				result, err := jsonschema.ValidateFile(filepath.Join("..", "..", "ansible"), file)
 				So(err, ShouldBeNil)
 				So(result, ShouldNotValidate)
 			})
