@@ -63,7 +63,7 @@ func RunTask(options ...TaskOption) {
 		_, _ = fmt.Fprintf(os.Stdout, "⌛ %s\n", t.Text)
 	} else {
 		s = spinner.New(spinner.CharSets[11], 150*time.Millisecond)
-		//s.ShowTimeElapsed = true
+		// s.ShowTimeElapsed = true
 		s.Reverse()
 		s.Suffix = " " + t.Text
 		s.Start()
