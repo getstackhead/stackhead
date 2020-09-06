@@ -54,7 +54,6 @@ func ShouldNotValidate(actual interface{}, _ ...interface{}) string {
 	result := jsonschema.ShouldValidate(actual)
 	if result == "" { // file validated
 		return "File validated (it should not)"
-	} else {
-		return ""
 	}
+	return ""
 }

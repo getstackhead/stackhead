@@ -21,7 +21,7 @@ func collectModules() []string {
 	}
 	webserver, err = stackhead.AutoCompleteModuleName(webserver, stackhead.ModuleWebserver)
 	if err != nil {
-		// error
+		panic(err.Error())
 	}
 	modules = append(modules, webserver)
 
@@ -31,7 +31,7 @@ func collectModules() []string {
 	}
 	container, err = stackhead.AutoCompleteModuleName(container, stackhead.ModuleContainer)
 	if err != nil {
-		// error
+		panic(err.Error())
 	}
 
 	modules = append(modules, container)
