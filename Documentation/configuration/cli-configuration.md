@@ -14,5 +14,5 @@ modules:
 
 {% hint style="info" %}
 Modules are resolved automatically to StackHead namespace, e.g. the webserver value `nginx` is treated as `getstackhead.stackhead_webserver_nginx`.
-If you're not using an official StackHead module, please make sure to add the vendor name (e.g. `acme.myserver`).
+If you're not using an official StackHead module, please make sure to add the vendor name (e.g. `acme.stackhead_webserver_nginx`).
 {% endhint %}
