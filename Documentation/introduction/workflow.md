@@ -16,12 +16,6 @@ This information is stored inside a [**project definition** file](../configurati
 
 Based on the project definition file, StackHead will take care setting up the required configuration. It will start up the specified Docker containers and set up the required web server configuration.
 
-## Ansible inventory
-
-Ansible is used to connect to the remote server. The information on the remote servers are stored in a inventory file. For more information on Ansible inventories in general, please have a look at the [official Ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html).
-
-For each host you can define which projects should run there. Also, using [capabilities](https://github.com/getstackhead/stackhead/tree/6ca2bd55402c905abf8800901fe17f81ad066cf8/Documentation/configuration/capabilities.md) you can install additional software environments during server setup.
-
 ## Server setup
 
 During server setup all software and utilities that are required to set up your projects with StackHead are installed. Such may include Terraform, container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
