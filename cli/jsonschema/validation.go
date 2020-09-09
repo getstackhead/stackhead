@@ -3,6 +3,7 @@ package jsonschema
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/ghodss/yaml"
@@ -32,7 +33,12 @@ func ValidateFile(collectionDir string, filePath string) (*gojsonschema.Result, 
 		return nil, err
 	}
 
-	schemaLoader := gojsonschema.NewReferenceLoader("file://" + filepath.Join(collectionAbsDir, "schema", "project-definition.schema.json"))
+	schemaPath := filepath.Join(collectionAbsDir, "schema", "project-definition.schema.json")
+	_, err = os.Stat(schemaPath)
+	if os.IsNotExist(err) {
+		return nil, fmt.Errorf("StackHead project definition schema could not be found")
+	}
+	schemaLoader := gojsonschema.NewReferenceLoader("file://" + schemaPath)
 
 	configData, err := ioutil.ReadFile(filePath)
 	if err != nil {
