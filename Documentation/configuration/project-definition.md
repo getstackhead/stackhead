@@ -60,6 +60,34 @@ Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatic
 Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
 {% endhint %}
 
+## domains.\*.security
+
+These options can be used to add further security to your projects.
+
+### authentication
+
+The authentication setting with `type: basic` will require the user to log in with a name and password.
+You may specify how many users you like.
+
+Removing the `authentication` section will remove the file containing the usernames and passwords for your project.
+
+```yaml
+domains:
+  - domain: mydomain.com
+    security:
+      authentication:
+        - type: basic
+          username: user1
+          password: pass1
+        - type: basic
+          username: user2
+          password: pass2
+```
+
+{% hint style="info" %}
+Right now, removing a single entry from the list and redeploying the project will NOT remove the user settings from the authentication file.
+{% endhint %}
+
 ## container.services
 
 The following configuration options are available inside a service definition:

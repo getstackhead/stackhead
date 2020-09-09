@@ -11,8 +11,8 @@
 
 ## Configuration
 
+* [CLI configuration](configuration/cli-configuration.md)
 * [Project definition](configuration/project-definition.md)
-* [Security](configuration/security.md)
 
 ## StackHead modules
 
