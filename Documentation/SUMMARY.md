@@ -5,6 +5,7 @@
 ## Introduction
 
 * [Installation](introduction/installation.md)
+* [Commands](introduction/commands.md)
 * [Getting started](introduction/getting-started.md)
 * [Workflow](introduction/workflow.md)
 * [Playbooks](introduction/plays.md)
