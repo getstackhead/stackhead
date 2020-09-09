@@ -78,5 +78,5 @@ func GetStackHeadCollectionLocation() (string, error) {
 			return installPath, nil
 		}
 	}
-	return "", fmt.Errorf("unable to find StackHead Ansible collection ")
+	return "", fmt.Errorf("unable to find StackHead Ansible collection. Make sure to install it with \"stackhead-cli init\"")
 }

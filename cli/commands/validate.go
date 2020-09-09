@@ -20,7 +20,11 @@ var Validate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var collectionDir, err = ansible.GetStackHeadCollectionLocation()
 		if err != nil {
-			panic(err.Error())
+			_, err = fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			if err != nil {
+				panic(err)
+			}
+			return
 		}
 		result, err := jsonschema.ValidateFile(collectionDir, args[0])
 
