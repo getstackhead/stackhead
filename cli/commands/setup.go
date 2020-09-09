@@ -28,7 +28,7 @@ var SetupServer = &cobra.Command{
 				inventoryFile, err := ansible.CreateInventoryFile(ansible.IPAddress(args[0]))
 				if err == nil {
 					defer os.Remove(inventoryFile)
-					err = routines.ExecAnsiblePlaybook("server-provision", inventoryFile)
+					err = routines.ExecAnsiblePlaybook("server-provision", inventoryFile, nil)
 				}
 
 				taskResult := routines.TaskResult{

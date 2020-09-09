@@ -43,10 +43,20 @@ func ExecAnsibleGalaxy(args ...string) error {
 }
 
 // ExecAnsiblePlaybook is shortcut for executing a playbook within the StackHead collection via ansible-playbook binary
-func ExecAnsiblePlaybook(playbookName string, inventoryPath string) error {
+func ExecAnsiblePlaybook(playbookName string, inventoryPath string, options map[string]string) error {
 	stackHeadLocation, err := ansible.GetStackHeadCollectionLocation()
 	if err != nil {
 		return err
 	}
-	return Exec("ansible-playbook", stackHeadLocation+"/playbooks/"+playbookName+".yml", "-i", inventoryPath)
+
+	args := []string{stackHeadLocation + "/playbooks/" + playbookName + ".yml", "-i", inventoryPath}
+	if len(options) > 0 {
+		var extraVars []string
+		for i, arg := range options {
+			extraVars = append(extraVars, i+"="+arg)
+		}
+		args = append(args, "--extra-vars", strings.Join(extraVars, ","))
+	}
+
+	return Exec("ansible-playbook", args...)
 }

@@ -11,27 +11,28 @@ import (
 	"github.com/getstackhead/stackhead/cli/routines"
 )
 
-// DeployApplication is a command object for Cobra that provides the deploy command
-var DeployApplication = &cobra.Command{
-	Use:     "deploy [path to project definition] [ipv4 address]",
-	Example: "deploy ./my_project_definition.yml 192.168.178.14",
-	Short:   "Deploy a project onto the target server",
-	Long:    `deploy will deploy the given project onto the server`,
+// DestroyApplication is a command object for Cobra that provides the destroy command
+var DestroyApplication = &cobra.Command{
+	Use:     "destroy [project name] [ipv4 address]",
+	Example: "destroy my_project_name 192.168.178.14",
+	Short:   "Destroy a deployed project on a target server",
+	Long:    `destroy will tear down the given project that has been deployed onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		routines.RunTask(
-			routines.Text(fmt.Sprintf("Deploying project \"%s\" onto server with IP \"%s\"", args[0], args[1])),
+			routines.Text(fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1])),
 			routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
 				defer wg.Done()
 
 				// Generate Inventory file
 				inventoryFile, err := ansible.CreateInventoryFile(
 					ansible.IPAddress(args[1]),
-					ansible.ProjectDefinitionFile(args[0]),
 				)
 				if err == nil {
 					defer os.Remove(inventoryFile)
-					err = routines.ExecAnsiblePlaybook("application-deploy", inventoryFile, nil)
+					options := make(map[string]string)
+					options["project_name"] = args[0]
+					err = routines.ExecAnsiblePlaybook("application-destroy", inventoryFile, options)
 				}
 
 				taskResult := routines.TaskResult{
