@@ -1,4 +1,16 @@
-# Playbooks
+# Ansible
+
+StackHead uses Ansible to install the required software and connect to the servers.
+The collection is available on Ansible Galaxy: [getstackhead/stackhead](https://galaxy.ansible.com/getstackhead/stackhead).
+
+It can also be installed from the official Git repository.
+
+```bash
+ansible-galaxy collection install getstackhead.stackhead
+ansible-galaxy collection install git+https://github.com/getstackhead/stackhead.git
+```
+
+## Playbooks
 
 The playbooks below are available to be run via `ansible-playbook`:
 

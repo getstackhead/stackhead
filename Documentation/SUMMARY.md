@@ -8,7 +8,6 @@
 * [Commands](introduction/commands.md)
 * [Getting started](introduction/getting-started.md)
 * [Workflow](introduction/workflow.md)
-* [Playbooks](introduction/plays.md)
 
 ## Configuration
 
@@ -27,6 +26,7 @@
 
 ## Technical Documentation
 
+* [Ansible](technical-documentation/ansible.md)
 * [Terraform](technical-documentation/terraform.md)
 * [SSL Certificates](technical-documentation/ssl-certificates.md)
 
