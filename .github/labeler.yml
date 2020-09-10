@@ -1,17 +1,16 @@
 ---
 deployment:
-  - ansible/roles/stackhead_project/
-  - ansible/roles/stackhead_webserver_*/tasks/deploy.yml
-  - ansible/roles/project_containerapp/
-  - ansible/roles/config_terraform/
-  - ansible/application-*.yml
+  - ansible/roles/stackhead_project/**/*
+  - ansible/roles/config_terraform/**/*
+  - ansible/playbooks/application-*.yml
+module-api:
+  - ansible/roles/stackhead_module_api/**/*
 setup:
-  - ansible/roles/stackhead_setup/
-  - ansible/server-*.yml
-  - ansible/roles/stackhead_webserver_*/tasks/setup.yml
+  - ansible/roles/stackhead_setup/**/*
+  - ansible/playbooks/server-*.yml
 dependencies:
-  - ansible/requirements/
+  - ansible/requirements/**/*
 documentation:
   - Documentation/**/*.md
 cli:
-  - cli/
+  - cli/**/*
