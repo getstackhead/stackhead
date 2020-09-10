@@ -3,6 +3,10 @@
 - file:
     path: "{{ stackhead__certificates_project_folder }}"
     state: directory
+    owner: stackhead
+    group: stackhead
 - file:
     path: "{{ stackhead__project_certificates_folder }}"
     state: directory
+    owner: stackhead
+    group: stackhead
