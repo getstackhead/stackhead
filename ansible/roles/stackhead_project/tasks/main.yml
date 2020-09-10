@@ -13,6 +13,8 @@
       file:
         path: "{{ stackhead__tf_project_folder }}"
         state: directory
+        owner: stackhead
+        group: stackhead
       when: project_folder.stat.exists == false and ensure == 'present'
 
 # The following tasks will generate and deploy Terraform configuration files to the remote server
