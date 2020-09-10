@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
+      - run: rm -rf ansible/schema && cp -R validation/schema ansible && ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
 
   checkLabel:
