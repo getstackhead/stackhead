@@ -5,6 +5,20 @@
     state: directory
     owner: stackhead
     group: stackhead
+- name: Write StackHead version to server
+  copy:
+    content: "{{ lookup('file', '../../VERSION') }}"
+    dest: "{{ stackhead__root_folder }}/VERSION"
+
+- name: slurp file
+  slurp:
+    src: "{{ stackhead__root_folder }}/VERSION"
+  register: slurp_remote_file
+
+- name: Read file
+  debug:
+    msg: "{{ slurp_remote_file['content'] | b64decode }}"
+
 - name: Create certificates folder
   file:
     path: "{{ stackhead__certificates_folder }}"
