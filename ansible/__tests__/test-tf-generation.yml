@@ -1,6 +1,7 @@
 ---
 - hosts: localhost
   connection: local
+  gather_facts: no
   tasks:
     - include_vars: "../roles/stackhead_module_api/testdata/variables.yml"
     - include_vars: "../vars/internal.yml"

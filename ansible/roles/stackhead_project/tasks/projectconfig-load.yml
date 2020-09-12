@@ -1,16 +1,4 @@
 ---
-- import_tasks: "../roles/stackhead_setup/tasks/facts-load.yml"
-
-- debug:
-    msg: "Server was setup with StackHead version {{ ansible_local['versions']['stackhead']['version'] }}"
-
-- name: Abort if current StackHead version requires a server setup
-  assert:
-    that:
-      - ansible_local['versions']['stackhead']['version'] is getstackhead.stackhead.withinMajorVersion(lookup('file', '../../VERSION'))
-    fail_msg: "StackHead version check failed. Please setup this server again with StackHead version {{ lookup('file', '../../VERSION') }}"
-    success_msg: "StackHead version check succeeded."
-
 # the variable "app_config" is part of the StackHead module API (update documentation if changed)
 - name: "StackHead::Project || Extract application information"
   include_vars:

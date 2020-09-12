@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - block:
+        - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
+          vars:
+            stackhead_version_installed: 1.0.0
+            stackhead_version_current: 2.1.0
+        - set_fact:
+            test_success: 0
+      rescue:
+        - set_fact:
+            test_success: 1
+      always:
+        - assert: {that: "test_success", msg: "Fail when current version has a higher major version than the version used for setup"}
+    - block:
+        - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
+          vars:
+            stackhead_version_installed: 1.0.0
+            stackhead_version_current: 2.1.0-dev
+        - set_fact:
+            test_success: 0
+      rescue:
+        - set_fact:
+            test_success: 1
+      always:
+        - assert: {that: "test_success", msg: "Fail when current version has a higher major version than the version used for setup (with version suffix)"}
+    - block:
+        - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
+          vars:
+            stackhead_version_installed: 1.0.0
+            stackhead_version_current: 1.2.3
+        - set_fact:
+            test_success: 1
+      rescue:
+        - set_fact:
+            test_success: 0
+      always:
+        - assert: {that: "test_success", msg: "Succeed when current version has an equal major version as the version used for setup"}
+    - block:
+        - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
+          vars:
+            stackhead_version_installed: 1.0.0
+            stackhead_version_current: 1.2.3-dev
+        - set_fact:
+            test_success: 1
+      rescue:
+        - set_fact:
+            test_success: 0
+      always:
+        - assert: {that: "test_success", msg: "Succeed when current version has an equal major version as the version used for setup (with version suffix)"}

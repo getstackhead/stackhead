@@ -19,6 +19,7 @@ jobs:
       - run: cp VERSION ansible/VERSION && rm -rf ansible/schema && cp -R validation/schema ansible
       - run: ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
+      - run: UNIT_TEST=1 ansible-playbook ./ansible/__tests__/test-version-check.yml
 
   checkLabel:
     name: Please request integration test and review
