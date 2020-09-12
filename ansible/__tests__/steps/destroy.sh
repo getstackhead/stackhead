@@ -5,8 +5,8 @@
 # IMPORTANT: This must run after test_deploy.sh!
 
 if [[ $INPUT_CLI != '' ]]; then
-  ${INPUT_CLI_BIN_PATH} destroy container "${INPUT_IPADDRESS}" -c "/tmp/.stackhead-cli.yml"
+	${INPUT_CLI_BIN_PATH} destroy container "${INPUT_IPADDRESS}" -c "/tmp/.stackhead-cli.yml"
 else
-  INVENTORY_PATH="${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.yml"
-  TEST=1 ansible-playbook "${GITHUB_ACTION_PATH}/ansible/playbooks/application-destroy.yml" -i "${INVENTORY_PATH}" --extra-vars "project_name=container" -vv
+	INVENTORY_PATH="${GITHUB_ACTION_PATH}/ansible/__tests__/inventory.yml"
+	TEST=1 ansible-playbook "${GITHUB_ACTION_PATH}/ansible/playbooks/application-destroy.yml" -i "${INVENTORY_PATH}" --extra-vars "project_name=container" -vv
 fi

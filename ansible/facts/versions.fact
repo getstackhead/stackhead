@@ -5,18 +5,18 @@ echo "version=$(cat /stackhead/VERSION)"
 
 # Nginx
 if command -v nginx 1>/dev/null 2>/dev/null; then
-    echo '[nginx]'
-    echo version="$(nginx -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
+	echo '[nginx]'
+	echo version="$(nginx -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
 fi
 
 # Docker
 if command -v docker 1>/dev/null 2>/dev/null; then
-    echo '[docker]'
-    echo version="$(docker -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
+	echo '[docker]'
+	echo version="$(docker -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
 fi
 
 # Docker Compose
 if command -v docker-compose 1>/dev/null 2>/dev/null; then
-    echo '[docker-compose]'
-    echo version="$(docker-compose -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
+	echo '[docker-compose]'
+	echo version="$(docker-compose -v 2>&1 | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')"
 fi
