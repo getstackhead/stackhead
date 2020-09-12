@@ -1,0 +1,57 @@
+# This workflow will automatically create a pull request
+# if the configured user (GITHUB_PUSHER_USERNAME) has pushed into the repository (also! specified by GITHUB_REPONAME).
+# it will create a new pull request against the branch in GITHUB_BASE and set GITHUB_PUSHER_USERNAME as reviewer.
+name: Auto Pull Request
+
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  GITHUB_REPONAME: getstackhead/stackhead
+  GITHUB_BASE: next
+  GITHUB_PUSHER_USERNAME: saitho
+
+jobs:
+  createPullRequest:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'refs/heads/')
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Create Pull Request
+        if: env.BRANCH_NAME != env.GITHUB_BASE && env.BRANCH_NAME != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
+        uses: vsoch/pull-request-action@1.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          PULL_REQUEST_BRANCH: ${{ env.GITHUB_BASE }}
+          PULL_REQUEST_REVIEWERS: ${{ env.GITHUB_PUSHER_USERNAME }}
+          PULL_REQUEST_TITLE: "Merge ${{ env.BRANCH_NAME }}"
+          PULL_REQUEST_BODY: |
+            * **Please check if the PR fulfills these requirements**
+            - [ ] The commit message follows our guidelines
+            - [ ] Tests for the changes have been added (for bug fixes / features)
+            - [ ] Docs have been added / updated (for bug fixes / features)
+
+
+            * **What kind of change does this PR introduce?** (Bug fix, feature, docs update, ...)
+
+
+
+            * **What is the current behavior?** (You can also link to an open issue here)
+
+
+
+            * **What is the new behavior (if this is a feature change)?**
+
+
+
+            * **Does this PR introduce a breaking change?** (What changes might users need to make in their application due to this PR?)
+
+
+
+            * **Other information**:
