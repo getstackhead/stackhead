@@ -26,3 +26,9 @@
         stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"
         stackhead__certificates_project_folder: ".stackhead/certificates/{{ project_name }}"
         stackhead__tf_project_folder: "/stackhead-root/projects/test/terraform"
+    - name: "Test Terraform provider file generation"
+      template:
+        src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
+        dest: "./terraform-providers.tf"
+      vars:
+        loaded_terraform_providers: ['test', 'test2']

@@ -1,11 +1,8 @@
 ---
-- name: "Setup {{ _stackhead__container }} container management"
-  include_role:
-    name: "{{ _stackhead__container }}"
+- include_tasks: "./setup/module.yml"
   vars:
-    stackhead_action: "setup"
-- name: "Setup {{ _stackhead__webserver }} webserver"
-  include_role:
-    name: "{{ _stackhead__webserver }}"
-  vars:
-    stackhead_action: "setup"
+    module_name: "{{ item.name }}"
+    module_group: "{{ item.group }}"
+  with_items:
+    - { name: "{{ stackhead_config.container }}", group: 'container management' }
+    - { name: '{{ stackhead_config.webserver }}', group: 'webserver' }
