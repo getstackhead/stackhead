@@ -84,6 +84,7 @@ func RunTask(options ...TaskOption) {
 	}
 	if result.Error {
 		fmt.Fprintf(os.Stdout, ErrorColor, "✗ ", result.Message)
+		os.Exit(1)
 	} else {
 		fmt.Fprintf(os.Stdout, SuccessColor, "✓ ", result.Message)
 	}
