@@ -23,8 +23,10 @@ else
 	# Install dependencies
 	if [[ $INPUT_SELFTEST != '' ]]; then
 		ansible-galaxy install -r "${GITHUB_WORKSPACE}/ansible/requirements/requirements.yml" --force-with-deps
+		ansible-playbook "${GITHUB_WORKSPACE}/ansible/playbooks/setup-ansible.yml"
 	else
 		ansible-galaxy install -r "${GITHUB_ACTION_PATH}/ansible/requirements/requirements.yml" --force-with-deps
+		ansible-playbook "${GITHUB_ACTION_PATH}/ansible/playbooks/setup-ansible.yml"
 	fi
 fi
 

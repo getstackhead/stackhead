@@ -54,6 +54,7 @@ Per default this should be `~/.ansible/collections/ansible_collections/`.
 
 | File | Description |
 | :--- | :--- |
+| setup-ansible.yml | Install all additional dependency required to use the other Ansible playbooks |
 | server-provision.yml | Perform [server setup](workflow.md) on all servers in inventory file |
 | server-check.yml | Outputs versions of installed software |
 | application-deploy.yml | Perform [project deployment](workflow.md) for all servers in inventory file |

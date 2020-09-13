@@ -29,6 +29,10 @@ func installCollectionDependencies() error {
 	)
 }
 
+func installInternalDependencies() error {
+	return routines.ExecAnsiblePlaybook("setup-ansible", "", nil)
+}
+
 // InstallCollection is a list of task options that provide the actual workflow being run
 func InstallCollection(version string) []routines.TaskOption {
 	text := "Installing StackHead Ansible collection"
@@ -52,6 +56,9 @@ func InstallCollection(version string) []routines.TaskOption {
 			}
 			if err == nil {
 				err = installCollectionDependencies()
+			}
+			if err == nil {
+				err = installInternalDependencies()
 			}
 
 			taskResult := routines.TaskResult{

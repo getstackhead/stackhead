@@ -49,7 +49,10 @@ func ExecAnsiblePlaybook(playbookName string, inventoryPath string, options map[
 		return err
 	}
 
-	args := []string{stackHeadLocation + "/playbooks/" + playbookName + ".yml", "-i", inventoryPath}
+	args := []string{stackHeadLocation + "/playbooks/" + playbookName + ".yml"}
+	if inventoryPath != "" {
+		args = append(args, "-i", inventoryPath)
+	}
 	if len(options) > 0 {
 		var extraVars []string
 		for i, arg := range options {
