@@ -1,0 +1,9 @@
+# This playbook will install all additional dependency required to use the other Ansible playbooks
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Install pip package "semantic_version"
+      pip:
+        name: semantic_version

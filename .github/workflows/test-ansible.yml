@@ -16,8 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
       - run: cp VERSION ansible/VERSION && rm -rf ansible/schema && cp -R validation/schema ansible
       - run: ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
+      - run: ansible-playbook ./ansible/playbooks/setup-ansible.yml
       - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
       - run: ansible-playbook ./ansible/__tests__/test-version-check.yml
       - run: ansible-playbook ./ansible/__tests__/test-constraint-check.yml
@@ -44,6 +49,10 @@ jobs:
       WEBSERVER: ${{ matrix.webserver }}
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
     - name: Print Ansible version
       run: ansible --version
     - uses: webfactory/ssh-agent@v0.2.0
