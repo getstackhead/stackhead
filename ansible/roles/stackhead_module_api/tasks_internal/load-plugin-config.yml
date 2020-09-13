@@ -1,0 +1,7 @@
+---
+- name: "load plugin config"
+  include_role:
+    name: "{{ plugin_config_name }}"
+  vars:
+    stackhead_action: "load-config"
+    include_varname: "module_vars"

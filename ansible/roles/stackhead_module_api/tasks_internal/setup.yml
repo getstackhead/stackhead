@@ -1,5 +1,5 @@
 ---
-- include_tasks: "./setup/module.yml"
+- include_tasks: "../roles/stackhead_module_api/tasks_internal/setup/module.yml"
   vars:
     module_name: "{{ item.name }}"
     module_group: "{{ item.group }}"

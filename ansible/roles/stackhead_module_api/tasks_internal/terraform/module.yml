@@ -1,5 +1,5 @@
 ---
-- include_tasks: "../load-plugin-config.yml"
+- include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
   vars:
     plugin_config_name: "{{ module_name }}"
 - block:
@@ -12,5 +12,5 @@
         group: stackhead
         force: yes
     - set_fact:
-        loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + module_vars.terraform.provider.name }}"
+        loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [module_vars.terraform.provider.name] }}"
   when: module_vars.terraform is defined and module_vars.terraform.provider is defined and module_vars.terraform.provider.name is defined and module_vars.terraform.provider.url is defined
