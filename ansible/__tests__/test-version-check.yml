@@ -6,8 +6,10 @@
     - block:
         - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
           vars:
-            stackhead_version_installed: ""
-            stackhead_version_current: 2.1.0
+            stackhead_config:
+              version:
+                installed: ""
+                current: 2.1.0
         - set_fact:
             test_success: 0
       rescue:
@@ -18,8 +20,10 @@
     - block:
         - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
           vars:
-            stackhead_version_installed: 1.0.0
-            stackhead_version_current: 2.1.0
+            stackhead_config:
+              version:
+                installed: 1.0.0
+                current: 2.1.0
         - set_fact:
             test_success: 0
       rescue:
@@ -30,8 +34,10 @@
     - block:
         - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
           vars:
-            stackhead_version_installed: 1.0.0
-            stackhead_version_current: 2.1.0-dev
+            stackhead_config:
+              version:
+                installed: 1.0.0
+                current: 2.1.0-dev
         - set_fact:
             test_success: 0
       rescue:
@@ -42,8 +48,10 @@
     - block:
         - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
           vars:
-            stackhead_version_installed: 1.0.0
-            stackhead_version_current: 1.2.3
+            stackhead_config:
+              version:
+                installed: 1.0.0
+                current: 1.2.3
         - set_fact:
             test_success: 1
       rescue:
@@ -54,8 +62,10 @@
     - block:
         - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
           vars:
-            stackhead_version_installed: 1.0.0
-            stackhead_version_current: 1.2.3-dev
+            stackhead_config:
+              version:
+                installed: 1.0.0
+                current: 1.2.3-dev
         - set_fact:
             test_success: 1
       rescue:

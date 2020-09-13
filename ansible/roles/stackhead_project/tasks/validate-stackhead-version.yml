@@ -1,15 +1,9 @@
 ---
-- block:
-    # when environment UNIT_TEST is set, this section is meant to be used for unit testing.
-    - set_fact:
-        stackhead_version_installed: "{{ ansible_local['versions']['stackhead']['version'] }}"
-        stackhead_version_current: "{{ lookup('file', '../../VERSION') }}"
-      when: lookup('env','UNIT_TEST') == ''
 - debug:
-    msg: "StackHead version used for setup is {{ stackhead_version_installed }} - Current version: {{ stackhead_version_current }}"
+    msg: "StackHead version used for setup is {{ stackhead_config.version.installed }} - Current version: {{ stackhead_config.version.current }}"
 - name: Abort if current StackHead version requires a server setup
   assert:
     that:
-      - stackhead_version_installed is getstackhead.stackhead.withinMajorVersion(stackhead_version_current)
-    fail_msg: "StackHead version check failed. Please re-setup this server with StackHead version {{ stackhead_version_current }}"
+      - stackhead_config.version.installed is getstackhead.stackhead.withinMajorVersion(stackhead_config.version.current)
+    fail_msg: "StackHead version check failed. Please re-setup this server with StackHead version {{ stackhead_config.version.current }}"
     success_msg: "StackHead version check succeeded."
