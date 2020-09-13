@@ -1,0 +1,10 @@
+---
+- include_tasks: "../load-plugin-config.yml"
+  vars:
+    plugin_config_name: "{{ module_name }}"
+- include_tasks: "../validate_module_constraints.yml"
+- name: "Setup {{ module_group }} ({{ module_name }})"
+  include_role:
+    name: "{{ module_name }}"
+  vars:
+    stackhead_action: "setup"

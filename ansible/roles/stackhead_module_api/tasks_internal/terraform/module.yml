@@ -1,0 +1,16 @@
+---
+- include_tasks: "../load-plugin-config.yml"
+  vars:
+    plugin_config_name: "{{ module_name }}"
+- block:
+    - name: "Download Terraform provider for {{ module_group }} ({{ module_name }})"
+      get_url:
+        url: "{{ module_vars.terraform.provider.url }}"
+        dest: "{{ terraform_plugin_directory }}/terraform-provider-{{ module_vars.terraform.provider.name }}"
+        mode: '0755'
+        owner: stackhead
+        group: stackhead
+        force: yes
+    - set_fact:
+        loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + module_vars.terraform.provider.name }}"
+  when: module_vars.terraform is defined and module_vars.terraform.provider is defined and module_vars.terraform.provider.name is defined and module_vars.terraform.provider.url is defined
