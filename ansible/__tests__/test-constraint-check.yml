@@ -1,0 +1,45 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    # Tests compare against this version
+    stackhead_version: 1.2.3
+  tasks:
+    - include_tasks: "./unit/contraint-check.yml"
+      with_items:
+        - name: "No constraints"
+          constraints: []
+          result: 1
+        - name: "Fulfilled constraint without version"
+          constraints:
+            - stackhead
+          result: 1
+        - name: "Fulfilled constraint with ==version"
+          constraints:
+            - stackhead==1.2.3
+          result: 1
+        - name: "Fulfilled constraint with >=version"
+          constraints:
+            - stackhead>=1.0.0
+          result: 1
+        - name: "Fulfilled constraint with ^version"
+          constraints:
+            - stackhead ^1.0.0
+          result: 1
+        - name: "Fulfilled constraint with ~version"
+          constraints:
+            - stackhead ~1.2.0
+          result: 1
+        - name: "Fulfilled constraint with version range"
+          constraints:
+            - stackhead >=1.0.0,<2.0.0
+          result: 1
+        - name: "Fulfilled constraint with whitespaced version range"
+          constraints:
+            - stackhead >= 1.0.0, < 2.0.0
+          result: 1
+        - name: "Unfulfilled constraint with ^version"
+          constraints:
+            - stackhead ^2.0.0
+          result: 0

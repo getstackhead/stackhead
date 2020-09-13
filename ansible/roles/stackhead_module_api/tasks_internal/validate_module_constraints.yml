@@ -1,0 +1,5 @@
+---
+- name: "Validate constraints"
+  assert:
+    that:
+      - module_vars.constraints is not defined or module_vars.constraints is getstackhead.stackhead.constraintsFulfilled(stackhead_config)

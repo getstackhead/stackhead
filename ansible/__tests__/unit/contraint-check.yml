@@ -1,0 +1,16 @@
+---
+- block:
+  - include_tasks: "../../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
+    vars:
+      module_vars:
+        constraints: "{{ item.constraints }}"
+      stackhead_config:
+        version:
+          current: "{{ stackhead_version }}"
+  - set_fact:
+      test_success: "{% if item.result == 1 %}1{% else %}0{% endif %}"
+  rescue:
+    - set_fact:
+        test_success: "{% if item.result == 1 %}0{% else %}1{% endif %}"
+  always:
+    - assert: {that: "test_success == '1'", success_msg: "SUCCESS – {{ item.name }}", fail_msg: "FAIL - {{ item.name }}"}
