@@ -1,6 +1,6 @@
 roles:
   - name: andrewrothstein.terraform
-    version: v2.2.47
+    version: v2.2.48
   - name: getstackhead.stackhead_container_docker
   - name: getstackhead.stackhead_webserver_nginx
   - name: getstackhead.stackhead_webserver_caddy

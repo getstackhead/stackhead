@@ -14,7 +14,7 @@
 - include_role:
     name: andrewrothstein.terraform
   vars:
-    terraform_ver: 0.12.29
+    terraform_ver: 0.13.3
 
 # Setup Terraform components of modules
 - import_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
