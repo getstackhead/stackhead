@@ -57,17 +57,19 @@ type: webserver
 
 Using the `provider` setting the required Terraform provider can be specified. If set, they will be installed during server setup.
 
-`name` is the actual name of the Terraform provider. Going by Terraform conventions a binary file is called `terraform-provider-[name]` with `[name]` being the actual name required in this setting.
+The provider is installed from Terraform registry, setting `vendor`, `name` and `version`.
 
-`url` points to the path where the binary file is being downloaded from.
+`name` is the actual name of the Terraform provider. `vendor` is the owner's name on Terraform registry.
+Looking at the provider _getstackhead/caddy_, _getstackhead_ is the vendor and _caddy_ is the name.
 
 {% code title="stackhead-module.yml" %}
 ```yaml
 ---
 terraform:
-  provider:
-    name: caddy # binary created will be called terraform-provider-caddy
-    url: https://github.com/getstackhead/terraform-caddy/releases/download/v1.0.0/terraform-provider-caddy
+  provider: # source=getstackhead/caddy
+    vendor: getstackhead
+    name: caddy
+    version: 1.0.1
 ```
 {% endcode %}
 
