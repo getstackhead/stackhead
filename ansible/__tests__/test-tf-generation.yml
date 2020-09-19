@@ -31,4 +31,10 @@
         src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
         dest: "./terraform-providers.tf"
       vars:
-        loaded_terraform_providers: ['test', 'test2']
+        loaded_terraform_providers:
+          - name: test
+            vendor: test
+            version: 1.0
+          - name: test2
+            vendor: test
+            version: 1.2

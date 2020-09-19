@@ -1,5 +1,20 @@
+terraform {
+  required_providers {
+    acme = {
+      source  = "hashicorp/acme"
+      version = "~> 1.5"
+    }
+  {% for provider in loaded_terraform_providers|default([]) %}
+    {{ provider.name }} = {
+      source = "{{ provider.vendor }}/{{ provider.name }}"
+      version = "{{ provider.version }}"
+    }
+  {% endfor %}
+  }
+}
+
 {% for provider in loaded_terraform_providers|default([]) %}
-provider "{{ provider }}" {
+provider "{{ provider.name }}" {
 }
 {% endfor %}
 
