@@ -62,6 +62,14 @@ The provider is installed from Terraform registry, setting `vendor`, `name` and 
 `name` is the actual name of the Terraform provider. `vendor` is the owner's name on Terraform registry.
 Looking at the provider _getstackhead/caddy_, _getstackhead_ is the vendor and _caddy_ is the name.
 
+Per default StackHead will initialize an empty provider.
+If you need to setup the provider with attributes, create a template file and set its path via `init` setting as shown below.
+
+{% hint style="info" %}
+Per default Ansible paths are resolved from playbook directory.
+Start your path with the variable `{{ role_path }}` to point to your role.
+{% endhint %}
+
 {% code title="stackhead-module.yml" %}
 ```yaml
 ---
@@ -70,6 +78,7 @@ terraform:
     vendor: getstackhead
     name: caddy
     version: 1.0.1
+    init: "{{ role_path }}/templates/terraform/provider_init.tf.j2"
 ```
 {% endcode %}
 
