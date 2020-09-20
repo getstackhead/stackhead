@@ -1,12 +1,12 @@
 ---
-- include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
-  vars:
-    plugin_config_name: "{{ module_name }}"
-- debug:
-    msg: "{{ module_vars }}"
 - block:
-    - set_fact:
-        loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [module_vars.terraform.provider|combine({'module_name': module_name})] }}"
-  when: module_vars.terraform is defined and module_vars.terraform.provider is defined and module_vars.terraform.provider.name and module_vars.terraform.provider.vendor is defined and module_vars.terraform.provider.version is defined
-- debug:
-    msg: "{{ loaded_terraform_providers }}"
+    - include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
+      vars:
+        plugin_config_name: "{{ module_name }}"
+    - block:
+        - set_fact:
+            loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [included_module_config.terraform.provider] }}"
+      when: included_module_config.terraform is defined and included_module_config.terraform.provider is defined and included_module_config.terraform.provider.name and included_module_config.terraform.provider.vendor is defined and included_module_config.terraform.provider.version is defined
+  vars:
+    include_varname: "module_vars_{{ module_name | regex_replace('[\\._-]') }}"
+    included_module_config: "{{ lookup('vars', include_varname)}}"

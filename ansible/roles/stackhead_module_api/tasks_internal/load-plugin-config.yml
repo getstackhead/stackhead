@@ -4,4 +4,4 @@
     name: "{{ plugin_config_name }}"
   vars:
     stackhead_action: "load-config"
-    include_varname: "module_vars"
+    # include_varname is set from outside

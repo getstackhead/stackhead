@@ -2,4 +2,6 @@
 - name: "Validate constraints"
   assert:
     that:
-      - module_vars.constraints is not defined or module_vars.constraints is getstackhead.stackhead.constraintsFulfilled(stackhead_config)
+      - included_module_config.constraints is not defined or included_module_config.constraints is getstackhead.stackhead.constraintsFulfilled(stackhead_config)
+  vars:
+    included_module_config: "{{ lookup('vars', include_varname)}}"

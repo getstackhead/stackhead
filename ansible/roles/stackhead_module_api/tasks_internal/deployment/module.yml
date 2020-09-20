@@ -1,8 +1,11 @@
 ---
-- include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
+- block:
+  - include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
+    vars:
+      plugin_config_name: "{{ module_name }}"
+  - include_tasks: "../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
   vars:
-    plugin_config_name: "{{ module_name }}"
-- include_tasks: "../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
+    include_varname: "module_vars_{{ module_name | regex_replace('[\\._-]') }}"
 - name: "Deploy {{ module_group }} ({{ module_name }}) configuration"
   include_role:
     name: "{{ module_name }}"

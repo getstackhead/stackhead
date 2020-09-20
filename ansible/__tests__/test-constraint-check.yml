@@ -5,13 +5,14 @@
   gather_facts: no
   vars:
     unittest_file: "../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
+    include_varname: "module_vars_test"
     stackhead_config:
       version:
         current: 1.2.3
   tasks:
     - include_tasks: "./unit/unittest_base.yml"
       vars:
-        module_vars:
+        module_vars_test:
           constraints: "{{ item.constraints }}"
       with_items:
         - name: "No constraints"
