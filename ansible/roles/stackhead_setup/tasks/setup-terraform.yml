@@ -5,12 +5,6 @@
     state: directory
     owner: stackhead
     group: stackhead
-- name: Create Terraform plugin folder
-  file:
-    path: "{{ terraform_plugin_directory }}"
-    state: directory
-    owner: stackhead
-    group: stackhead
 - include_role:
     name: andrewrothstein.terraform
   vars:
@@ -19,20 +13,6 @@
 # Setup Terraform components of modules
 - import_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
 
-- name: Create Terraform plugin folder
-  file:
-    path: "{{ terraform_plugin_directory }}/registry.terraform.io/hashicorp/acme/1.5.0/{{ terraform_platform }}"
-    state: directory
-    owner: stackhead
-    group: stackhead
-- name: Copy patched acme-provider
-  get_url:
-    url: https://github.com/getstackhead/terraform-provider-acme/releases/download/v1.5.0-patched/terraform-provider-acme
-    dest: "{{ terraform_plugin_directory }}/registry.terraform.io/hashicorp/acme/1.5.0/{{ terraform_platform }}/terraform-provider-acme"
-    mode: '0755'
-    owner: stackhead
-    group: stackhead
-    force: yes
 - name: Create Terraform provider configurations
   template:
     src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
