@@ -98,6 +98,9 @@ jobs:
         domain2: 'sub.${{ env.DOMAIN }}'
         webserver: 'getstackhead.stackhead_webserver_nginx' # use nginx
         selftest: '1'
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+    #  if: always()
     - name: PR comment if integration stage was left intact
       uses: mshick/add-pr-comment@v1
       if: always() && contains( github.event.pull_request.labels.*.name, 'action/keep-integration-stage')
