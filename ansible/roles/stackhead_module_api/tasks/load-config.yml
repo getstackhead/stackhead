@@ -1,0 +1,11 @@
+# This task loads the module configuration into the variable set by include_varname
+---
+- include_vars:
+    file: "{{ role_path }}/stackhead-module.yml"
+    name: "{{ include_varname }}"
+# {{ role_path }} in config is not replaced when vars are included
+# which is why we have to do that ourselves.
+# Otherwise it will use the stackhead_project role what we do not want!
+- set_fact:
+    "{{ include_varname }}": "{{ vars[include_varname]|combine({'terraform': { 'provider': { 'init': vars[include_varname].terraform.provider.init | regex_replace('^{{ role_path }}(.*)$', role_path ~ '\\1') } }}, recursive=True) }}"
+  when: vars[include_varname].terraform is defined and vars[include_varname].terraform.provider is defined and vars[include_varname].terraform.provider.init is defined
