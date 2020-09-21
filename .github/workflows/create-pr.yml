@@ -25,7 +25,7 @@ jobs:
         run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
       - name: Create Pull Request
         if: env.BRANCH_NAME != env.GITHUB_BASE && env.BRANCH_NAME != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
-        uses: vsoch/pull-request-action@1.0.7
+        uses: vsoch/pull-request-action@1.0.8
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           PULL_REQUEST_BRANCH: ${{ env.GITHUB_BASE }}
