@@ -10,5 +10,4 @@ ansible:
 software:
   webserver: nginx
   container: docker
-
 ```
