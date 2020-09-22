@@ -14,7 +14,7 @@ import (
 // DeployApplication is a command object for Cobra that provides the deploy command
 var DeployApplication = &cobra.Command{
 	Use:     "deploy [path to project definition] [ipv4 address]",
-	Example: "deploy ./my_project_definition.yml 192.168.178.14",
+	Example: "deploy ./my_project.yml 192.168.178.14",
 	Short:   "Deploy a project onto the target server",
 	Long:    `deploy will deploy the given project onto the server`,
 	Args:    cobra.ExactArgs(2),

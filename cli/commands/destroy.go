@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/spf13/cobra"
@@ -13,8 +15,8 @@ import (
 
 // DestroyApplication is a command object for Cobra that provides the destroy command
 var DestroyApplication = &cobra.Command{
-	Use:     "destroy [project name] [ipv4 address]",
-	Example: "destroy my_project_name 192.168.178.14",
+	Use:     "destroy [path to project definition] [ipv4 address]",
+	Example: "destroy ./my_project.yml 192.168.178.14",
 	Short:   "Destroy a deployed project on a target server",
 	Long:    `destroy will tear down the given project that has been deployed onto the server`,
 	Args:    cobra.ExactArgs(2),
@@ -27,11 +29,13 @@ var DestroyApplication = &cobra.Command{
 				// Generate Inventory file
 				inventoryFile, err := ansible.CreateInventoryFile(
 					ansible.IPAddress(args[1]),
+					ansible.ProjectDefinitionFile(args[0]),
 				)
+
 				if err == nil {
 					defer os.Remove(inventoryFile)
 					options := make(map[string]string)
-					options["project_name"] = args[0]
+					options["project_name"] = strings.TrimSuffix(strings.TrimSuffix(filepath.Base(args[0]), ".yml"), ".yaml")
 					err = routines.ExecAnsiblePlaybook("application-destroy", inventoryFile, options)
 				}
 
