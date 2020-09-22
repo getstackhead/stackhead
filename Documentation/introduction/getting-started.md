@@ -61,6 +61,6 @@ After deployment, open the domain in your web browser. It should display content
 Now let's remove all configurations we created during deployment. This will remove the web server configuration and Docker containers.
 
 ```bash
-stackhead-cli destroy example_app 123.456.789.10
+stackhead-cli destroy ./stackhead/example_app.yml 123.456.789.10
 ```
 
