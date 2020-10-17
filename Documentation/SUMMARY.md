@@ -4,15 +4,15 @@
 
 ## Introduction
 
-* [Installation](introduction/installation.md)
-* [Commands](introduction/commands.md)
-* [Getting started](introduction/getting-started.md)
 * [Workflow](introduction/workflow.md)
+* [Project definition](introduction/project-definition.md)
+* [Getting started](introduction/getting-started.md)
 
-## Configuration
+## StackHead CLI
 
-* [CLI configuration](configuration/cli-configuration.md)
-* [Project definition](configuration/project-definition.md)
+* [Installation](stackhead-cli/installation-1.md)
+* [Commands](stackhead-cli/commands.md)
+* [Configuration](stackhead-cli/cli-configuration.md)
 
 ## StackHead modules
 
@@ -24,9 +24,14 @@
   * [Module API](stackhead-modules/development/module-api.md)
   * [Testing modules](stackhead-modules/development/testing-modules.md)
 
+## Ansible Collection <a id="ansible-playbooks"></a>
+
+* [Installation](ansible-playbooks/installation.md)
+* [Inventory](ansible-playbooks/inventory.md)
+* [Playbooks](ansible-playbooks/playbooks.md)
+
 ## Technical Documentation
 
-* [Ansible](technical-documentation/ansible.md)
 * [Terraform](technical-documentation/terraform.md)
 * [SSL Certificates](technical-documentation/ssl-certificates.md)
 

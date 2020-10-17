@@ -14,41 +14,61 @@ Applications run in one or multiple Docker containers. While the settings are ba
 Not all options from Docker Compose are supported right now.
 {% endhint %}
 
-The example below consists of two services \(app and db\).
+## Annotated project definition
+
+The file below is a fully annotated project definition file.
 
 ```yaml
 ---
 domains:
-  - domain: example.com
-    expose:
-      - internal_port: 80
-        external_port: 80
-        service: app
+  - domain: example.com # domain name (without protocol and port)
+    expose: # expose one or multiple ports
+      - internal_port: 80 # port inside the container
+        external_port: 80 # port where service can be reached by browsers (i.e. example.com:80)
+        service: app # name of service that should be exposed
+    security:
+      authentication:
+        - type: basic # basic authentication: users will have to authenticate with username ("user") and password ("pass")
+          username: user
+          password: pass
 container:
   services:
-    - name: app
-      image: nginxdemos/hello:latest
-    - name: db
-      image: mariadb:10.5
-      environment:
+    - name: app # service name
+      image: nginxdemos/hello:latest # Docker image name
+      volumes:
+        - type: global # mount the "config" folder inside container at "/var/config". As both services use "global" they will mount the same source and share data.
+          src: config
+          dest: /var/config
+        - type: local # mount the "data" folder inside container at "/var/data". This folder is not shared with other services ("local").
+          src: data
+          dest: /var/data
+        - type: custom # mount the "/docker/data/test" folder inside container at "/var/test".
+          src: /docker/data/test
+          dest: /var/test
+    - name: db # service name
+      image: mariadb:10.5 # Docker image name
+      environment: # environment variables for Docker container
         MYSQL_ROOT_PASSWORD: example
+      volumes_from: app:ro # mount all volumes from app service as readonly
 ```
 
-## domains.\*.expose
+## Settings
+
+### domains.\*.expose
 
 The web server will proxy all web traffic to the service and port specified in `expose` setting.
 
 In the example above, the web server will proxy web requests to the "app" container's port 80.
 
-### service
+#### service
 
 Name of the Container service to receive the web request.
 
-### internal\_port
+#### internal\_port
 
 Port of the given container service to receive the web request.
 
-### external\_port
+#### external\_port
 
 Port that Nginx listens to.
 
@@ -60,14 +80,13 @@ Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatic
 Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
 {% endhint %}
 
-## domains.\*.security
+### domains.\*.security
 
 These options can be used to add further security to your projects.
 
-### authentication
+#### authentication
 
-The authentication setting with `type: basic` will require the user to log in with a name and password.
-You may specify how many users you like.
+The authentication setting with `type: basic` will require the user to log in with a name and password. You may specify how many users you like.
 
 Removing the `authentication` section will remove the file containing the usernames and passwords for your project.
 
@@ -88,19 +107,19 @@ domains:
 Right now, removing a single entry from the list and redeploying the project will NOT remove the user settings from the authentication file.
 {% endhint %}
 
-## container.services
+### container.services
 
 The following configuration options are available inside a service definition:
 
-### name
+#### name
 
 Internal name of your service. Used as service name in generated docker-compose file.
 
-### image \(required\)
+#### image \(required\)
 
 See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
 
-### volumes
+#### volumes
 
 StackHead saves mounted data in the project directory at project or service level. You can also define a custom location on the server.
 
@@ -153,15 +172,15 @@ services:
 {% endtab %}
 {% endtabs %}
 
-### volumes\_from
+#### volumes\_from
 
 See [docker-compose documentation on volumes\_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
 
-### environment
+#### environment
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/compose-file-v2/#environment).
 
-### user
+#### user
 
 See [docker-compose documentation on user](https://docs.docker.com/compose/compose-file/compose-file-v2/#user).
 

@@ -1,14 +1,14 @@
 ---
 description: >-
-  This guide will explain how to setup a server for usage with StackHead and
-  deploy a basic Docker-based application.
+  This guide will explain how to setup a server deploy a basic Docker-based
+  application with StackHead CLI.
 ---
 
 # Getting started
 
 You will require:
 
-* StackHead installed \(see [Installation Guide](installation.md)\)
+* StackHead CLI \(see [Installation Guide](../stackhead-cli/installation-1.md)\)
 * a top level domain
 * a web server with SSH root access
 
@@ -38,7 +38,7 @@ This defines that a new Docker container shall be created with the `nginxdemos/h
 
 Let's setup our first server. We recommend only doing that with newly created servers to minimize the side effects of already installed packages.
 
-Run the following command to provision your server (replace `123.456.789.10` with your own server's IP address)
+Run the following command to provision your server \(replace `123.456.789.10` with your own server's IP address\)
 
 ```bash
 stackhead-cli setup 123.456.789.10

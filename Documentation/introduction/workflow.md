@@ -2,7 +2,7 @@
 
 StackHead utilizes Ansible and Terraform to set up your projects.
 
-![StackHead process](../.gitbook/assets/stackhead-process%20%281%29%20%281%29%20%281%29.png)
+![StackHead process](../.gitbook/assets/stackhead-process%20%281%29%20%281%29%20%281%29%20%281%29.png)
 
 The figure above illustrates the general StackHead workflow. StackHead provides custom Ansible playbooks for installing required software on a remote server \(setup\) and configuring your projects \(deployment\).
 
@@ -12,7 +12,7 @@ The highlighted terms are explained in further detail below.
 
 A web project usually includes an application and additional components \(runtime environment, databases, etc\). Also it is usually served on a Top Level Domain by some kind of webserver.
 
-This information is stored inside a [**project definition** file](../configuration/project-definition.md).
+This information is stored inside a [**project definition** file](project-definition.md).
 
 Based on the project definition file, StackHead will take care setting up the required configuration. It will start up the specified Docker containers and set up the required web server configuration.
 

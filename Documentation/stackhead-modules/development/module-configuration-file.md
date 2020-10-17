@@ -22,8 +22,7 @@ terraform:
 
 ## constraints
 
-Constraints are used to ensure a StackHead module is compatible with other components.
-You can define which versions of StackHead the module is compatible with.
+Constraints are used to ensure a StackHead module is compatible with other components. You can define which versions of StackHead the module is compatible with.
 
 The contraint format follows [semantic versioning](https://semver.org).
 
@@ -37,9 +36,7 @@ constraints:
 ```
 
 {% hint style="info" %}
-We recommend allowing any release after the version that is known to work (e.g. stackhead>=1.0.0).
-Once a version is known to be incompatible, the constraint can be adjusted.
-This is to make sure modules do not have to be updated once a new (breaking) StackHead is published.
+We recommend allowing any release after the version that is known to work \(e.g. stackhead&gt;=1.0.0\). Once a version is known to be incompatible, the constraint can be adjusted. This is to make sure modules do not have to be updated once a new \(breaking\) StackHead is published.
 {% endhint %}
 
 ## type
@@ -59,15 +56,12 @@ Using the `provider` setting the required Terraform provider can be specified. I
 
 The provider is installed from Terraform registry, setting `vendor`, `name` and `version`.
 
-`name` is the actual name of the Terraform provider. `vendor` is the owner's name on Terraform registry.
-Looking at the provider _getstackhead/caddy_, _getstackhead_ is the vendor and _caddy_ is the name.
+`name` is the actual name of the Terraform provider. `vendor` is the owner's name on Terraform registry. Looking at the provider _getstackhead/caddy_, _getstackhead_ is the vendor and _caddy_ is the name.
 
-Per default StackHead will initialize an empty provider.
-If you need to setup the provider with attributes, create a template file and set its path via `init` setting as shown below.
+Per default StackHead will initialize an empty provider. If you need to setup the provider with attributes, create a template file and set its path via `init` setting as shown below.
 
 {% hint style="info" %}
-Per default Ansible paths are resolved from playbook directory.
-Start your path with the variable `{{ role_path }}` to point to your role.
+Per default Ansible paths are resolved from playbook directory. Start your path with the variable `{{ role_path }}` to point to your role.
 {% endhint %}
 
 {% code title="stackhead-module.yml" %}
