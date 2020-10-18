@@ -39,3 +39,6 @@ container:
       image: mariadb:10.5
       environment:
         MYSQL_ROOT_PASSWORD: example
+      hooks:
+        after_setup:
+          - /dev/null

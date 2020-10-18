@@ -67,6 +67,23 @@
           "description": "Container environment variables",
           "type": "object"
         },
+        "hooks": {
+          "additionalProperties": false,
+          "properties": {
+            "after_setup": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "before_destroy": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "volumes": {
           "description": "Volumes to be mounted",
           "type": "array",
