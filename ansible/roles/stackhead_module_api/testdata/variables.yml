@@ -58,6 +58,13 @@ app_config:
             mode: ro
         volumes_from:
           - data:ro
+        hooks:
+          after_setup:
+            - echo 'after setup 1'
+            - echo "after setup 2"
+          before_destroy:
+            - echo 'before destroy 1'
+            - echo "before destroy 2"
       - name: php
         image: getstackhead/php:7.2
         volumes_from:
