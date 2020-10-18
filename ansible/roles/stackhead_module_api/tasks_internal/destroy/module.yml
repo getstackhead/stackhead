@@ -1,0 +1,13 @@
+---
+- block:
+    - include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
+      vars:
+        plugin_config_name: "{{ module_name }}"
+    - include_tasks: "../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
+  vars:
+    include_varname: "module_vars_{{ module_name | regex_replace('[\\._-]') }}"
+- name: "Setup {{ module_group }} ({{ module_name }})"
+  include_role:
+    name: "{{ module_name }}"
+  vars:
+    stackhead_action: "destroy"

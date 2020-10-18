@@ -33,6 +33,9 @@
     - import_tasks: "../roles/stackhead_module_api/tasks_internal/deployment.yml"
   when: ensure == 'present'
 
+- import_tasks: "../roles/stackhead_module_api/tasks_internal/destroy.yml"
+  when: ensure == 'absent'
+
 # Symlink Terraform configurations from project to main folder and execute them
 - import_tasks: "../roles/config_terraform/tasks/update-project-symlinks.yml"
   when: ensure == 'present'
