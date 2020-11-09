@@ -45,6 +45,11 @@ container:
         - type: custom # mount the "/docker/data/test" folder inside container at "/var/test".
           src: /docker/data/test
           dest: /var/test
+      hooks:
+        after_setup: # these commands are executed inside container after it was created
+          - echo 'Container was created'
+        before_destroy: # these commands are executed inside container before it is destroyed
+          - echo 'Container will be destroyed'
     - name: db # service name
       image: mariadb:10.5 # Docker image name
       environment: # environment variables for Docker container
@@ -118,6 +123,19 @@ Internal name of your service. Used as service name in generated docker-compose 
 #### image \(required\)
 
 See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
+
+#### hooks
+
+```yaml
+services:
+  - name: nginx
+    # ...
+    hooks:
+      after_setup:
+        - echo 'Executed inside container after it was created'
+      before_destroy:
+        - echo 'Executed inside container before it is destroyed'
+```
 
 #### volumes
 
