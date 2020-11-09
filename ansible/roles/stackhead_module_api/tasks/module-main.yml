@@ -1,0 +1,5 @@
+---
+- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/load-config.yml"
+  when: stackhead_action == 'load-config'
+- include_tasks: "{{ role_path }}/tasks/steps/{{ stackhead_action }}.yml"
+  when: stackhead_action == 'setup' or stackhead_action == 'deploy' or stackhead_action == 'destroy'
