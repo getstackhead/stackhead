@@ -1,5 +1,12 @@
 ---
 - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/load-config.yml"
   when: stackhead_action == 'load-config'
-- include_tasks: "{{ role_path }}/tasks/steps/{{ stackhead_action }}.yml"
+- block:
+    - name: Check for {{ stackhead_action }} file in {{ role_path }}
+      local_action: stat path={{ module_action_path }}
+      register: stat_module_action
+    - include_tasks: "{{ module_action_path }}"
+      when: stat_module_action.stat.exists
+  vars:
+    module_action_path: "{{ role_path }}/tasks/steps/{{ stackhead_action }}.yml"
   when: stackhead_action == 'setup' or stackhead_action == 'deploy' or stackhead_action == 'destroy'
