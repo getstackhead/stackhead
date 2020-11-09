@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/getstackhead/stackhead/cli/ansible"
-	"github.com/getstackhead/stackhead/cli/jsonschema"
+	jsonschema "github.com/saitho/jsonschema-validator/validator"
 )
 
 // Validate is a command object for Cobra that provides the validate command
