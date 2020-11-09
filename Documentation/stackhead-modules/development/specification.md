@@ -28,29 +28,23 @@ Each StackHead module is to required to have a [module configuration file](modul
 
 ## Structure requirements
 
-StackHead modules are included as role during setup and deployment processes. As StackHead modules combine logics for both setup and configuration, the variable `stackhead_action` is used to tell the role what it should do. Please make sure your role executes the correct tasks for each action.
+StackHead modules are included as role during setup and deployment processes.
+That is why they are required to have a `tasks/main.yml` file with this content:
 
-| `stackhead_action` value | Expected behaviour | Used in step |
+```yaml
+---
+- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/module-main.yml"
+```
+
+This will make the steps configured in your module available to StackHead.
+Make sure the following files exist and the expected behaviour is implemented accordingly
+
+| file path | Expected behaviour | Used in step |
 | :--- | :--- | :--- |
-| setup | The software is installed. | Server setup |
-| load-config | Load stackhead-module.yml vars into variable given by _include\_varname_ \(see below\) | Server setup |
-| deploy | The software is configured for the given project. | Project deployment |
+| `tasks/steps/setup.yml` | The software is installed. | Server setup |
+| `tasks/steps/deploy.yml` | The software is configured for the given project. | Project deployment |
+| `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | Project destruction |
 
-## Recommended structure
-
-We recommend setting up task files named like the `stackhead_action` value \(`tasks/[stackhead_action value].yml`\) and include them in the `tasks/main.yml` like so:
-
-```yaml
----
-- include_tasks: "{{ role_path }}/tasks/{{ stackhead_action }}.yml"
-```
-
-The `load-config` action is needed as we can't determine the role location. So we need a task that assigns the contents of the _stackhead-module.yml_ to where StackHead wants it. Going by the recommended structure, set this inside your `tasks/load-config.yml` file:
-
-```yaml
----
-- include_vars:
-    file: "{{ role_path }}/stackhead-module.yml"
-    name: "{{ include_varname }}"
-```
-
+{% hint style="warning" %}
+Please make sure you use `include_tasks` instead of `import_tasks` in your steps and files included into your steps!
+{% endhint %}
