@@ -1,7 +1,6 @@
 FROM golang:alpine as builder
-RUN mkdir /build
-ADD . /build/
 WORKDIR /build
+ADD . /build
 RUN go build -o ./bin/stackhead-cli .
 
 FROM alpine
