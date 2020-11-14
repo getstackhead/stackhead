@@ -4,6 +4,7 @@
 - block:
     - name: Check for {{ stackhead_action }} file in {{ role_path }}
       local_action: stat path={{ module_action_path }}
+      become: false
       register: stat_module_action
     - include_tasks: "{{ module_action_path }}"
       when: stat_module_action.stat.exists
