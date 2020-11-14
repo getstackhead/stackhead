@@ -20,17 +20,14 @@ jobs:
     if: contains(github.ref, 'refs/heads/')
     steps:
       - uses: actions/checkout@v2
-      - name: Extract branch name
-        shell: bash
-        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
       - name: Create Pull Request
-        if: env.BRANCH_NAME != env.GITHUB_BASE && env.BRANCH_NAME != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
+        if: env.HEAD_REF != env.GITHUB_BASE && env.HEAD_REF != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
         uses: vsoch/pull-request-action@1.0.8
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           PULL_REQUEST_BRANCH: ${{ env.GITHUB_BASE }}
           PULL_REQUEST_REVIEWERS: ${{ env.GITHUB_PUSHER_USERNAME }}
-          PULL_REQUEST_TITLE: "Merge ${{ env.BRANCH_NAME }}"
+          PULL_REQUEST_TITLE: "Merge ${{ env.HEAD_REF }}"
           PULL_REQUEST_BODY: |
             * **Please check if the PR fulfills these requirements**
             - [ ] The commit message follows our guidelines
