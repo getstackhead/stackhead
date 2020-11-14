@@ -45,6 +45,11 @@ func Exec(name string, arg ...string) error {
 
 // ExecAnsibleGalaxy is shortcut for executing a command via ansible-galaxy binary
 func ExecAnsibleGalaxy(args ...string) error {
+	return Exec("ansible-galaxy", args...)
+}
+
+// ExecAnsibleGalaxyCollection is shortcut for executing a collection command via ansible-galaxy binary
+func ExecAnsibleGalaxyCollection(args ...string) error {
 	collectionDir, err := ansible.GetCollectionDirs()
 	if err != nil {
 		return err
@@ -58,7 +63,10 @@ func ExecAnsibleGalaxy(args ...string) error {
 	// We have to set a relative path, otherwise ansible-galaxy will do weird things...
 	relCollectionsPath, _ := filepath.Rel(cwd, "/")
 	args = append(args, "-p "+relCollectionsPath+"/../.."+collectionDir[0])
-	return Exec("ansible-galaxy", args...)
+
+	// Prepend "collection" task to args
+	args = append([]string{"collection"}, args...)
+	return ExecAnsibleGalaxy(args...)
 }
 
 // ExecAnsiblePlaybook is shortcut for executing a playbook within the StackHead collection via ansible-playbook binary

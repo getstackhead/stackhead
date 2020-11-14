@@ -13,8 +13,8 @@ func installCollection(version string) error {
 	if len(version) > 0 {
 		repoPath += "," + version
 	}
-	return routines.ExecAnsibleGalaxy(
-		"collection", "install", repoPath,
+	return routines.ExecAnsibleGalaxyCollection(
+		"install", repoPath,
 	)
 }
 
