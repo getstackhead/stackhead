@@ -30,6 +30,9 @@ inputs:
   cli_bin_path:
     description: 'Path to CLI binary'
     required: false
+  version:
+    description: 'Version of StackHead to use (default: next)'
+    required: false
 runs:
   using: "composite"
   steps:
@@ -42,7 +45,10 @@ runs:
         INPUT_ROLENAME: ${{ inputs.rolename }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
+        INPUT_SELFTEST: ${{ inputs.selftest }}
+        INPUT_VERSION: ${{ inputs.version }}
       run: ${{ github.action_path }}/ansible/__tests__/steps/build.sh
     - name: "Setup server"
       shell: bash
