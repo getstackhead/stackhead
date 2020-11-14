@@ -42,3 +42,5 @@ container:
       hooks:
         after_setup:
           - /dev/null
+        before_destroy:
+          - echo "Hello"
