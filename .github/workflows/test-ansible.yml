@@ -53,6 +53,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+    - name: Install Ansible v2.10 alpha (GH actions currently uses 2.9)
+      run: ANSIBLE_SKIP_CONFLICT_CHECK=1 pip install --user ansible==2.10.0a9 && ansible --version
     - name: Print Ansible version
       run: ansible --version
     - uses: webfactory/ssh-agent@v0.2.0
