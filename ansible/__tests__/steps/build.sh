@@ -9,9 +9,9 @@ modules:
 " >"/tmp/.stackhead-cli.yml"
 
 	if [[ $INPUT_SELFTEST != '' ]]; then
-		${INPUT_CLI_BIN_PATH} init --version="${INPUT_VERSION}" -c "/tmp/.stackhead-cli.yml"
+		${INPUT_CLI_BIN_PATH} init --version="${INPUT_VERSION}" -v -c "/tmp/.stackhead-cli.yml"
 	else
-		${INPUT_CLI_BIN_PATH} init --version=next -c "/tmp/.stackhead-cli.yml"
+		${INPUT_CLI_BIN_PATH} init --version=next -v -c "/tmp/.stackhead-cli.yml"
 	fi
 else
 	cp VERSION ansible/VERSION
@@ -28,6 +28,9 @@ else
 		ansible-galaxy install -r "${GITHUB_ACTION_PATH}/ansible/requirements/requirements.yml" --force-with-deps
 		ansible-playbook "${GITHUB_ACTION_PATH}/ansible/playbooks/setup-ansible.yml"
 	fi
+
+  ansible-galaxy install "${INPUT_WEBSERVER}"
+  ansible-galaxy install "${INPUT_CONTAINER}"
 fi
 
 if [[ $INPUT_ROLENAME != '' ]]; then
