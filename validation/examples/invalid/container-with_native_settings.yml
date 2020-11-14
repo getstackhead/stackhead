@@ -1,9 +1,0 @@
----
-type: docker
-domains:
-  - domain: mydomain.com
-    public_path: public
-native:
-  capabilities:
-    php:
-      version: 7.3

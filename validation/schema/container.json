@@ -73,13 +73,15 @@
             "after_setup": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "pattern": "^[^']*$"
               }
             },
             "before_destroy": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "pattern": "^[^']*$"
               }
             }
           }
