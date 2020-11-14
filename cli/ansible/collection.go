@@ -55,11 +55,11 @@ func GetCollectionDirs() ([]string, error) {
 	var pathEnv = os.Getenv("COLLECTIONS_PATHS")
 	var pathList []string
 	if pathEnv == "" {
-		pathList = []string{homeDir + "/.ansible/collections/ansible_collections"}
+		pathList = []string{homeDir + "/.ansible/collections"}
 	} else {
 		pathList = strings.Split(pathEnv, ":")
 		if len(pathList) == 0 {
-			pathList = []string{homeDir + "/.ansible/collections/ansible_collections"}
+			pathList = []string{homeDir + "/.ansible/collections"}
 		}
 	}
 	return pathList, nil
@@ -73,7 +73,7 @@ func GetStackHeadCollectionLocation() (string, error) {
 	}
 	// Look for Ansible directory
 	for _, singlePath := range collectionDirs {
-		var installPath = filepath.Join(singlePath, "getstackhead", "stackhead")
+		var installPath = filepath.Join(singlePath, "ansible_collections", "getstackhead", "stackhead")
 		if _, err := os.Stat(installPath); !os.IsNotExist(err) {
 			return installPath, nil
 		}

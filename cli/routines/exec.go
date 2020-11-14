@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -48,7 +49,15 @@ func ExecAnsibleGalaxy(args ...string) error {
 	if err != nil {
 		return err
 	}
-	args = append(args, "-p "+collectionDir[0])
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	// We have to set a relative path, otherwise ansible-galaxy will do weird things...
+	relCollectionsPath, _ := filepath.Rel(cwd, "/")
+	args = append(args, "-p "+relCollectionsPath+"/../.."+collectionDir[0])
 	return Exec("ansible-galaxy", args...)
 }
 
