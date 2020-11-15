@@ -4,7 +4,7 @@
   connection: local
   gather_facts: no
   vars:
-    unittest_file: "../roles/stackhead_module_api/tasks_internal/validate_module_constraints.yml"
+    unittest_file: "../roles/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
     include_varname: "module_vars_test"
     stackhead_config:
       version:

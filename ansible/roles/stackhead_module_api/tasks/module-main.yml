@@ -6,7 +6,7 @@
       local_action: stat path={{ module_action_path }}
       become: false
       register: stat_module_action
-    - include_tasks: "{{ module_action_path }}"
+    - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/execute-module-step.yml"
       when: stat_module_action.stat.exists
   vars:
     module_action_path: "{{ role_path }}/tasks/steps/{{ stackhead_action }}.yml"
