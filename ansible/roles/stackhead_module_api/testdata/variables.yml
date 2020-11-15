@@ -60,11 +60,9 @@ app_config:
           - data:ro
         hooks:
           after_setup:
-            - echo 'after setup 1'
-            - echo "after setup 2"
+            - echo "after setup"
           before_destroy:
-            - echo 'before destroy 1'
-            - echo "before destroy 2"
+            - echo "before destroy"
       - name: php
         image: getstackhead/php:7.2
         volumes_from:
