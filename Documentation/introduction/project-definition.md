@@ -47,9 +47,9 @@ container:
           dest: /var/test
       hooks:
         after_setup: # these commands are executed inside container after it was created
-          - echo 'Container was created'
+          - echo "Container was created"
         before_destroy: # these commands are executed inside container before it is destroyed
-          - echo 'Container will be destroyed'
+          - echo "Container will be destroyed"
     - name: db # service name
       image: mariadb:10.5 # Docker image name
       environment: # environment variables for Docker container
@@ -132,10 +132,14 @@ services:
     # ...
     hooks:
       after_setup:
-        - echo 'Executed inside container after it was created'
+        - echo "Executed inside container after it was created"
       before_destroy:
-        - echo 'Executed inside container before it is destroyed'
+        - echo "Executed inside container before it is destroyed"
 ```
+
+{% hint style="info" %}
+Due to technical limitations by Terraform you are not able to use single quotes. Please use double quotes and escape accordingly!
+{% endhint %}
 
 #### volumes
 
