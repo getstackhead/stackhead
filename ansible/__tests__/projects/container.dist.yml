@@ -27,6 +27,11 @@ container:
       image: getstackhead/nginx:php
       volumes_from:
         - data:ro
+      hooks:
+        after_setup:
+          - echo "Executed inside container after it was created"
+        before_destroy:
+          - echo "Executed inside container before it is destroyed"
     - name: php
       image: getstackhead/php:7.4
       volumes_from:
