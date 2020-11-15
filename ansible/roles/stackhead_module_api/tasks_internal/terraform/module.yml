@@ -1,8 +1,6 @@
 ---
 - block:
     - include_tasks: "../roles/stackhead_module_api/tasks_internal/load-plugin-config.yml"
-      vars:
-        plugin_config_name: "{{ module_name }}"
     - block:
         - set_fact:
             loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [included_module_config.terraform.provider] }}"

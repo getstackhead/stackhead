@@ -28,16 +28,8 @@ Each StackHead module is to required to have a [module configuration file](modul
 
 ## Structure requirements
 
-StackHead modules are included as role during setup and deployment processes.
-That is why they are required to have a `tasks/main.yml` file with this content:
-
-```yaml
----
-- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks/module-main.yml"
-```
-
-This will make the steps configured in your module available to StackHead.
-Make sure the following files exist and the expected behaviour is implemented accordingly
+StackHead looks for files in the `tasks/steps` directory for the currently performed action.
+Make sure the following files exist and the expected behaviour is implemented accordingly:
 
 | file path | Expected behaviour | Used in step |
 | :--- | :--- | :--- |
