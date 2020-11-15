@@ -14,7 +14,7 @@ modules:
 		${INPUT_CLI_BIN_PATH} init --version=next -v -c "/tmp/.stackhead-cli.yml"
 	fi
 else
-	cp VERSION ansible/VERSION
+	cp "${GITHUB_ACTION_PATH}/VERSION" "${GITHUB_ACTION_PATH}/ansible/VERSION"
 	rm -rf "${GITHUB_ACTION_PATH}/ansible/schema"
 	cp -R "${GITHUB_ACTION_PATH}/validation/schema" "${GITHUB_ACTION_PATH}/ansible"
 	ansible-galaxy collection build -f "${GITHUB_ACTION_PATH}/ansible"
