@@ -3,6 +3,6 @@
     - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/load-plugin-config.yml"
     - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
   vars:
-    include_varname: "module_vars_{{ module_name | regex_replace('[\\._-]') }}"
+    include_varname: "{{ module_name | getstackhead.stackhead.getModuleVarsName }}"
 - name: "{{ stackhead_action }} {{ module_group }} ({{ module_name }}) configuration"
   include_tasks: "{{ lookup('getstackhead.stackhead.role_path', module_name)}}/tasks/steps/{{ stackhead_action }}.yml"
