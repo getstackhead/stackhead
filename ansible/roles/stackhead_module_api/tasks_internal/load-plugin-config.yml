@@ -8,7 +8,7 @@
     # which is why we have to do that ourselves.
     # Otherwise it will use the stackhead_project role what we do not want!
     - set_fact:
-        "{{ include_varname }}": "{{ included_module_config|combine({'terraform': { 'provider': { 'init': included_module_config.terraform.provider.init | regex_replace('^{{ role_path }}(.*)$', module_rolepath ~ '\\1') } }}, recursive=True) }}"
+        "{{ include_varname }}": "{{ included_module_config|getstackhead.stackhead.TFpopulateModuleConfig(module_rolepath) }}"
       when: included_module_config.terraform is defined and included_module_config.terraform.provider is defined and included_module_config.terraform.provider.init is defined
       vars:
         included_module_config: "{{ lookup('vars', include_varname)}}"
