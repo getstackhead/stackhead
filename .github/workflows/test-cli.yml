@@ -79,7 +79,7 @@ jobs:
         run: ansible --version && sudo apt purge ansible -y
       - name: Install Ansible v2.10 alpha (GH actions currently uses 2.9)
         run: sudo python -m pip install ansible==2.10.0a9 && ansible --version
-      - uses: webfactory/ssh-agent@v0.2.0
+      - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: "${{ secrets.SSH_PRIVATE_KEY }}"
       - name: Setup Hetzner server
