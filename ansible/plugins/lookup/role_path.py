@@ -1,6 +1,7 @@
 from ansible.plugins.lookup import LookupBase
 from os import path
 
+
 class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
@@ -11,9 +12,12 @@ class LookupModule(LookupBase):
         parts = role_name.split('.', 2)
         if len(parts) == 3:  # collection
             collection_paths = self._templar.template("{{ lookup('config', 'COLLECTIONS_PATHS')}}")
-            search_paths = list(map(lambda x: x + "/ansible_collections/" + parts[0] + "/" + parts[1] + "/roles", collection_paths))
+            search_paths = list(map(
+                lambda x: x + "/ansible_collections/" + parts[0] + "/" + parts[1] + "/roles",
+                collection_paths
+            ))
             role_name = parts[2]
-        else: # role
+        else:  # role
             search_paths = self._templar.template("{{ lookup('config', 'DEFAULT_ROLES_PATH')}}")
 
         ret = []
