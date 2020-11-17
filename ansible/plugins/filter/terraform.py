@@ -36,7 +36,12 @@ class FilterModule(object):
         return text
 
     def tf_populate_module_config(self, included_module_config, module_rolepath):
-
+        if 'terraform' not in included_module_config:
+            return included_module_config
+        if 'provider' not in included_module_config.terraform:
+            return included_module_config
+        if 'init' not in included_module_config.terraform.provider:
+            return included_module_config
 
         init_path = included_module_config.terraform.provider.init
 
