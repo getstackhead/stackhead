@@ -6,5 +6,5 @@
             loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [included_module_config.terraform.provider] }}"
       when: included_module_config.terraform is defined and included_module_config.terraform.provider is defined and included_module_config.terraform.provider.name and included_module_config.terraform.provider.vendor is defined and included_module_config.terraform.provider.version is defined
   vars:
-    include_varname: "{{ module_name | getstackhead.stackhead.getModuleVarsName }}"
+    include_varname: "{{ module_name | getstackhead.stackhead.moduleVarsName }}"
     included_module_config: "{{ lookup('vars', include_varname)}}"

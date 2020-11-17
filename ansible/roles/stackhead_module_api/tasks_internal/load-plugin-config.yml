@@ -13,5 +13,5 @@
       vars:
         included_module_config: "{{ lookup('vars', include_varname)}}"
   vars:
-    include_varname: "{{ module_name | getstackhead.stackhead.getModuleVarsName }}"
+    include_varname: "{{ module_name | getstackhead.stackhead.moduleVarsName }}"
     module_rolepath: "{{ lookup('getstackhead.stackhead.role_path', module_name) }}"
