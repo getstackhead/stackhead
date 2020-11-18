@@ -27,6 +27,19 @@ jobs:
       - run: ansible-playbook ./ansible/__tests__/test-version-check.yml
       - run: ansible-playbook ./ansible/__tests__/test-constraint-check.yml
 
+  #py-unit:
+  #  name: Python Unit Tests
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: Set up Python 3
+  #      uses: actions/setup-python@v2
+  #      with:
+  #        python-version: '3.x'
+  #    - name: Install Ansible v2.10 alpha (GH actions currently uses 2.9)
+  #      run: ANSIBLE_SKIP_CONFLICT_CHECK=1 pip install --user ansible==2.10.0a9 && ansible --version
+  #    - run: (cd .. && python -m unittest stackhead/ansible/test/units/**/**/*.py)
+
   checkLabel:
     name: Please request integration test and review
     needs: smoke
