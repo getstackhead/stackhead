@@ -9,8 +9,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'TFreplace': self.tf_replace,
-            'TFescapeDoubleQuotes': self.tf_escape_double_quotes,
-            'TFpopulateModuleConfig': self.tf_populate_module_config
+            'TFescapeDoubleQuotes': self.tf_escape_double_quotes
         }
 
     def tf_replace(self, text, project_name):
@@ -34,19 +33,3 @@ class FilterModule(object):
         text = text.replace('"', '\\"')
 
         return text
-
-    def tf_populate_module_config(self, included_module_config, module_rolepath):
-        if 'terraform' not in included_module_config:
-            return included_module_config
-        if 'provider' not in included_module_config.terraform:
-            return included_module_config
-        if 'init' not in included_module_config.terraform.provider:
-            return included_module_config
-
-        init_path = included_module_config.terraform.provider.init
-
-        double_quotes = re.compile(r'^{{ role_path }}(.*)$')
-        init_path = double_quotes.sub(module_rolepath + "\1", init_path)
-
-        included_module_config.terraform.provider.init = init_path
-        return included_module_config
