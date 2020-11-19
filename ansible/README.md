@@ -15,5 +15,5 @@ Due to the collision of the "ansible" python package and our local "ansible" fol
 we have to back one directory in order to run tests.
 
 ```
-(cd .. && python -m unittest stackhead/ansible/test/units/plugins/action/module_load_config.py)
+(cd .. && python -m unittest stackhead/ansible/test/units/**/**/*.py)
 ```

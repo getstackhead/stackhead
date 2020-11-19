@@ -39,8 +39,8 @@ class ActionModule(ActionBase):
 
         init_path = included_module_config['terraform']['provider']['init']
 
-        double_quotes = re.compile(r'^{{\s*role_path\s*}}(.*)$')
-        init_path = double_quotes.sub(module_rolepath + "\\1", init_path)
+        init_path = re.compile(r'^{{\s*role_path.*\s*}}(.*)$').sub(module_rolepath + "\\1", init_path)
+        init_path = re.compile(r'^{{\s*module_role_path.*\s*}}(.*)$').sub(module_rolepath + "\\1", init_path)
 
         included_module_config['terraform']['provider']['init'] = init_path
         return included_module_config

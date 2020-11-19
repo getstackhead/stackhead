@@ -6,4 +6,6 @@
   vars:
     module_config: "{{ loaded_config.config_varname }}"
 - name: "{{ stackhead_action }} {{ module_group }} ({{ module_name }}) configuration"
-  include_tasks: "{{ lookup('getstackhead.stackhead.role_path', module_name)}}/tasks/steps/{{ stackhead_action }}.yml"
+  include_tasks: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
+  vars:
+    module_role_path: "{{ lookup('getstackhead.stackhead.role_path', module_name) }}"
