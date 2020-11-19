@@ -55,6 +55,26 @@ class TestCopyResultExclude(unittest.TestCase):
             {'foo': 'bar', 'terraform': {'provider': {'init': '{{role_path}}/test'}}}, '/some/path')
         self.assertEqual({'foo': 'bar', 'terraform': {'provider': {'init': '/some/path/test'}}}, result)
 
+        # module_role_path variable in init
+        result = subject.tf_populate_module_config(
+            {'foo': 'bar', 'terraform': {'provider': {'init': '{{ module_role_path }}/test'}}}, '/some/path')
+        self.assertEqual({'foo': 'bar', 'terraform': {'provider': {'init': '/some/path/test'}}}, result)
+
+        # module_role_path variable in init
+        result = subject.tf_populate_module_config(
+            {'foo': 'bar', 'terraform': {'provider': {'init': '{{module_role_path}}/test'}}}, '/some/path')
+        self.assertEqual({'foo': 'bar', 'terraform': {'provider': {'init': '/some/path/test'}}}, result)
+
+        # module_role_path|default(role_path) variable in init
+        result = subject.tf_populate_module_config(
+            {'foo': 'bar', 'terraform': {'provider': {'init': '{{ module_role_path | default(role_path) }}/test'}}}, '/some/path')
+        self.assertEqual({'foo': 'bar', 'terraform': {'provider': {'init': '/some/path/test'}}}, result)
+
+        # module_role_path|default(role_path) variable in init
+        result = subject.tf_populate_module_config(
+            {'foo': 'bar', 'terraform': {'provider': {'init': '{{module_role_path|default(role_path)}}/test'}}}, '/some/path')
+        self.assertEqual({'foo': 'bar', 'terraform': {'provider': {'init': '/some/path/test'}}}, result)
+
     def test_get_role_path_of_regular_role(self):
         task = MagicMock(Task)
         task.async_val = False

@@ -38,5 +38,11 @@ Make sure the following files exist and the expected behaviour is implemented ac
 | `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | Project destruction |
 
 {% hint style="warning" %}
+Note that `role_path` will most likely not refer to the path to your role, but to a StackHead role.
+StackHead provides the path to your role as `module_role_path`, so you should use that preferably:
+`{{ module_role_path | default(role_path) }}`
+{% endhint %}
+
+{% hint style="warning" %}
 Please make sure you use `include_tasks` instead of `import_tasks` in your steps and files included into your steps!
 {% endhint %}
