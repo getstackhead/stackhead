@@ -4,6 +4,7 @@
     stackhead_action: "destroy"
     module_name: "{{ item.name }}"
     module_group: "{{ item.group }}"
+    optional: true
   with_items:
     - { name: "{{ stackhead_config.container }}", group: 'container management' }
     - { name: '{{ stackhead_config.webserver }}', group: 'webserver' }

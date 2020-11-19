@@ -1,11 +1,21 @@
 ---
-- getstackhead.stackhead.module_load_config:
+- getstackhead.stackhead.module.load_config:
     name: "{{ module_name }}"
   register: loaded_config
 - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
   vars:
     module_config: "{{ loaded_config.config_varname }}"
+- name: "Load module variables"
+  include_vars: "{{ var_path }}"
+  when: lookup('pipe', '[ -f ' ~ var_path ~ ' ]; echo $?') == '0'
+  with_items:
+    - "{{ loaded_config.role_path }}/defaults/main.yml"
+    - "{{ loaded_config.role_path }}/vars/main.yml"
+  loop_control:
+    loop_var: var_path
 - name: "{{ stackhead_action }} {{ module_group }} ({{ module_name }}) configuration"
-  include_tasks: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
+  include_tasks: "{{ include_file_path }}"
+  when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not optional|default(false)|bool
   vars:
     module_role_path: "{{ lookup('getstackhead.stackhead.role_path', module_name) }}"
+    include_file_path: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
