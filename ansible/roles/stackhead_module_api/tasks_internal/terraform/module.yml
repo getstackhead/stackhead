@@ -1,6 +1,6 @@
 # excluded to own file as we can't look blocks...
 ---
-- getstackhead.stackhead.module_load_config:
+- getstackhead.stackhead.module.load_config:
     name: "{{ module_name }}"
   register: loaded_config
 - set_fact:

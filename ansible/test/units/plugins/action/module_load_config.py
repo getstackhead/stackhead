@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import MagicMock, Mock, patch
 from ansible.playbook.task import Task
 from ansible.plugins.loader import connection_loader
-from .....plugins.action.module_load_config import ActionModule
+from .....plugins.action.module.load_config import ActionModule
 
 
 class TestCopyResultExclude(unittest.TestCase):
