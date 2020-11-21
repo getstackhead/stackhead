@@ -89,6 +89,7 @@ all:
     ansible_user: root
     ansible_connection: ssh
     stackhead__config_folder: "{{ .TmpProjectDefinitionFolder }}"
+    ansible_python_interpreter: /usr/bin/python3
   hosts:
     mackerel:
       ansible_host: {{ .IPAddress }}

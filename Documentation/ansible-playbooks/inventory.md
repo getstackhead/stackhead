@@ -17,6 +17,7 @@ all:
   vars:
     ansible_user: root
     ansible_connection: ssh
+    ansible_python_interpreter: /usr/bin/python3
   hosts:
     myhost:
       stackhead__webserver: getstackhead.stackhead_webserver_nginx # use NGINX as webserver
@@ -27,3 +28,6 @@ all:
           - example_app
 ```
 
+{% hint style="warning" %}
+Your inventory must specific Python 3 as `ansible_python_interpreter`!
+{% endhint %}
