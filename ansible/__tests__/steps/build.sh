@@ -9,9 +9,9 @@ modules:
 " >"/tmp/.stackhead-cli.yml"
 
 	if [[ $INPUT_SELFTEST != '' ]]; then
-		${INPUT_CLI_BIN_PATH} init --version="${INPUT_VERSION}" -v -c "/tmp/.stackhead-cli.yml"
+		${INPUT_CLI_BIN_PATH} init --version="${INPUT_VERSION}" -v -c "/tmp/.stackhead-cli.yml" -v
 	else
-		${INPUT_CLI_BIN_PATH} init --version=next -v -c "/tmp/.stackhead-cli.yml"
+		${INPUT_CLI_BIN_PATH} init --version=next -v -c "/tmp/.stackhead-cli.yml" -v
 	fi
 else
 	cp "${GITHUB_ACTION_PATH}/VERSION" "${GITHUB_ACTION_PATH}/ansible/VERSION"
