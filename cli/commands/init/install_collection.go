@@ -29,6 +29,17 @@ func installCollectionDependencies() error {
 	)
 }
 
+func installCollectionPipDependencies() error {
+	collectionDir, err := ansible.GetStackHeadCollectionLocation()
+	if err != nil {
+		return err
+	}
+	return routines.Exec(
+		"pip",
+		"install", "-r", collectionDir+"/requirements/pip_requirements.txt",
+	)
+}
+
 func installInternalDependencies() error {
 	return routines.ExecAnsiblePlaybook("setup-ansible", "", nil)
 }
@@ -56,6 +67,9 @@ func InstallCollection(version string) []routines.TaskOption {
 			}
 			if err == nil {
 				err = installCollectionDependencies()
+			}
+			if err == nil {
+				err = installCollectionPipDependencies()
 			}
 			if err == nil {
 				err = installInternalDependencies()
