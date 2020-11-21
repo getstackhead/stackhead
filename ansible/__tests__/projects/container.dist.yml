@@ -30,8 +30,10 @@ container:
       hooks:
         after_setup:
           - echo "Executed inside container after it was created"
+          - echo "Executed inside container after it was created 2"
         before_destroy:
           - echo "Executed inside container before it is destroyed"
+          - echo "Executed inside container before it is destroyed 2"
     - name: php
       image: getstackhead/php:7.4
       volumes_from:

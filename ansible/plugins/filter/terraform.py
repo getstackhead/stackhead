@@ -25,9 +25,9 @@ class FilterModule(object):
         if not isinstance(text, str):
             return text
 
-        # already escaped double quotes will get another backslash \" => \\", \\" => \\\"
-        double_quotes = re.compile(r'(\\+\")')
-        text = double_quotes.sub("\\\\\\1", text)
+        # duplicate existing escapes \" => \\", \\" => \\\\"
+        double_quotes = re.compile(r'((\\+)\")')
+        text = double_quotes.sub("\\2\\1", text)
 
         # all double quotes have to be escaped with one backslashes again
         text = text.replace('"', '\\"')
