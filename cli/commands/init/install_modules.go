@@ -14,24 +14,38 @@ import (
 func collectModules() []string {
 	var modules []string
 	var err error
+	var moduleName string
 
 	var webserver = viper.GetString("modules.webserver")
 	if len(webserver) == 0 {
 		webserver = "getstackhead.stackhead_webserver_nginx"
 	}
-	webserver, err = stackhead.AutoCompleteModuleName(webserver, stackhead.ModuleWebserver)
+	moduleName, err = stackhead.AutoCompleteModuleName(webserver, stackhead.ModuleWebserver)
 	if err != nil {
 		panic(err.Error())
 	}
-	modules = append(modules, webserver)
+	modules = append(modules, moduleName)
 
 	var container = viper.GetString("modules.container")
 	if len(container) == 0 {
 		container = "getstackhead.stackhead_container_docker"
 	}
-	container, err = stackhead.AutoCompleteModuleName(container, stackhead.ModuleContainer)
+	moduleName, err = stackhead.AutoCompleteModuleName(container, stackhead.ModuleContainer)
 	if err != nil {
 		panic(err.Error())
+	}
+
+	modules = append(modules, moduleName)
+
+	var plugins = viper.GetStringSlice("modules.plugins")
+	if len(plugins) > 0 {
+		for _, plugin := range plugins {
+			moduleName, err = stackhead.AutoCompleteModuleName(plugin, stackhead.ModulePlugin)
+			if err != nil {
+				panic(err.Error())
+			}
+			modules = append(modules, moduleName)
+		}
 	}
 
 	modules = append(modules, container)
