@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StackHead CLI config",
+  "description": "StackHead CLI config file",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": {
+      "$ref": "#/definitions/prop-type"
+    }
+  },
+  "definitions": {
+    "prop-type": {
+      "type": "string",
+      "enum": ["container", "plugin", "webserver"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"type": {"const": "plugin"}}},
+      "then": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/definitions/prop-type"
+          }
+        }
+      },
+      "else": {
+        "$ref": "module-config/terraform.json"
+      }
+    }
+  ]
+},
