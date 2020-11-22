@@ -30,6 +30,7 @@ validate_files()
 
 validate_files "project-definition"
 validate_files "module-config"
+validate_files "cli-config"
 
 if [ $TEST_FAILED -eq 0 ]; then
   echo 'All tests succeeded.'
