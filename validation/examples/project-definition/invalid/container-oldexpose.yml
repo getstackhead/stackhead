@@ -1,0 +1,33 @@
+---
+domain: mydomain.com
+deployment:
+  type: container
+  settings:
+    expose:
+      service: app
+      port: 8080
+    registries:
+      - username: dockerhubuser
+        password: dockerhubpassword
+      - username: privateuser
+        password: privatepassword
+        url: https://myprivateregistry.tld
+    services:
+      - name: app
+        image: getstackhead/project-demo-php
+        user: "1000:1000"
+        volumes:
+          - type: global
+            src: assets
+            dest: /var/www/public/assets
+          - type: local
+            src: log
+            dest: /var/www/public/log
+          - type: custom
+            src: /etc/secrets.txt
+            dest: /var/www/secrets.txt
+            mode: ro
+      - name: db
+        image: mariadb:10.5
+        environment:
+          MYSQL_ROOT_PASSWORD: example

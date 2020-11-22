@@ -1,8 +1,0 @@
----
-domain: mydomain.com
-deployment:
-  type: container
-  settings:
-    services:
-      app:
-        expose_port: 8080
