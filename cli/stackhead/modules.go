@@ -10,6 +10,8 @@ const (
 	ModuleWebserver = "stackhead_webserver"
 	// ModuleContainer is the string that identifies a package name as container package
 	ModuleContainer = "stackhead_container"
+	// ModulePlugin is the string that identifies a package name as plugin package
+	ModulePlugin = "stackhead_plugin"
 )
 
 // SplitModuleName splits a given module name into vendor, module type and base name
@@ -54,11 +56,20 @@ func IsContainerModule(moduleName string) bool {
 	return strings.HasPrefix(moduleName, ModuleContainer)
 }
 
+// IsPluginModule checks if the given module is a plugin module based on its name
+func IsPluginModule(moduleName string) bool {
+	moduleName = RemoveVendor(moduleName)
+	return strings.HasPrefix(moduleName, ModulePlugin)
+}
+
 // GetModuleType returns the module type for the given module according its name
-// Will return the values of ModuleContainer and ModuleWebserver constants.
+// Will return the values of ModulePlugin, ModuleContainer and ModuleWebserver constants.
 func GetModuleType(moduleName string) string {
 	if IsContainerModule(moduleName) {
 		return ModuleContainer
+	}
+	if IsPluginModule(moduleName) {
+		return ModulePlugin
 	}
 	if IsWebserverModule(moduleName) {
 		return ModuleWebserver
