@@ -29,6 +29,8 @@ jobs:
       - name: PNPM install
         run: npm i -g pnpm && pnpm i -P
       - run: pnpm install
+      # todo: adjust Version numbers (VERSION, ansible/VERSION)
+      # todo: copy schema directory from validation/ to ansible/)
       - name: Semantic Release Action
         uses: saitho/semantic-release-action-pnpm@master
         env:
