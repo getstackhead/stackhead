@@ -16,10 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Remove Python 2 and old Ansible 2.9 version
+        run: sudo apt purge python ansible -y
       - name: Set up Python 3
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
+      - name: Install Ansible v2.10.3 (GH actions currently uses 2.9)
+        run: pip install ansible==2.10.3
+      - name: Print Ansible and Python version
+        run: ansible --version && python --version
       - run: cp VERSION ansible/VERSION && rm -rf ansible/schema && cp -R validation/schema ansible
       - run: ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
       - run: ansible-playbook ./ansible/playbooks/setup-ansible.yml
@@ -62,15 +68,15 @@ jobs:
       WEBSERVER: ${{ matrix.webserver }}
     steps:
     - uses: actions/checkout@v2
+    - name: Remove Python 2 and old Ansible 2.9 version
+      run: sudo apt purge python ansible -y
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Uninstall old Ansible
-      run: ansible --version && sudo apt purge ansible -y
     - name: Install Ansible v2.10.3 (GH actions currently uses 2.9)
-      run: sudo pip install ansible==2.10.3
-    - name: Print Ansible version
+      run: pip install ansible==2.10.3
+    - name: Print Ansible and Python version
       run: ansible --version && python --version
     - uses: webfactory/ssh-agent@v0.4.1
       with:
