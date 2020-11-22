@@ -1,5 +1,4 @@
 ---
-type: container
 domains:
   - domain: ${domain}
     expose:
