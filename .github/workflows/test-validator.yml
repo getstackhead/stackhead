@@ -6,13 +6,13 @@ on:
       - master
       - next
     paths:
-      - validation/**
+      - schemas/**
       - .github/workflows/test-validator.yml
   pull_request:
     branches:
       - master
     paths:
-      - validation/**
+      - schemas/**
       - .github/workflows/test-validator.yml
 
 jobs:

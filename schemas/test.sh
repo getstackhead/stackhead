@@ -4,7 +4,7 @@ TEST_FAILED=0
 
 validate_files()
 {
-  SCHEMAFILE="schema/${1}.schema.json"
+  SCHEMAFILE="./${1}.schema.json"
   EXAMPLE_DIR="examples/${1}"
   echo "### TESTING ${SCHEMAFILE} ... START\n"
 	printf "Valid %s files should be valid:\n" EXAMPLE_DIR
