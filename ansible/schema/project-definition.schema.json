@@ -22,7 +22,7 @@
           },
           "security": {
             "type": "object",
-            "$ref": "security.json"
+            "$ref": "project-definition/security.json"
           }
         }
       }
@@ -33,7 +33,7 @@
       "if": {"properties": {"type": {"const": "container"}}},
       "then": {
         "type": "object",
-        "$ref": "container.json"
+        "$ref": "project-definition/container.json"
       }
     }
   ]

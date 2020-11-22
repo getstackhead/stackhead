@@ -16,7 +16,9 @@ modules:
 else
 	cp "${GITHUB_ACTION_PATH}/VERSION" "${GITHUB_ACTION_PATH}/ansible/VERSION"
 	rm -rf "${GITHUB_ACTION_PATH}/ansible/schema"
-	cp -R "${GITHUB_ACTION_PATH}/validation/schema" "${GITHUB_ACTION_PATH}/ansible"
+	rm -rf "${GITHUB_ACTION_PATH}/ansible/schema"
+	mkdir "${GITHUB_ACTION_PATH}/ansible/schema"
+	(cd "${GITHUB_ACTION_PATH}/schemas" && find . -name "*.json" -exec cp --parents -R '{}' "${GITHUB_ACTION_PATH}/ansible/schema/" ';')
 	ansible-galaxy collection build -f "${GITHUB_ACTION_PATH}/ansible"
 	ansible-galaxy collection install "$(find getstackhead-stackhead-*)" -f
 
