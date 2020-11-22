@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -19,6 +20,13 @@ var Validate = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var collectionDir, err = ansible.GetStackHeadCollectionLocation()
+		collectionAbsDir, err := filepath.Abs(collectionDir)
+		if err != nil {
+			panic(err)
+			return
+		}
+
+		schemaPath := filepath.Join(collectionAbsDir, "schema", "project-definition.schema.json")
 		if err != nil {
 			_, err = fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			if err != nil {
@@ -26,7 +34,7 @@ var Validate = &cobra.Command{
 			}
 			return
 		}
-		result, err := jsonschema.ValidateFile(collectionDir, args[0])
+		result, err := jsonschema.ValidateFile(args[0], schemaPath)
 
 		if err != nil {
 			panic(err.Error())
