@@ -18,6 +18,10 @@ inputs:
     description: 'Container module to use'
     required: false
     default: getstackhead.stackhead_container_docker
+  plugins:
+    description: 'Plugin modules to use (as YAML array)'
+    required: false
+    default: '[]'
   rolename:
     description: 'Name of role that is being tested'
     required: false
@@ -45,6 +49,7 @@ runs:
         INPUT_ROLENAME: ${{ inputs.rolename }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_PLUGINS: ${{ inputs.plugins }}
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
@@ -56,6 +61,7 @@ runs:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_PLUGINS: ${{ inputs.plugins }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
         INPUT_CLI: ${{ inputs.cli }}
@@ -71,6 +77,7 @@ runs:
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
+        INPUT_PLUGINS: ${{ inputs.plugins }}
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Validate deployment"
