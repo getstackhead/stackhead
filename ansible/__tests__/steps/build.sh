@@ -6,6 +6,7 @@ if [[ $INPUT_CLI != '' ]]; then
 modules:
   webserver: ${INPUT_WEBSERVER}
   container: ${INPUT_CONTAINER}
+  plugins: ${INPUT_PLUGINS}
 " >"/tmp/.stackhead-cli.yml"
 
 	if [[ $INPUT_SELFTEST != '' ]]; then

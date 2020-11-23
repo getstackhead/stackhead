@@ -5,7 +5,7 @@ all:
     stackhead__config_folder: "{{ inventory_dir }}/projects"
     stackhead__webserver: ${webserver}
     stackhead__container: ${container}
-    stackhead__plugins: []
+    stackhead__plugins: ${plugins}
     ansible_user: root
     ansible_connection: ssh
     ansible_python_interpreter: /usr/bin/python3
