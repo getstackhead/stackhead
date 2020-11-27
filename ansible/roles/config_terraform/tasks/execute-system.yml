@@ -1,0 +1,6 @@
+---
+- name: "Apply system terraform plans"
+  terraform:
+    project_path: '{{ stackhead__system_tf_root_folder }}'
+    force_init: yes
+    state: "present"
