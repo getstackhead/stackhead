@@ -5,6 +5,12 @@
     state: directory
     owner: stackhead
     group: stackhead
+- name: Create system Terraform folder
+  file:
+    path: "{{ stackhead__system_tf_root_folder }}"
+    state: directory
+    owner: stackhead
+    group: stackhead
 - include_role:
     name: andrewrothstein.terraform
   vars:
@@ -13,10 +19,14 @@
 # Setup Terraform components of modules
 - import_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
 
-- name: Create Terraform provider configurations
+- name: Create Terraform provider configurations (projects folder)
   template:
     src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
     dest: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
+- name: Create Terraform provider configurations (system folder)
+  template:
+    src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
+    dest: "{{ stackhead__system_tf_root_folder }}/terraform-providers.tf"
 
 # Initial run applying settings from Terraform files created above
 - import_tasks: "../roles/config_terraform/tasks/execute.yml"

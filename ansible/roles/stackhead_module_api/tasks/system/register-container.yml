@@ -1,0 +1,7 @@
+---
+- include_tasks: "../roles/stackhead_module_api/tasks_internal/execute-module-step.yml"
+  vars:
+    stackhead_action: "setup-syscontainer"
+    module_name: "{{ stackhead_config.container }}"
+    module_group: "container"
+- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/terraform/update-system-terraform.yml"
