@@ -55,6 +55,8 @@ def _get_role_path(role_name, collection_paths, role_paths):
 
 def load_config(module_name, collection_paths, role_paths):
     module_rolepath = _get_role_path(module_name, collection_paths, role_paths)
+    if not module_rolepath:
+        raise ValueError("Unable to get role path for module " + module_name)
     module_config_path = module_rolepath + '/stackhead-module.yml'
 
     config_file = open(module_config_path)
