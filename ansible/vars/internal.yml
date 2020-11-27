@@ -5,10 +5,10 @@
 stackhead__root_folder: "/stackhead"
 
 # internal: Path to remote where Terraform files (and symlinks) are stored
-stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/"
+stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/project/"
 
 # internal: Path to remote where system Terraform files (and symlinks) are stored
-stackhead__system_tf_root_folder: "{{ stackhead__root_folder }}/system/terraform/"
+stackhead__system_tf_root_folder: "{{ stackhead__root_folder }}/terraform/system/"
 
 # internal
 stackhead_config:
