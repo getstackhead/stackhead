@@ -12,8 +12,8 @@ The module configuration file `stackhead-module.yml` is a YAML file that is used
 ---
 constraints:
   - stackhead>=1.0.0
-type: webserver # or container
-terraform:
+type: webserver # or container or plugin
+terraform: # not available for plugins
   provider:
     name: myprovider # binary created will be called terraform-provider-myprovider
     url: https://github.com/getstackhead/terraform-myprovider/releases/download/v1.0.0/terraform-provider-myprovider
@@ -41,7 +41,7 @@ We recommend allowing any release after the version that is known to work \(e.g.
 
 ## type
 
-The type of your module \(i.e. webserver or container\). While your are currently not required to set this attribute, we recommend you to do so.
+The type of your module \(i.e. `webserver`, `container` or `plugin`\). While your are currently not required to set this attribute, we recommend you to do so.
 
 {% code title="stackhead-module.yml" %}
 ```yaml

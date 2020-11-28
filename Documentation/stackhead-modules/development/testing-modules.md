@@ -19,6 +19,7 @@ In order to use the action you'll have to set up a webserver and make sure GitHu
     domain2: 'yourdomain2.com'
     webserver: 'getstackhead.stackhead_webserver_nginx' # webserver to use (make sure to install it)
     container: 'getstackhead.stackhead_container_docker' # container manager to use (make sure to install it)
+    plugins: [] # you may define plugins to use for your tests if needed
     rolename: '<vendor>.stackhead_<type>_<name>'
 ```
 

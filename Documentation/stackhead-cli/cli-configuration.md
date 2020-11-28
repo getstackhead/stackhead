@@ -11,6 +11,8 @@ This file is used to configure which StackHead modules to use.
 modules:
   webserver: nginx
   container: docker
+  plugins:
+    - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
 ```
 
 {% hint style="info" %}
