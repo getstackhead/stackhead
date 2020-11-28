@@ -18,6 +18,8 @@ stackhead_config:
   version:
     current: "{{ lookup('file', '../../VERSION') }}"
     installed: "{% if 'versions' in ansible_local %}{{ ansible_local.versions.stackhead.version }}{% endif %}"
+  terraform:
+    manual_update: "{{ stackhead__tf_update_realtime|default('yes')|bool }}"
 
 ###
 # SSL certificates
