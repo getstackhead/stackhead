@@ -30,3 +30,10 @@
 
 # Initial run applying settings from Terraform files created above
 - import_tasks: "../roles/config_terraform/tasks/execute.yml"
+
+# Setup crontask for applying Terraform files every 5 minutes
+- name: Create StackHead Terraform apply crontab
+  cron:
+    name: "Apply Terraform project files"
+    minute: "*/5"
+    job: "TF_IN_AUTOMATION=1 terraform apply -auto-approve -input=false {{ stackhead__tf_root_folder }}"
