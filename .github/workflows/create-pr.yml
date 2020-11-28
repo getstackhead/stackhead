@@ -17,11 +17,11 @@ jobs:
   createPullRequest:
     name: Create Pull Request
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'refs/heads/')
+    if: contains(github.ref, 'refs/heads/') && github.ref != 'ref/heads/next' && github.ref != 'ref/heads/master'
     steps:
       - uses: actions/checkout@v2
       - name: Create Pull Request
-        if: env.HEAD_REF != env.GITHUB_BASE && env.HEAD_REF != 'master' && env.GITHUB_BASE != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
+        if: env.HEAD_REF != env.GITHUB_BASE && env.HEAD_REF != 'master' && github.repository == env.GITHUB_REPONAME && github.actor == env.GITHUB_PUSHER_USERNAME
         uses: vsoch/pull-request-action@1.0.12
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
