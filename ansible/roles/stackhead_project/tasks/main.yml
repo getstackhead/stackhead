@@ -42,6 +42,7 @@
 - import_tasks: "../roles/config_terraform/tasks/remove-project-symlinks.yml"
   when: ensure == 'absent'
 - import_tasks: "../roles/config_terraform/tasks/execute.yml"
+  when: stackhead_config.terraform.manual_update
 - file:
     path: "{{ item }}"
     state: absent
