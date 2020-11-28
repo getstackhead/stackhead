@@ -17,6 +17,7 @@ There are the following module types:
 
 * **webserver**: Configuration for reverse proxy webserver
 * **container**: Configuration for launching containers
+* **plugin**: Any additional software to install on your server (not bound to projects)
 
 ## Role name
 
@@ -31,11 +32,11 @@ Each StackHead module is to required to have a [module configuration file](modul
 StackHead looks for files in the `tasks/steps` directory for the currently performed action.
 Make sure the following files exist and the expected behaviour is implemented accordingly:
 
-| file path | Expected behaviour | Used in step |
+| file path | Expected behaviour | Required for which modules? |
 | :--- | :--- | :--- |
-| `tasks/steps/setup.yml` | The software is installed. | Server setup |
-| `tasks/steps/deploy.yml` | The software is configured for the given project. | Project deployment |
-| `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | Project destruction |
+| `tasks/steps/setup.yml` | The software is installed. | `webserver`, `container`, `plugins` |
+| `tasks/steps/deploy.yml` | The software is configured for the given project. | `webserver`, `container` |
+| `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | `plugins` |
 
 {% hint style="warning" %}
 Note that `role_path` will most likely not refer to the path to your role, but to a StackHead role.

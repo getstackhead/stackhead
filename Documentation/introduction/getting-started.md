@@ -8,7 +8,7 @@ description: >-
 
 You will require:
 
-* StackHead CLI \(see [Installation Guide](../stackhead-cli/installation-1.md)\)
+* StackHead CLI \(see [Installation Guide](../stackhead-cli/installation.md)\)
 * a top level domain
 * a web server with SSH root access
 

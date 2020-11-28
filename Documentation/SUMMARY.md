@@ -10,7 +10,7 @@
 
 ## StackHead CLI
 
-* [Installation](stackhead-cli/installation-1.md)
+* [Installation](stackhead-cli/installation.md)
 * [Commands](stackhead-cli/commands.md)
 * [Configuration](stackhead-cli/cli-configuration.md)
 

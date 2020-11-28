@@ -21,3 +21,8 @@ If no webserver is configured, **Nginx \(getstackhead.stackhead\_webserver\_ngin
 If no container manager is configured, **Docker \(getstackhead.stackhead\_webserver\_docker\)** will be used per default.
 {% endhint %}
 
+
+
+## Plugins
+
+* [Watchtower \(getstackhead.stackhead\_plugin\_watchtower\)](https://github.com/getstackhead/module-plugin-watchtower)

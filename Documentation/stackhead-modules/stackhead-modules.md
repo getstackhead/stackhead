@@ -22,3 +22,12 @@ Container managers are applications like Docker that provide container technolog
 Set the container manager you want to use `modules.container` setting in your `.stackhead-cli.yml` file.
 {% endhint %}
 
+## Plugins
+
+Plugins are additional applications to be installed on your server.
+Such may include reverse proxies, load balancers, databases, etc.
+
+{% hint style="info" %}
+Set the plugins you want to use in the `modules.plugins` array setting in your `.stackhead-cli.yml` file.
+{% endhint %}
+
