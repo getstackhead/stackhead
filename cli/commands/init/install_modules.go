@@ -5,8 +5,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/spf13/viper"
-
 	"github.com/getstackhead/stackhead/cli/routines"
 	"github.com/getstackhead/stackhead/cli/stackhead"
 )
@@ -16,39 +14,24 @@ func collectModules() []string {
 	var err error
 	var moduleName string
 
-	var webserver = viper.GetString("modules.webserver")
-	if len(webserver) == 0 {
-		webserver = "getstackhead.stackhead_webserver_nginx"
-	}
-	moduleName, err = stackhead.AutoCompleteModuleName(webserver, stackhead.ModuleWebserver)
+	moduleName, err = stackhead.GetWebserverModule()
 	if err != nil {
 		panic(err.Error())
 	}
 	modules = append(modules, moduleName)
 
-	var container = viper.GetString("modules.container")
-	if len(container) == 0 {
-		container = "getstackhead.stackhead_container_docker"
-	}
-	moduleName, err = stackhead.AutoCompleteModuleName(container, stackhead.ModuleContainer)
+	moduleName, err = stackhead.GetContainerModule()
 	if err != nil {
 		panic(err.Error())
 	}
-
 	modules = append(modules, moduleName)
 
-	var plugins = viper.GetStringSlice("modules.plugins")
-	if len(plugins) > 0 {
-		for _, plugin := range plugins {
-			moduleName, err = stackhead.AutoCompleteModuleName(plugin, stackhead.ModulePlugin)
-			if err != nil {
-				panic(err.Error())
-			}
-			modules = append(modules, moduleName)
-		}
+	pluginModules, err := stackhead.GetPluginModules()
+	if err != nil {
+		panic(err.Error())
 	}
+	modules = append(modules, pluginModules...)
 
-	modules = append(modules, container)
 	return modules
 }
 

@@ -3,6 +3,8 @@ package stackhead
 import (
 	"fmt"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -94,4 +96,35 @@ func AutoCompleteModuleName(moduleNameFragment string, targetType string) (strin
 	}
 
 	return vendorName + "." + strings.Join([]string{moduleType, baseName}, "_"), nil
+}
+
+func GetWebserverModule() (string, error) {
+	var module = viper.GetString("modules.webserver")
+	if len(module) == 0 {
+		module = "getstackhead.stackhead_webserver_nginx"
+	}
+	return AutoCompleteModuleName(module, ModuleWebserver)
+}
+
+func GetContainerModule() (string, error) {
+	var module = viper.GetString("modules.container")
+	if len(module) == 0 {
+		module = "getstackhead.stackhead_container_docker"
+	}
+	return AutoCompleteModuleName(module, ModuleContainer)
+}
+
+func GetPluginModules() ([]string, error) {
+	var plugins = viper.GetStringSlice("modules.plugins")
+	var modules []string
+	if len(plugins) > 0 {
+		for _, plugin := range plugins {
+			moduleName, err := AutoCompleteModuleName(plugin, ModulePlugin)
+			if err != nil {
+				return []string{}, err
+			}
+			modules = append(modules, moduleName)
+		}
+	}
+	return modules, nil
 }
