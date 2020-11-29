@@ -67,7 +67,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     env:
-      INVENTORY_PATH: ansible/__tests__/inventory.yml
       DOMAIN: pr-${{ github.run_id }}-cli.test.stackhead.io
     steps:
       - uses: actions/checkout@v2

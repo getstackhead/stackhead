@@ -15,9 +15,9 @@ domains:
         external_port: 80
     security:
       authentication:
-          - type: basic
-            username: user
-            password: pass
+        - type: basic
+          username: user
+          password: pass
 container:
   services:
     - name: data

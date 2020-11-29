@@ -70,7 +70,8 @@ runs:
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
         INPUT_VERSION: ${{ inputs.version }}
-      run: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}/ansible/__tests__/steps/build.sh
+        STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
+      run: ${{ github.action_path }}/steps/build.sh
     - name: "Setup server"
       shell: bash
       env:
@@ -83,10 +84,11 @@ runs:
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
-      run: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}/ansible/__tests__/steps/setup.sh
+        STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
+      run: ${{ github.action_path }}/steps/setup.sh
     - name: "Deploy application"
       shell: bash
-      run: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}/ansible/__tests__/steps/deploy.sh
+      run: ${{ github.action_path }}/steps/deploy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
@@ -96,9 +98,10 @@ runs:
         INPUT_PLUGINS: ${{ inputs.plugins }}
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
+        STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
     - name: "Validate deployment"
       shell: bash
-      run: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}/ansible/__tests__/steps/validate.sh
+      run: ${{ github.action_path }}/steps/validate.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
@@ -107,8 +110,9 @@ runs:
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Destroy deployment"
       shell: bash
-      run: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}/ansible/__tests__/steps/destroy.sh
+      run: ${{ github.action_path }}/steps/destroy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
+        STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
