@@ -123,6 +123,11 @@ jobs:
       - name: Set execution permission on binary
         run: chmod +x /home/runner/bin/stackhead-cli
         working-directory: /home/runner/bin
+      - name: Perform validation tests
+        run: |
+          /home/runner/bin/stackhead-cli cli validate ./schemas/examples/cli-config/valid/cli.yml
+          /home/runner/bin/stackhead-cli module validate ./schemas/examples/module-config/valid/container-module.yml
+          /home/runner/bin/stackhead-cli project validate ./schemas/examples/project-definition/valid/docker_project.yml
       - name: Perform integration test
         uses: ./actions/integration-test
         with:

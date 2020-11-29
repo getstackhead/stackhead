@@ -1,0 +1,6 @@
+---
+type: container
+terraform:
+  provider:
+    vendor: getstackhead
+    name: nginx
