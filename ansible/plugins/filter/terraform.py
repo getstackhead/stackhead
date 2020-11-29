@@ -12,12 +12,12 @@ class FilterModule(object):
             'TFescapeDoubleQuotes': self.tf_escape_double_quotes
         }
 
-    def tf_replace(self, text, project_name):
+    def tf_replace(self, text, project_name, container_resource_name='docker_container'):
         if not isinstance(text, str):
             return text
         # Replace Docker service name variables
         docker_service = re.compile(r'\$DOCKER_SERVICE_NAME\[\'(.*)\'\]')
-        text = docker_service.sub("${docker_container.stackhead-" + project_name + "-\\1.name}", text)
+        text = docker_service.sub("${" + container_resource_name + ".stackhead-" + project_name + "-\\1.name}", text)
 
         return text
 

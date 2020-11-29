@@ -8,7 +8,7 @@ class FilterModule(object):
             'containerPorts': self.container_ports
         }
 
-    def container_ports(self, containerapp__expose, project_name):
+    def container_ports(self, containerapp__expose, project_name, container_resource_name='docker_container'):
         containerapp__expose.sort(key=lambda x: x['service'])
         output = []
 
@@ -27,7 +27,7 @@ class FilterModule(object):
                 'index': len(output),
                 'service': service_name,
                 'internal_port': internal_port,
-                'tfstring': "${docker_container.stackhead-" + project_name + "-" +
+                'tfstring': "${" + container_resource_name + ".stackhead-" + project_name + "-" +
                             service_name + ".ports[" + str(index) + "].external}"
             })
             previous_service = service_name
