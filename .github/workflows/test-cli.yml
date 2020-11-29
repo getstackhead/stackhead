@@ -125,7 +125,7 @@ jobs:
         run: chmod +x /home/runner/bin/stackhead-cli
         working-directory: /home/runner/bin
       - name: Perform integration test
-        uses: ./
+        uses: ./actions/integration-test
         with:
           ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
           domain: '${{ env.DOMAIN }}'
