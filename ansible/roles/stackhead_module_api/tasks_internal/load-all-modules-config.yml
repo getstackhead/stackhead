@@ -1,5 +1,5 @@
 ---
-# Load config for all modules – can be accessed via ansible_facts['mymodule'|getstackhead.stackhead.module_vars_name]
+# Load config for all modules – can be accessed via lookup('vars', "mymodule"|getstackhead.stackhead.module_vars_name)
 - name: "Load config for module"
   getstackhead.stackhead.module.load_config:
     name: "{{ item }}"
