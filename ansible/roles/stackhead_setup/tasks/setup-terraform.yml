@@ -32,8 +32,24 @@
 - import_tasks: "../roles/config_terraform/tasks/execute.yml"
 
 # Setup crontask for applying Terraform files every 5 minutes
-- name: Create StackHead Terraform apply crontab
-  cron:
-    name: "Apply Terraform project files"
-    minute: "*/5"
-    job: "TF_IN_AUTOMATION=1 terraform apply -auto-approve -input=false {{ stackhead__tf_root_folder }}"
+- shell: which terraform
+  register: terraform_bin_abs_path
+- name: Create StackHead Terraform apply service
+  include_role:
+    name: openstack_systemd_service
+  vars:
+    systemd_services:
+      - service_name: stackhead-apply-terraform
+        service_type: oneshot
+        working_directory: "{{ stackhead__tf_root_folder }}"
+        environment:
+          TF_IN_AUTOMATION: 1
+        execstarts:
+          - "{{ terraform_bin_abs_path.stdout }} apply -auto-approve -input=false"
+        timer:
+          state: "started"
+          options:
+            Unit: "stackhead-apply-terraform.service"
+            OnActiveSec: 1sec
+            OnUnitActiveSec: 5min
+            Persistent: true
