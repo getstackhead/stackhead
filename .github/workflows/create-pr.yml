@@ -27,7 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           PULL_REQUEST_BRANCH: ${{ env.GITHUB_BASE }}
           PULL_REQUEST_REVIEWERS: ${{ env.GITHUB_PUSHER_USERNAME }}
-          PULL_REQUEST_TITLE: "Merge ${{ env.HEAD_REF }}"
+          PULL_REQUEST_TITLE: "Merge ${{ github.ref }}"
           PULL_REQUEST_BODY: |
             * **Please check if the PR fulfills these requirements**
             - [ ] The commit message follows our guidelines
