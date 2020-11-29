@@ -8,6 +8,7 @@ on:
       - next
     paths:
       - ansible/**
+      - actions/integration-test/**
       - .github/workflows/test-ansible.yml
 
 jobs:
@@ -63,7 +64,6 @@ jobs:
         webserver: ['nginx']
       fail-fast: false
     env:
-      INVENTORY_PATH: ansible/__tests__/inventory.yml
       DOMAIN: pr-${{ github.run_id }}-${{ matrix.webserver }}.test.stackhead.io
       WEBSERVER: ${{ matrix.webserver }}
     steps:
@@ -139,31 +139,31 @@ jobs:
           ### Build
 
           ```bash
-          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. GITHUB_WORKSPACE=. ./ansible/__tests__/steps/build.sh
+          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. STACKHEAD_CLONE_LOCATION=. ./actions/integration-test/steps/build.sh
           ```
 
           ### Setup server
 
           ```bash
-          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. GITHUB_WORKSPACE=. ./ansible/__tests__/steps/setup.sh
+          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. STACKHEAD_CLONE_LOCATION=. ./actions/integration-test/steps/setup.sh
           ```
 
           ### Deploy application
 
           ```bash
-          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. GITHUB_WORKSPACE=. ./ansible/__tests__/steps/deploy.sh
+          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. STACKHEAD_CLONE_LOCATION=. ./actions/integration-test/steps/deploy.sh
           ```
 
           ### Validate application
 
           ```bash
-          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. GITHUB_WORKSPACE=. ./ansible/__tests__/steps/validate.sh
+          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. STACKHEAD_CLONE_LOCATION=. ./actions/integration-test/steps/validate.sh
           ```
 
           ### Destroy application
 
           ```bash
-          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. GITHUB_WORKSPACE=. ./ansible/__tests__/steps/destroy.sh
+          INPUT_IPADDRESS=${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }} INPUT_DOMAIN=${{ env.DOMAIN }} INPUT_DOMAIN2=sub.${{ env.DOMAIN }} INPUT_WEBSERVER=getstackhead.stackhead_webserver_nginx INPUT_CONTAINER=getstackhead.stackhead_container_docker INPUT_SELFTEST=1 GITHUB_ACTION_PATH=. STACKHEAD_CLONE_LOCATION=. ./actions/integration-test/steps/destroy.sh
           ```
 
           ## Done debugging?
