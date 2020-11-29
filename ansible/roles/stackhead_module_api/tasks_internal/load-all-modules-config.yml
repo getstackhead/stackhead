@@ -1,0 +1,9 @@
+---
+# Load config for all modules – can be accessed via ansible_facts['mymodule'|getstackhead.stackhead.module_vars_name]
+- name: "Load config for module"
+  getstackhead.stackhead.module.load_config:
+    name: "{{ item }}"
+  with_items:
+    - "{{ stackhead_config.container }}"
+    - "{{ stackhead_config.webserver }}"
+    - "{{ stackhead_config.plugins }}"

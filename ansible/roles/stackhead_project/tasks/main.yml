@@ -6,6 +6,8 @@
 - import_tasks: "../roles/stackhead_project/tasks/validate-stackhead-version.yml"
 - import_tasks: "../roles/stackhead_project/tasks/projectconfig-load.yml"
 
+- import_tasks: "../roles/stackhead_module_api/tasks_internal/load-all-modules-config.yml"
+
 - block:
     - name: "Check if project directory exists | Project: {{ project_name }}"
       stat:

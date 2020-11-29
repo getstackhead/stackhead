@@ -1,11 +1,7 @@
 ---
-- name: "Load config for module {{ module_name }}"
-  getstackhead.stackhead.module.load_config:
-    name: "{{ module_name }}"
-  register: loaded_config
 - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
-  vars:
-    module_config: "{{ loaded_config.config_varname }}"
+- set_fact:
+    loaded_config: "{{ ansible_facts[module_name | getstackhead.stackhead.module_vars_name] }}"
 - name: "Load module variables"
   include_vars: "{{ var_path }}"
   when: lookup('pipe', '[ -f ' ~ var_path ~ ' ]; echo $?') == '0'
