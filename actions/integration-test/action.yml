@@ -54,7 +54,7 @@ runs:
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
         INPUT_VERSION: ${{ inputs.version }}
-      run: ${{ github.action_path }}/ansible/__tests__/steps/build.sh
+      run: ${{ github.action_path }}/../../ansible/__tests__/steps/build.sh
     - name: "Setup server"
       shell: bash
       env:
@@ -67,10 +67,10 @@ runs:
         INPUT_CLI: ${{ inputs.cli }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
-      run: ${{ github.action_path }}/ansible/__tests__/steps/setup.sh
+      run: ${{ github.action_path }}/../../ansible/__tests__/steps/setup.sh
     - name: "Deploy application"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/deploy.sh
+      run: ${{ github.action_path }}/../../ansible/__tests__/steps/deploy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
@@ -82,7 +82,7 @@ runs:
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Validate deployment"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/validate.sh
+      run: ${{ github.action_path }}/../../ansible/__tests__/steps/validate.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
@@ -91,7 +91,7 @@ runs:
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Destroy deployment"
       shell: bash
-      run: ${{ github.action_path }}/ansible/__tests__/steps/destroy.sh
+      run: ${{ github.action_path }}/../../ansible/__tests__/steps/destroy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_CLI: ${{ inputs.cli }}
