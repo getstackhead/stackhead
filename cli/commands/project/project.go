@@ -6,9 +6,9 @@ import (
 
 func GetCommands() *cobra.Command {
 	command := &cobra.Command{
-		Use:     "project",
-		Short:   "Project commands",
+		Use:   "project",
+		Short: "Project commands",
 	}
-	command.AddCommand(DeployApplication, DestroyApplication, SetupServer, Validate)
+	command.AddCommand(DeployApplication, DestroyApplication, Validate)
 	return command
 }

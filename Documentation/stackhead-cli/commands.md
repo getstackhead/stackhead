@@ -10,7 +10,9 @@ The following commands are available in StackHead CLI:
 | :--- | :--- |
 | `init` | Installs the StackHead Ansible collection and dependencies |
 | `setup [ip address]` | Install required software on a server |
-| `deploy [path to project definition] [ip address]` | Deploy your project onto the server |
-| `destroy [path to project definition] [ip address]` | Remove a deployed project |
-| `validate [path to project definition]` | Validate a project definition file |
+| `project deploy [path to project definition] [ip address]` | Deploy your project onto the server |
+| `project destroy [path to project definition] [ip address]` | Remove a deployed project |
+| `project validate [path to project definition]` | Validate a project definition file |
+| `cli validate [path to cli configuration]` | Validate a StackHead CLI configuration file |
+| `module validate [path to module file]` | Validate a StackHead module file |
 
