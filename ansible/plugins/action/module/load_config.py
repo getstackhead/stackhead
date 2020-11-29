@@ -64,6 +64,8 @@ def load_config(module_name, collection_paths, role_paths):
 
     populated_config = tf_populate_module_config(config_content, module_rolepath)
 
+    populated_config['role_path'] = module_rolepath
+
     include_varname = module_vars_name(module_name)
     return {
         'config': populated_config,

@@ -5,6 +5,8 @@
 - import_tasks: "../roles/stackhead_setup/tasks/facts-load.yml"
   ignore_errors: yes
 
+- import_tasks: "../roles/stackhead_module_api/tasks_internal/load-all-modules-config.yml"
+
 - import_tasks: "../roles/stackhead_setup/tasks/facts-deploy.yml"
 
 - import_tasks: "../roles/stackhead_setup/tasks/setup-basic.yml"

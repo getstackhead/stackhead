@@ -1,8 +1,7 @@
 # excluded to own file as we can't look blocks...
 ---
-- getstackhead.stackhead.module.load_config:
-    name: "{{ module_name }}"
-  register: loaded_config
 - set_fact:
-    loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [loaded_config.config.terraform.provider] }}"
-  when: loaded_config.config.terraform is defined and loaded_config.config.terraform.provider is defined and loaded_config.config.terraform.provider.name and loaded_config.config.terraform.provider.vendor is defined and loaded_config.config.terraform.provider.version is defined
+    loaded_config: "{{ ansible_facts[module_name | getstackhead.stackhead.module_vars_name] }}"
+- set_fact:
+    loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [loaded_config.terraform.provider] }}"
+  when: loaded_config.terraform is defined and loaded_config.terraform.provider is defined and loaded_config.terraform.provider.name and loaded_config.terraform.provider.vendor is defined and loaded_config.terraform.provider.version is defined
