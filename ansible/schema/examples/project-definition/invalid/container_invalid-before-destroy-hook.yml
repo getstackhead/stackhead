@@ -1,0 +1,15 @@
+---
+domains:
+  - domain: mydomain.com
+    expose:
+      - service: app
+        internal_port: 8080
+        external_port: 80
+container:
+  services:
+    - name: app
+      image: getstackhead/project-demo-php
+      hooks:
+        before_destroy:
+          - echo "valid"
+          - echo 'invalid'

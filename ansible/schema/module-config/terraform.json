@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "terraform": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "object",
+          "required": ["vendor", "name", "version"],
+          "properties": {
+            "vendor": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
