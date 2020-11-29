@@ -9,6 +9,9 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/getstackhead/stackhead/cli/commands"
+	"github.com/getstackhead/stackhead/cli/commands/cli"
+	"github.com/getstackhead/stackhead/cli/commands/module"
+	"github.com/getstackhead/stackhead/cli/commands/project"
 )
 
 var cfgFile string
@@ -42,11 +45,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&collectionPath, "collection-path", "p", "", "Path to Ansible collection directory")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show more output")
 
-	rootCmd.AddCommand(commands.Validate)
+	rootCmd.AddCommand(project.GetCommands())
+	rootCmd.AddCommand(module.GetCommands())
+	rootCmd.AddCommand(cli.GetCommands())
 	rootCmd.AddCommand(commands.Init())
-	rootCmd.AddCommand(commands.SetupServer)
-	rootCmd.AddCommand(commands.DeployApplication)
-	rootCmd.AddCommand(commands.DestroyApplication)
 }
 
 // initConfig reads in config file and ENV variables if set.
