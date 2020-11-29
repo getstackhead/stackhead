@@ -48,6 +48,7 @@ func init() {
 	rootCmd.AddCommand(project.GetCommands())
 	rootCmd.AddCommand(module.GetCommands())
 	rootCmd.AddCommand(cli.GetCommands())
+	rootCmd.AddCommand(commands.SetupServer)
 	rootCmd.AddCommand(commands.Init())
 }
 
