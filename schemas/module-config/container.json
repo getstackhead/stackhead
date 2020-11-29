@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "container": {
+      "type": "object",
+      "properties": {
+        "terraform": {
+          "type": "object",
+          "required": ["resource_name"],
+          "properties": {
+            "resource_name": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
