@@ -84,6 +84,7 @@ runs:
       shell: bash
       run: ${{ github.action_path }}/ansible/__tests__/steps/validate.sh
       env:
+        INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
         INPUT_CLI: ${{ inputs.cli }}
