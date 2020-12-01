@@ -9,7 +9,7 @@ import (
 	jsonschema "github.com/saitho/jsonschema-validator/validator"
 )
 
-func Validate(filePath string, schemaFile string)  {
+func Validate(filePath string, schemaFile string) {
 	var collectionDir, err = ansible.GetStackHeadCollectionLocation()
 	collectionAbsDir, err := filepath.Abs(collectionDir)
 	if err != nil {
@@ -17,7 +17,7 @@ func Validate(filePath string, schemaFile string)  {
 		return
 	}
 
-	schemaPath := filepath.Join(collectionAbsDir, "schema", schemaFile)
+	schemaPath := filepath.Join(collectionAbsDir, "schemas", schemaFile)
 	if err != nil {
 		_, err = fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		if err != nil {
