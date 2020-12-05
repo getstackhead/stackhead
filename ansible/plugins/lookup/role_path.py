@@ -1,5 +1,6 @@
-from ansible.plugins.lookup import LookupBase
 from os import path
+
+from ansible.plugins.lookup import LookupBase
 
 
 class LookupModule(LookupBase):

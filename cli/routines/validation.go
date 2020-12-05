@@ -14,17 +14,9 @@ func Validate(filePath string, schemaFile string) {
 	collectionAbsDir, err := filepath.Abs(collectionDir)
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	schemaPath := filepath.Join(collectionAbsDir, "schemas", schemaFile)
-	if err != nil {
-		_, err = fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-		if err != nil {
-			panic(err)
-		}
-		return
-	}
 	result, err := jsonschema.ValidateFile(filePath, schemaPath)
 
 	if err != nil {

@@ -4,7 +4,7 @@ StackHead will look for a file named `.stackhead-cli.yml` in the working directo
 
 This file is used to configure which StackHead modules to use.
 
-### Full annotated configuration
+## Full annotated configuration
 
 ```yaml
 ---

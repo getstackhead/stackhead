@@ -6,8 +6,8 @@ import (
 
 func GetCommands() *cobra.Command {
 	command := &cobra.Command{
-		Use:     "cli",
-		Short:   "StackHead CLI commands",
+		Use:   "cli",
+		Short: "StackHead CLI commands",
 	}
 	command.AddCommand(Validate)
 	return command
