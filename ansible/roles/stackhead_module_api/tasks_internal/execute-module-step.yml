@@ -1,7 +1,8 @@
 ---
-- include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
+- name: "Validate constraints of {{ module.group }} ({{ module.name }})"
+  include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/validate-module-constraints.yml"
 - set_fact:
-    loaded_config: "{{ ansible_facts[module_name | getstackhead.stackhead.module_vars_name] }}"
+    loaded_config: "{{ ansible_facts[module.name | getstackhead.stackhead.module_vars_name] }}"
 - name: "Load module variables"
   include_vars: "{{ var_path }}"
   when: lookup('pipe', '[ -f ' ~ var_path ~ ' ]; echo $?') == '0'
@@ -10,9 +11,9 @@
     - "{{ loaded_config.role_path }}/vars/main.yml"
   loop_control:
     loop_var: var_path
-- name: "{{ stackhead_action }} {{ module_group }} ({{ module_name }}) configuration"
+- name: "{{ stackhead_action }} {{ module.group }} ({{ module.name }}) configuration"
   include_tasks: "{{ include_file_path }}"
-  when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not optional|default(false)|bool
+  when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not module.optional|default(false)|bool
   vars:
-    module_role_path: "{{ lookup('getstackhead.stackhead.role_path', module_name) }}"
+    module_role_path: "{{ lookup('getstackhead.stackhead.role_path', module.name) }}"
     include_file_path: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
