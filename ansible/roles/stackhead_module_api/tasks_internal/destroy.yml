@@ -1,13 +1,13 @@
 ---
 - set_fact:
     plugin_list: "{{ plugin_list|default([]) + [{'name': item, 'group': 'plugin', 'optional': false}] }}"
+  when: item != ''
   with_items: "{{ stackhead_config.plugins }}"
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/execute-module-step.yml"
   vars:
     stackhead_action: "destroy"
-    module_name: "{{ item.name }}"
-    module_group: "{{ item.group }}"
-    optional: "{{ item.optional }}"
+  loop_control:
+    loop_var: module
   with_items:
     - { name: "{{ stackhead_config.container }}", group: 'container management', optional: true }
     - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: true }

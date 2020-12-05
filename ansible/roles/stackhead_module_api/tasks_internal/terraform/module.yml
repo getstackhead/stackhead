@@ -1,7 +1,7 @@
 # excluded to own file as we can't look blocks...
 ---
 - set_fact:
-    loaded_config: "{{ ansible_facts[module_name | getstackhead.stackhead.module_vars_name] }}"
+    loaded_config: "{{ ansible_facts[module.name | getstackhead.stackhead.module_vars_name] }}"
 - set_fact:
     loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [loaded_config.terraform.provider] }}"
   when: loaded_config.terraform is defined and loaded_config.terraform.provider is defined and loaded_config.terraform.provider.name and loaded_config.terraform.provider.vendor is defined and loaded_config.terraform.provider.version is defined
