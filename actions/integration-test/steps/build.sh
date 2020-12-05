@@ -19,7 +19,7 @@ else
 	rm -rf "${STACKHEAD_CLONE_LOCATION}/ansible/schema"
 	rm -rf "${STACKHEAD_CLONE_LOCATION}/ansible/schema"
 	mkdir "${STACKHEAD_CLONE_LOCATION}/ansible/schema"
-	(cd "${STACKHEAD_CLONE_LOCATION}/schemas" && find . -name "*.json" -exec cp --parents -R '{}' "${STACKHEAD_CLONE_LOCATION}/ansible/schema/" ';')
+	(cd "${STACKHEAD_CLONE_LOCATION}/schemas" && find . -name "*.json" -exec cp --parents -R '{}' "../ansible/schemas/" ';')
 	ansible-galaxy collection build -f "${STACKHEAD_CLONE_LOCATION}/ansible"
 	ansible-galaxy collection install "$(find getstackhead-stackhead-*)" -f
 
