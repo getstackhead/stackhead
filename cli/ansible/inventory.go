@@ -5,38 +5,37 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
+
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 
 	"github.com/getstackhead/stackhead/cli/stackhead"
 )
 
-// InventoryOptions is a configuration used during creation of the temporary inventory file
-type InventoryOptions struct {
-	IPAddress                  string
-	ProjectDefinitionFile      string
-	ProjectDefinitionFileName  string
-	TmpProjectDefinitionFolder string
-	Webserver                  string
-	Container                  string
-	Plugins                    []string
-}
-
-// IPAddress sets the corresponding inventory option
-func IPAddress(ipAddress string) InventoryOption {
-	return func(args *InventoryOptions) {
-		args.IPAddress = ipAddress
+type Inventory struct {
+	All struct {
+		Vars struct {
+			AnsibleUser               string                 `yaml:"ansible_user"`
+			AnsibleConnection         string                 `yaml:"ansible_connection"`
+			AnsiblePythonInterpreter  string                 `yaml:"ansible_python_interpreter"`
+			StackHeadConfigFolder     string                 `yaml:"stackhead__config_folder"`
+			StackHeadWebserver        string                 `yaml:"stackhead__webserver"`
+			StackHeadContainer        string                 `yaml:"stackhead__container"`
+			StackHeadPlugins          []string               `yaml:"stackhead__plugins"`
+			StackHeadConfigSetup      map[string]interface{} `yaml:"stackhead__config_setup"`
+			StackHeadConfigDeployment map[string]interface{} `yaml:"stackhead__config_deployment"`
+			StackHeadConfigDestroy    map[string]interface{} `yaml:"stackhead__config_destroy"`
+		}
+		Hosts struct {
+			Mackerel struct {
+				AnsibleHost string `yaml:"ansible_host"`
+				Stackhead   struct {
+					Applications []string
+				}
+			}
+		}
 	}
 }
-
-// ProjectDefinitionFile sets the corresponding inventory option
-func ProjectDefinitionFile(projectDefinitionFile string) InventoryOption {
-	return func(args *InventoryOptions) {
-		args.ProjectDefinitionFile = projectDefinitionFile
-	}
-}
-
-// InventoryOption is a single inventory setting
-type InventoryOption func(*InventoryOptions)
 
 func copyFile(srcPath string, destPath string) error {
 	input, err := ioutil.ReadFile(srcPath)
@@ -52,11 +51,30 @@ func copyFile(srcPath string, destPath string) error {
 
 // CreateInventoryFile creates a temporary inventory file with the given settings and returns an absolute file path.
 // Note: make sure to remove the file when you don't need it anymore!
-func CreateInventoryFile(options ...InventoryOption) (string, error) {
-	opts := &InventoryOptions{}
-	for _, setter := range options {
-		setter(opts)
+func CreateInventoryFile(ipAddress string, projectDefinitionFile string) (string, error) {
+	conf := Inventory{}
+	conf.All.Vars.AnsibleUser = "root"
+	conf.All.Vars.AnsibleConnection = "ssh"
+	conf.All.Vars.AnsiblePythonInterpreter = "/usr/bin/python3"
+	conf.All.Hosts.Mackerel.AnsibleHost = ipAddress
+
+	webserverModule, err := stackhead.GetWebserverModule()
+	if err != nil {
+		return "", err
 	}
+	conf.All.Vars.StackHeadWebserver = webserverModule
+
+	containerModule, err := stackhead.GetContainerModule()
+	if err != nil {
+		return "", err
+	}
+	conf.All.Vars.StackHeadContainer = containerModule
+
+	pluginModules, err := stackhead.GetPluginModules()
+	if err != nil {
+		return "", err
+	}
+	conf.All.Vars.StackHeadPlugins = pluginModules
 
 	tmpFile, err := ioutil.TempFile("", "inventory")
 	if err != nil {
@@ -69,66 +87,34 @@ func CreateInventoryFile(options ...InventoryOption) (string, error) {
 		return "", err
 	}
 
-	opts.Webserver, err = stackhead.GetWebserverModule()
-	if err != nil {
-		return "", err
-	}
-	opts.Container, err = stackhead.GetContainerModule()
-	if err != nil {
-		return "", err
-	}
-	opts.Plugins, err = stackhead.GetPluginModules()
-	for i := range opts.Plugins {
-		opts.Plugins[i] = "\"" + opts.Plugins[i] + "\""
-	}
-	if err != nil {
-		return "", err
-	}
-
-	if len(opts.ProjectDefinitionFile) > 0 {
-		opts.TmpProjectDefinitionFolder, err = ioutil.TempDir("", "project_definitions")
+	if len(projectDefinitionFile) > 0 {
+		conf.All.Vars.StackHeadConfigFolder, err = ioutil.TempDir("", "project_definitions")
 		if err != nil {
 			return "", err
 		}
-		projectDefinitionFile := filepath.Base(opts.ProjectDefinitionFile)
+		projectDefinitionFilePath := filepath.Base(projectDefinitionFile)
 
 		// Copy project definition file
-		err = copyFile(opts.ProjectDefinitionFile, filepath.Join(opts.TmpProjectDefinitionFolder, projectDefinitionFile))
+		err = copyFile(projectDefinitionFile, filepath.Join(conf.All.Vars.StackHeadConfigFolder, projectDefinitionFilePath))
 		if err != nil {
 			return "", err
 		}
 
-		opts.ProjectDefinitionFileName = projectDefinitionFile
-		opts.ProjectDefinitionFileName = strings.TrimSuffix(opts.ProjectDefinitionFileName, ".yml")
-		opts.ProjectDefinitionFileName = strings.TrimSuffix(opts.ProjectDefinitionFileName, ".yaml")
+		projectDefinitionFilePath = strings.TrimSuffix(projectDefinitionFilePath, ".yml")
+		projectDefinitionFilePath = strings.TrimSuffix(projectDefinitionFilePath, ".yaml")
+		conf.All.Hosts.Mackerel.Stackhead.Applications = append(conf.All.Hosts.Mackerel.Stackhead.Applications, projectDefinitionFilePath)
 	}
 
-	t := template.New("ansible_inventory")
-	t = t.Funcs(template.FuncMap{"StringsJoin": strings.Join})
+	conf.All.Vars.StackHeadConfigSetup = viper.GetStringMap("modules.config.setup")
+	conf.All.Vars.StackHeadConfigDeployment = viper.GetStringMap("modules.config.deployment")
+	conf.All.Vars.StackHeadConfigDestroy = viper.GetStringMap("modules.config.destroy")
 
-	t, err = t.Parse(`# This file was generated by StackHead.
----
-all:
-  vars:
-    ansible_user: root
-    ansible_connection: ssh
-    stackhead__config_folder: "{{ .TmpProjectDefinitionFolder }}"
-    stackhead__webserver: "{{ .Webserver }}"
-    stackhead__container: "{{ .Container }}"
-    stackhead__plugins: [{{ StringsJoin .Plugins "," }}]
-    ansible_python_interpreter: /usr/bin/python3
-  hosts:
-    mackerel:
-      ansible_host: {{ .IPAddress }}
-      stackhead:
-        applications:
-          - {{ .ProjectDefinitionFileName }}
-`)
+	d, err := yaml.Marshal(&conf)
 	if err != nil {
 		return "", err
 	}
 
-	if err = t.Execute(tmpFile, opts); err != nil {
+	if _, err = tmpFile.Write(d); err != nil {
 		return "", err
 	}
 
