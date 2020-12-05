@@ -1,10 +1,12 @@
-from ansible.plugins.action import ActionBase
-from ansible.config.manager import ensure_type
-from ansible.module_utils.six import string_types
-from ansible.errors import AnsibleActionFail
-from os import path
 import re
+from os import path
+
 import yaml
+from ansible.config.manager import ensure_type
+from ansible.errors import AnsibleActionFail
+from ansible.module_utils.six import string_types
+
+from ansible.plugins.action import ActionBase
 
 
 def module_vars_name(module_name):
@@ -38,7 +40,7 @@ def tf_populate_module_config(included_module_config, module_rolepath):
     return included_module_config
 
 
-def _get_role_path(role_name, collection_paths, role_paths):
+def get_role_path(role_name, collection_paths, role_paths):
     parts = role_name.split(".", 2)
     if len(parts) == 3:  # collection
         search_paths = list(
@@ -65,7 +67,7 @@ def _get_role_path(role_name, collection_paths, role_paths):
 
 
 def load_config(module_name, collection_paths, role_paths):
-    module_rolepath = _get_role_path(module_name, collection_paths, role_paths)
+    module_rolepath = get_role_path(module_name, collection_paths, role_paths)
     if not module_rolepath:
         raise ValueError("Unable to get role path for module " + module_name)
     module_config_path = module_rolepath + "/stackhead-module.yml"
