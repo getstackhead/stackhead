@@ -10,7 +10,7 @@ on:
       - ansible/**
       - cli/**
       - actions/integration-test/**
-      - .github/workflows/test-cli.yml
+      - .github/workflows/test-integration.yml
 
 jobs:
 
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ 'ubuntu-18.04', 'ubuntu-20.04' ]
+        os: [ 'ubuntu-18.04', 'ubuntu-20.04', 'centos-8' ]
       fail-fast: false
     if: github.event.pull_request.draft == false
     env:
