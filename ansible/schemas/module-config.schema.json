@@ -29,13 +29,6 @@
       "else": {
         "$ref": "module-config/terraform.json"
       }
-    },
-    {
-      "if": {"properties": {"type": {"const": "container"}}},
-      "then": {
-        "additionalProperties": false,
-        "$ref": "module-config/container.json"
-      }
     }
   ]
 }

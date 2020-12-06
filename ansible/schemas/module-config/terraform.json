@@ -6,7 +6,7 @@
       "properties": {
         "provider": {
           "type": "object",
-          "required": ["vendor", "name", "version"],
+          "required": ["vendor", "name", "version", "resource_name"],
           "properties": {
             "vendor": {
               "type": "string"
@@ -15,6 +15,9 @@
               "type": "string"
             },
             "version": {
+              "type": "string"
+            },
+            "resource_name": {
               "type": "string"
             }
           }
