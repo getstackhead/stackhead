@@ -105,9 +105,9 @@ func CreateInventoryFile(ipAddress string, projectDefinitionFile string) (string
 		conf.All.Hosts.Mackerel.Stackhead.Applications = append(conf.All.Hosts.Mackerel.Stackhead.Applications, projectDefinitionFilePath)
 	}
 
-	conf.All.Vars.StackHeadConfigSetup = viper.GetStringMap("modules.config.setup")
-	conf.All.Vars.StackHeadConfigDeployment = viper.GetStringMap("modules.config.deployment")
-	conf.All.Vars.StackHeadConfigDestroy = viper.GetStringMap("modules.config.destroy")
+	conf.All.Vars.StackHeadConfigSetup = viper.GetStringMap("config.setup")
+	conf.All.Vars.StackHeadConfigDeployment = viper.GetStringMap("config.deployment")
+	conf.All.Vars.StackHeadConfigDestroy = viper.GetStringMap("config.destroy")
 
 	d, err := yaml.Marshal(&conf)
 	if err != nil {

@@ -1,6 +1,6 @@
 ---
 - set_fact:
-    plugin_list: "{{ plugin_list|default([]) + [{'name': item, 'group': 'plugin', 'optional': true}] }}"
+    plugin_list: "{{ plugin_list|default([]) + [{'name': item, 'group': 'plugin', 'optional': true, 'config': stackhead_config.deployment[item]|default([])}]}] }}"
   when: item != ''
   with_items: "{{ stackhead_config.plugins }}"
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/execute-module-step.yml"
@@ -9,6 +9,6 @@
   loop_control:
     loop_var: module
   with_items:
-    - { name: "{{ stackhead_config.container }}", group: 'container management', optional: false }
-    - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: false }
+    - { name: "{{ stackhead_config.container }}", group: 'container management', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.container]|default([]) }}" }
+    - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.webserver]|default([]) }}" }
     - "{{ plugin_list|default([]) }}"

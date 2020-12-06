@@ -13,6 +13,11 @@ modules:
   container: docker
   plugins:
     - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
+config:
+  setup:
+    getstackhead.stackhead_webserver_nginx: # config settings for Nginx module
+      extra_conf_options:
+        - server_names_hash_bucket_size: 64
 ```
 
 {% hint style="info" %}

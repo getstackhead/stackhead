@@ -9,6 +9,10 @@ all:
     ansible_user: root
     ansible_connection: ssh
     ansible_python_interpreter: /usr/bin/python3
+    stackhead__config_setup:
+      getstackhead.stackhead_webserver_nginx:
+        extra_conf_options:
+          - server_names_hash_bucket_size: 128
   hosts:
     hetzner1:
       ansible_host: ${ipaddress}
