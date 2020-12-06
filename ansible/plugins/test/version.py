@@ -3,7 +3,7 @@ import re
 # Regular expression taken from
 # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 SEMVER_RE = re.compile(
-    r'''
+    r"""
     ^
         (?P<major>0|[1-9]\d*)
         \.
@@ -22,8 +22,8 @@ SEMVER_RE = re.compile(
             (?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*)
         )?
     $
-    ''',
-    flags=re.X
+    """,
+    flags=re.X,
 )
 
 
@@ -48,6 +48,4 @@ class TestModule(object):
     """
 
     def tests(self):
-        return {
-            'withinMajorVersion': within_major
-        }
+        return {"withinMajorVersion": within_major}

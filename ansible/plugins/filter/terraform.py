@@ -8,16 +8,25 @@ class FilterModule(object):
 
     def filters(self):
         return {
-            'TFreplace': self.tf_replace,
-            'TFescapeDoubleQuotes': self.tf_escape_double_quotes
+            "TFreplace": self.tf_replace,
+            "TFescapeDoubleQuotes": self.tf_escape_double_quotes,
         }
 
-    def tf_replace(self, text, project_name, container_resource_name='docker_container'):
+    def tf_replace(
+        self, text, project_name, container_resource_name="docker_container"
+    ):
         if not isinstance(text, str):
             return text
         # Replace Docker service name variables
-        docker_service = re.compile(r'\$DOCKER_SERVICE_NAME\[\'(.*)\'\]')
-        text = docker_service.sub("${" + container_resource_name + ".stackhead-" + project_name + "-\\1.name}", text)
+        docker_service = re.compile(r"\$DOCKER_SERVICE_NAME\[\'(.*)\'\]")
+        text = docker_service.sub(
+            "${"
+            + container_resource_name
+            + ".stackhead-"
+            + project_name
+            + "-\\1.name}",
+            text,
+        )
 
         return text
 
@@ -26,7 +35,7 @@ class FilterModule(object):
             return text
 
         # duplicate existing escapes \" => \\", \\" => \\\\"
-        double_quotes = re.compile(r'((\\+)\")')
+        double_quotes = re.compile(r"((\\+)\")")
         text = double_quotes.sub("\\2\\1", text)
 
         # all double quotes have to be escaped with one backslashes again
