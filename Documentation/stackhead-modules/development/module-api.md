@@ -22,6 +22,9 @@ The following variables are set by StackHead and can be used by the role:
 | `project_name` | Name of the project that is being deployed | deployment | string |
 | `app_config` | Contents of the project definition file | deployment | object |
 
+Additionally the plugin configuration for the respective step set in StackHead CLI is available in `module.config`.
+
+
 ## Processes
 
 ### Terraform execution
