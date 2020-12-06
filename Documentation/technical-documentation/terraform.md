@@ -6,7 +6,7 @@ StackHead installs Terraform during **server setup** and uses it during **projec
 
 The Terraform configuration files are generated based in the project definition. The aim is to use Terraform for all resources we need to create in order to allow state-like resource management.
 
-![StackHead Workflow: Ansible and Terraform](../.gitbook/assets/ansible-terraform-interaction%20%281%29%20%281%29%20%281%29%20%281%29.png)
+![StackHead Workflow: Ansible and Terraform](../.gitbook/assets/ansible-terraform-interaction.png)
 
 ## Resources managed by Terraform
 
@@ -22,7 +22,7 @@ Each project's Terraform configuration files are placed in the `terraform` folde
 
 The Terraform configuration files from all project directories are symlinked into a general Terraform folder \(as seen below\). With that Terraform is able to manage resources for all projects simultaneously.
 
-![Applying Terraform changes](../.gitbook/assets/terraform-files-structure%20%281%29%20%281%29%20%281%29%20%281%29.png)
+![Applying Terraform changes](../.gitbook/assets/terraform-files-structure.png)
 
 Each deployment will remove existing Symlinks in the global Terraform directory and relink those that are currently in the project's Terraform directory. The files in the global Terraform directory will have the format `[projectname]-[originalname].tf`.
 

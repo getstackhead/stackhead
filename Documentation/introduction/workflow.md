@@ -2,7 +2,7 @@
 
 StackHead utilizes Ansible and Terraform to set up your projects.
 
-![StackHead process](../.gitbook/assets/stackhead-process%20%281%29%20%281%29%20%281%29%20%281%29.png)
+![StackHead process](../.gitbook/assets/stackhead-process.png)
 
 The figure above illustrates the general StackHead workflow. StackHead provides custom Ansible playbooks for installing required software on a remote server \(setup\) and configuring your projects \(deployment\).
 
