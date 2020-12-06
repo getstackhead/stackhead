@@ -27,9 +27,9 @@ A role name has to adhere to this schema: `stackhead_[type]_[name]`.
 
 Each StackHead module is to required to have a [module configuration file](module-configuration-file.md) in its root directory.
 
-## Structure requirements
+### Structure requirements
 
-StackHead looks for files in the `tasks/steps` directory for the currently performed action.
+StackHead looks for files in the `tasks/steps` directory for the currently performed step.
 Make sure the following files exist and the expected behaviour is implemented accordingly:
 
 | file path | Expected behaviour | Required for which modules? |

@@ -54,6 +54,10 @@ type: webserver
 
 Using the `provider` setting the required Terraform provider can be specified. If set, they will be installed during server setup.
 
+{% hint style="info" %}
+Webserver and Container modules are required to use Terraform for setting up the configurations and therefore MUST define the "terraform" setting.
+{% endhint %}
+
 The provider is installed from Terraform registry, setting `vendor`, `name` and `version`.
 
 `name` is the actual name of the Terraform provider. `vendor` is the owner's name on Terraform registry. Looking at the provider _getstackhead/caddy_, _getstackhead_ is the vendor and _caddy_ is the name.
@@ -73,6 +77,7 @@ terraform:
     name: caddy
     version: 1.0.1
     init: "{{ role_path }}/templates/terraform/provider_init.tf.j2"
+    resource_name: caddy_server_block
 ```
 {% endcode %}
 
