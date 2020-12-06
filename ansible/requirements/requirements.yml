@@ -7,4 +7,6 @@ roles:
     version: v0.1.0
 
 collections:
-  - name: crivetimihai.virtualization
+  - name: https://github.com/getstackhead/ansible_virtualization
+    type: git
+    version: v1.0.42-1

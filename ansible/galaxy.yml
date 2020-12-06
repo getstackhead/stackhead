@@ -13,4 +13,4 @@ documentation: "http://docs.stackhead.io/"
 build_ignore:
   - __tests__
 dependencies:
-  "crivetimihai.virtualization": ">=1.0.33"
+  "getstackhead.virtualization": ">=1.0.36"
