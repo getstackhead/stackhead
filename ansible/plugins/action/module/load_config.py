@@ -5,7 +5,6 @@ import yaml
 from ansible.config.manager import ensure_type
 from ansible.errors import AnsibleActionFail
 from ansible.module_utils.six import string_types
-
 from ansible.plugins.action import ActionBase
 
 
