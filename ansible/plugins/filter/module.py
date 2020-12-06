@@ -7,6 +7,4 @@ class FilterModule(object):
     """
 
     def filters(self):
-        return {
-            'module_vars_name': module_vars_name
-        }
+        return {"module_vars_name": module_vars_name}

@@ -4,7 +4,7 @@ Ansible is used to connect to the remote server. The information on the remote s
 
 For each host you can define which projects should run there.
 
-### Variables
+## Variables
 
 Aside from specifying the server IP with the `ansible_host` property, the applications that should be deployed have to be set in `stackhead.applications` setting as below.
 
