@@ -5,3 +5,4 @@ terraform:
     vendor: getstackhead
     name: nginx
     version: 1.3.2
+    resource_name: example

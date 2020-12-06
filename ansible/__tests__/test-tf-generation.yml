@@ -21,6 +21,7 @@
         src: "{{ stackhead__templates }}/terraform/ssl-certificate.tf.j2"
         dest: "./ssl-certificate.tf"
       vars:
+        server_resource_name: "test-resource"
         stackhead__acme_folder: ""
         stackhead__roles: "{{ playbook_dir }}/../roles"
         stackhead__project_certificates_folder: ".stackhead/projects/{{ project_name }}/certificates"

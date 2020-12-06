@@ -12,3 +12,5 @@
     force: true
   vars:
     domain_alternative: []
+    server_resource_name: "{{ lookup('vars', stackhead_config.webserver|getstackhead.stackhead.module_vars_name).terraform.provider.resource_name }}"
+
