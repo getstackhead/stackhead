@@ -14,15 +14,6 @@
     create_home: no
     home: "{{ stackhead__root_folder }}"
     state: present
-- name: Generate stackhead sudoers permissions file
-  blockinfile:
-    path: '/etc/sudoers.d/stackhead'
-    block: |
-      %stackhead ALL= NOPASSWD: /bin/systemctl reload nginx
-    mode: 0440
-    create: yes
-    state: present
-    validate: 'visudo -cf %s'
 - name: Set includedir in sudoers
   lineinfile:
     dest: /etc/sudoers
