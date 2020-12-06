@@ -1,6 +1,6 @@
 ---
 - name: "StackHead::Project || Apply terraform plans"
-  terraform:
+  community.general.terraform:
     project_path: '{{ stackhead__tf_root_folder }}'
     force_init: yes
     state: "present"
