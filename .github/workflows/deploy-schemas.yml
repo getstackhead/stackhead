@@ -1,0 +1,34 @@
+name: Deploy schemas
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - schemas/**
+      - .github/workflows/deploy-schemas.yml
+
+jobs:
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove Python 2 and old Ansible 2.9 version
+        run: sudo apt purge python ansible -y
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install Ansible v2.10.3 (GH actions currently uses 2.9)
+        run: pip install ansible==2.10.3
+      - name: Print Ansible and Python version
+        run: ansible --version && python --version
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: "${{ secrets.SSH_PRIVATE_KEY_STACKHEAD_PROD }}"
+      - name: Perform integration test
+        uses: ./actions/deploy
+        with:
+          ipaddress: "${{ secrets.IPADDRESS_STACKHEAD_PROD }}"
