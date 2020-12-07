@@ -1,0 +1,4 @@
+---
+modules:
+  webserver: nginx
+  container: docker
