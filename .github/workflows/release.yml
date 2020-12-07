@@ -31,6 +31,7 @@ jobs:
       - run: pnpm install
       # todo: adjust Version numbers (VERSION, ansible/VERSION)
       # todo: copy schema directory from schemas/ to ansible/)
+      # todo: copy cli binary to actions/deploy folder
       - name: Semantic Release Action
         uses: saitho/semantic-release-action-pnpm@master
         env:

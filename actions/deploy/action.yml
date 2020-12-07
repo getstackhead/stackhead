@@ -1,0 +1,26 @@
+name: 'StackHead CLI'
+description: 'Deploy a project definition file to your server that was prepared for StackHead.'
+author: 'Mario Lubenka'
+inputs:
+  ipaddress:
+    description: 'IP address of the server'
+    required: true
+  file:
+    description: 'Project definition file'
+    required: true
+  version:
+    description: 'Version of StackHead to use (default: master)'
+    required: false
+    default: master
+runs:
+  using: "composite"
+  steps:
+    - name: Add IP to known_hosts
+      shell: bash
+      run: "ssh-keyscan -v -T 30 ${{ inputs.ipaddress }} >> ~/.ssh/known_hosts"
+    - name: "Install dependencies"
+      shell: bash
+      run: ${{ github.action_path }}/stackhead-cli init --version="${{ inputs.version }}" -v
+    - name: "Deploy application"
+      shell: bash
+      run: ${{ github.action_path }}/stackhead-cli project deploy "${{ github.workspace }}/${{ inputs.file }}" "${{ inputs.ipaddress }}" -v
