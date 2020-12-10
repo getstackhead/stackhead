@@ -2,11 +2,14 @@ name: 'StackHead CLI'
 description: 'Deploy a project definition file to your server that was prepared for StackHead.'
 author: 'Mario Lubenka'
 inputs:
+  ssh_privatekey:
+    description: 'SSH private key'
+    required: true
   ipaddress:
     description: 'IP address of the server'
     required: true
   file:
-    description: 'Project definition file'
+    description: 'Project definition file (relative path from repository root)'
     required: true
   version:
     description: 'Version of StackHead to use (default: master)'
@@ -16,6 +19,7 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.version }}
+    - ${{ inputs.ssh_privatekey }}
     - ${{ inputs.ipaddress }}
     - ${{ inputs.file }}
+    - ${{ inputs.version }}

@@ -1,11 +1,15 @@
 #!/bin/sh -l
 
-# Add IP to known_hosts
-ssh-keyscan -v -T 30 ${2} >> ~/.ssh/known_hosts
+mkdir -p ~/.ssh
+echo "${1}" > ~/.ssh/id_rsa
+chmod 0600 ~/.ssh/id_rsa
+eval `ssh-agent -s`
+ssh-add ~/.ssh/id_rsa
 
 # Install dependencies
-/stackhead-cli init --version="${1}" -v
+/bin/stackhead-cli init --version="${4}" -v
 
 # Deploy project
-/stackhead-cli project deploy "${GITHUB_WORKSPACE}/${3}" "${2}" -v
+echo "Deploying ${GITHUB_WORKSPACE}/${3} to server ${2}"
+/bin/stackhead-cli project deploy "${GITHUB_WORKSPACE}/${3}" "${2}" -v
 
