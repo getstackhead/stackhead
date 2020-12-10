@@ -1,6 +1,6 @@
-FROM pad92/ansible-alpine:2.10.3
+FROM getstackhead/stackhead-cli:latest
 
-COPY stackhead-cli /stackhead-cli
 COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

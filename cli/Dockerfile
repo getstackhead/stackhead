@@ -1,6 +1,6 @@
 FROM golang:alpine as builder
 WORKDIR /build
-ADD . /build
+COPY . /build
 RUN go build -o ./bin/stackhead-cli .
 
 FROM pad92/ansible-alpine:2.10.3
