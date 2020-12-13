@@ -83,6 +83,12 @@
                 "type": "string",
                 "pattern": "^[^']*$"
               }
+            },
+            "execute_after_setup": {
+              "type": "string"
+            },
+            "execute_before_destroy": {
+              "type": "string"
             }
           }
         },
