@@ -37,68 +37,49 @@ type Inventory struct {
 	}
 }
 
-func copyFile(srcPath string, destPath string) error {
-	input, err := ioutil.ReadFile(srcPath)
-	if err != nil {
-		return err
-	}
-
-	if err = ioutil.WriteFile(destPath, input, 0600); err != nil {
-		return err
-	}
-	return nil
-}
-
 // CreateInventoryFile creates a temporary inventory file with the given settings and returns an absolute file path.
 // Note: make sure to remove the file when you don't need it anymore!
 func CreateInventoryFile(ipAddress string, projectDefinitionFile string) (string, error) {
+	var err error
+
 	conf := Inventory{}
 	conf.All.Vars.AnsibleUser = "root"
 	conf.All.Vars.AnsibleConnection = "ssh"
 	conf.All.Vars.AnsiblePythonInterpreter = "/usr/bin/python3"
 	conf.All.Hosts.Mackerel.AnsibleHost = ipAddress
 
-	webserverModule, err := stackhead.GetWebserverModule()
+	conf.All.Vars.StackHeadWebserver, err = stackhead.GetWebserverModule()
 	if err != nil {
 		return "", err
 	}
-	conf.All.Vars.StackHeadWebserver = webserverModule
 
-	containerModule, err := stackhead.GetContainerModule()
+	conf.All.Vars.StackHeadContainer, err = stackhead.GetContainerModule()
 	if err != nil {
 		return "", err
 	}
-	conf.All.Vars.StackHeadContainer = containerModule
 
-	pluginModules, err := stackhead.GetPluginModules()
+	conf.All.Vars.StackHeadPlugins, err = stackhead.GetPluginModules()
 	if err != nil {
 		return "", err
 	}
-	conf.All.Vars.StackHeadPlugins = pluginModules
 
 	tmpFile, err := ioutil.TempFile("", "inventory")
 	if err != nil {
 		return "", err
 	}
 
-	filePath, err := filepath.Abs(tmpFile.Name())
+	inventoryFilePath, err := filepath.Abs(tmpFile.Name())
 	if err != nil {
-		os.Remove(tmpFile.Name())
+		_ = os.Remove(tmpFile.Name())
 		return "", err
 	}
 
 	if len(projectDefinitionFile) > 0 {
-		conf.All.Vars.StackHeadConfigFolder, err = ioutil.TempDir("", "project_definitions")
+		conf.All.Vars.StackHeadConfigFolder, err = filepath.Abs(filepath.Dir(projectDefinitionFile))
 		if err != nil {
 			return "", err
 		}
 		projectDefinitionFilePath := filepath.Base(projectDefinitionFile)
-
-		// Copy project definition file
-		err = copyFile(projectDefinitionFile, filepath.Join(conf.All.Vars.StackHeadConfigFolder, projectDefinitionFilePath))
-		if err != nil {
-			return "", err
-		}
 
 		projectDefinitionFilePath = strings.TrimSuffix(projectDefinitionFilePath, ".yml")
 		projectDefinitionFilePath = strings.TrimSuffix(projectDefinitionFilePath, ".yaml")
@@ -123,5 +104,5 @@ func CreateInventoryFile(ipAddress string, projectDefinitionFile string) (string
 		return "", err
 	}
 
-	return filePath, nil
+	return inventoryFilePath, nil
 }
