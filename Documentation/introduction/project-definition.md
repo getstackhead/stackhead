@@ -46,10 +46,8 @@ container:
           src: /docker/data/test
           dest: /var/test
       hooks:
-        after_setup: # these commands are executed inside container after it was created
-          - echo "Container was created"
-        before_destroy: # these commands are executed inside container before it is destroyed
-          - echo "Container will be destroyed"
+        execute_after_setup: ./setup.sh # this file is executed inside container after the container is created
+        execute_before_destroy: ./destroy.sh # this file is executed inside container before the container is destroyed
     - name: db # service name
       image: mariadb:10.5 # Docker image name
       environment: # environment variables for Docker container
@@ -131,14 +129,13 @@ services:
   - name: nginx
     # ...
     hooks:
-      after_setup:
-        - echo "Executed inside container after it was created"
-      before_destroy:
-        - echo "Executed inside container before it is destroyed"
+      execute_after_setup: ./setup.sh
+      execute_before_destroy: ./destroy.sh
 ```
 
 {% hint style="info" %}
-Due to technical limitations by Terraform you are not able to use single quotes. Please use double quotes and escape accordingly!
+Only the specified file is copied onto the server (and container) during deployment.
+Note that you should not use or call any files in the file that are not already on the container!
 {% endhint %}
 
 #### volumes

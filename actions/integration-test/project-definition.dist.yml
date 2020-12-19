@@ -27,12 +27,8 @@ container:
       volumes_from:
         - data:ro
       hooks:
-        after_setup:
-          - echo "after setup"
-          - echo "after setup with \"some \\"cool\\" text\""
-        before_destroy:
-          - echo "before destroy"
-          - echo "before destroy with \"some \\"cool\\" text\""
+        execute_after_setup: container_setup.sh
+        execute_before_destroy: container_destroy.sh
     - name: php
       image: getstackhead/php:7.4
       volumes_from:

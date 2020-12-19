@@ -40,9 +40,5 @@ container:
       environment:
         MYSQL_ROOT_PASSWORD: example
       hooks:
-        after_setup:
-          - /dev/null
-        before_destroy:
-          - echo "Hello"
         execute_after_setup: ./some-file.sh
         execute_before_destroy: ./some-file.sh
