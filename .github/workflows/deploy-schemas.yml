@@ -4,16 +4,17 @@ on:
   push:
     branches:
       - master
+      - next
     paths:
       - schemas/.deploy/**
       - .github/workflows/deploy-schemas.yml
 
 jobs:
 
-  deploy:
-    name: Deploy
+  deploy-master:
+    name: deploy master
     runs-on: ubuntu-latest
-    #if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - name: Deploy project
@@ -21,5 +22,19 @@ jobs:
         with:
           ipaddress: "${{ secrets.IPADDRESS_STACKHEAD_PROD }}"
           file: ./schemas/.deploy/schemas.yml
+          version: next
+          ssh_privatekey: "${{ secrets.SSH_PRIVATE_KEY_STACKHEAD_PROD }}"
+
+  deploy-next:
+    name: deploy next
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/next'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy project
+        uses: ./actions/deploy
+        with:
+          ipaddress: "${{ secrets.IPADDRESS_STACKHEAD_PROD }}"
+          file: ./schemas/.deploy/schemas-next.yml
           version: next
           ssh_privatekey: "${{ secrets.SSH_PRIVATE_KEY_STACKHEAD_PROD }}"

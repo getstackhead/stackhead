@@ -1,0 +1,17 @@
+---
+domains:
+  - domain: next.schema.stackhead.io
+    expose:
+      - service: nginx
+        internal_port: 80
+        external_port: 80
+container:
+  services:
+    - name: data
+      image: getstackhead/schemas:next
+    - name: nginx
+      image: getstackhead/nginx:standalone
+      hooks:
+        execute_after_setup: setup_container.sh
+      volumes_from:
+        - data
