@@ -61,12 +61,6 @@ app_config:
         hooks:
           execute_after_setup: "./some-file.sh"
           execute_before_destroy: "./some-file.sh"
-          after_setup:
-            - echo "after setup"
-            - echo "after setup with \"some \\"cool\\" text\""
-          before_destroy:
-            - echo "before destroy"
-            - echo "before destroy with \"some \\"cool\\" text\""
       - name: php
         image: getstackhead/php:7.2
         volumes_from:
