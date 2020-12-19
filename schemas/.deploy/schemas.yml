@@ -11,9 +11,7 @@ container:
       image: getstackhead/schemas:latest
     - name: nginx
       image: getstackhead/nginx:standalone
-      #hooks:
-      #  after_setup:
-      #    # add autoindex to list all schema files
-      #    - sed -i "s/location \/ {/location \/ {\n       autoindex on;/" /etc/nginx/conf.d/default.conf
+      hooks:
+        execute_after_setup: setup_container.sh
       volumes_from:
         - data
