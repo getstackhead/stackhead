@@ -1,4 +1,4 @@
-FROM scratch
+FROM alpine:3.12
 
 WORKDIR /var/www
 VOLUME /var/www
