@@ -7,7 +7,7 @@ This file is used to configure which StackHead modules to use.
 You may define additional module configurations for each step (setup, deployment, destroy) within the config key.
 Note that you have to set the fully qualified plugin name (e.g. `getstackhead.stackhead_webserver_nginx`).
 
-See example below for setting the setting _extra_conf_http_options_ for the Nginx webserver module in setup step.
+See example below for setting the setting _server_names_hash_bucket_size_ for the Nginx webserver module in setup step.
 
 ## Full annotated configuration
 
@@ -21,8 +21,7 @@ modules:
 config:
   setup:
     getstackhead.stackhead_webserver_nginx: # config settings for Nginx module
-      extra_conf_http_options:
-        server_names_hash_bucket_size: 64
+      server_names_hash_bucket_size: 128
 ```
 
 {% hint style="info" %}

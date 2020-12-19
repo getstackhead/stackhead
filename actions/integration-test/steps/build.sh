@@ -10,8 +10,7 @@ modules:
 config:
 	setup:
 		getstackhead.stackhead_webserver_nginx:
-			extra_conf_http_options:
-				server_names_hash_bucket_size: 128
+			server_names_hash_bucket_size: 128
 " >"/tmp/.stackhead-cli.yml"
 
 	if [[ $INPUT_SELFTEST != '' ]]; then
