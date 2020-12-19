@@ -59,6 +59,8 @@ app_config:
         volumes_from:
           - data:ro
         hooks:
+          execute_after_setup: "./some-file.sh"
+          execute_before_destroy: "./some-file.sh"
           after_setup:
             - echo "after setup"
             - echo "after setup with \"some \\"cool\\" text\""
