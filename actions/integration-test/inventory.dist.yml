@@ -11,7 +11,7 @@ all:
     ansible_python_interpreter: /usr/bin/python3
     stackhead__config_setup:
       getstackhead.stackhead_webserver_nginx:
-        extra_conf_options:
+        extra_conf_http_options:
           server_names_hash_bucket_size: 128
   hosts:
     hetzner1:
