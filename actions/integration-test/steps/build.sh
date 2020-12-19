@@ -4,9 +4,9 @@ if [[ $INPUT_CLI != '' ]]; then
 	# Write config file
 	echo "---
 modules:
-  webserver: ${INPUT_WEBSERVER}
-  container: ${INPUT_CONTAINER}
-  plugins: ${INPUT_PLUGINS}
+	webserver: ${INPUT_WEBSERVER}
+	container: ${INPUT_CONTAINER}
+	plugins: ${INPUT_PLUGINS}
 config:
 	setup:
 		getstackhead.stackhead_webserver_nginx:
@@ -38,8 +38,8 @@ else
 		ansible-playbook "${STACKHEAD_CLONE_LOCATION}/ansible/playbooks/setup-ansible.yml"
 	fi
 
-  ansible-galaxy install "${INPUT_WEBSERVER}"
-  ansible-galaxy install "${INPUT_CONTAINER}"
+	ansible-galaxy install "${INPUT_WEBSERVER}"
+	ansible-galaxy install "${INPUT_CONTAINER}"
 fi
 
 if [[ $INPUT_ROLENAME != '' ]]; then
