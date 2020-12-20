@@ -2,7 +2,6 @@
 # This test deploys a container project onto the target server
 # IMPORTANT: This must run after test_provision.sh!
 
-mkdir -p "${GITHUB_ACTION_PATH}/projects"
 sed -e "s/\${domain}/${INPUT_DOMAIN}/" -e "s/\${domain2}/${INPUT_DOMAIN2}/" "${GITHUB_ACTION_PATH}/project-definition.dist.yml" >"${GITHUB_ACTION_PATH}/container.yml"
 
 if [[ $INPUT_CLI != '' ]]; then

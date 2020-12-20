@@ -2,7 +2,7 @@
 ---
 all:
   vars:
-    stackhead__config_folder: "{{ inventory_dir }}/projects"
+    stackhead__config_folder: "{{ inventory_dir }}"
     stackhead__webserver: ${webserver}
     stackhead__container: ${container}
     stackhead__plugins: ${plugins}
