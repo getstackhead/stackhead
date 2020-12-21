@@ -5,3 +5,6 @@
       - provider_old is defined and provider_old != ""
       - provider_new is defined and provider_new != ""
 - include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/replace-provider.yml"
+  with_items:
+    - "{{ stackhead__tf_root_folder }}"
+    - "{{ stackhead__system_tf_root_folder }}"
