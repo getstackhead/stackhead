@@ -2,16 +2,14 @@
 domains:
   - domain: schema.stackhead.io
     expose:
-      - service: nginx
+      - service: webserver
         internal_port: 80
         external_port: 80
 container:
   services:
-    - name: data
-      image: getstackhead/schemas:latest
-    - name: nginx
-      image: getstackhead/nginx:standalone
-      hooks:
-        execute_after_setup: setup_container.sh
-      volumes_from:
-        - data
+    - name: webserver
+      image: saitho/git-file-webserver:v1
+      volumes:
+        - type: local
+          src: webserver_config.yml
+          dest: /config/config.yml
