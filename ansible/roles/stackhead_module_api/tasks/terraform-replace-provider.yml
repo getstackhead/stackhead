@@ -1,0 +1,7 @@
+---
+- assert:
+    name: "Check required variables provider_old and provider_new"
+    that:
+      - provider_old is defined and provider_old != ""
+      - provider_new is defined and provider_new != ""
+- include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/replace-provider.yml"
