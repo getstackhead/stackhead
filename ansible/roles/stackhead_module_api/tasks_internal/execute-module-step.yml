@@ -11,9 +11,16 @@
     - "{{ loaded_config.role_path }}/vars/main.yml"
   loop_control:
     loop_var: var_path
-- name: "{{ stackhead_action }} {{ module.group }} ({{ module.name }}) configuration"
-  include_tasks: "{{ include_file_path }}"
-  when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not module.optional|default(false)|bool
+- block:
+  - name: "Run migration step for {{ module.group }} ({{ module.name }})"
+    include_tasks: "{{ include_file_path }}"
+    when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0'
+    vars:
+      include_file_path: "{{ module_role_path }}/tasks/steps/migration.yml"
+  - name: "{{ stackhead_action }} {{ module.group }} ({{ module.name }}) configuration"
+    include_tasks: "{{ include_file_path }}"
+    when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not module.optional|default(false)|bool
+    vars:
+      include_file_path: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
   vars:
     module_role_path: "{{ lookup('getstackhead.stackhead.role_path', module.name) }}"
-    include_file_path: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
