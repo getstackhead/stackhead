@@ -47,3 +47,17 @@ StackHead provides the path to your role as `module_role_path`, so you should us
 {% hint style="warning" %}
 Please make sure you use `include_tasks` instead of `import_tasks` in your steps and files included into your steps!
 {% endhint %}
+
+### Migrations
+
+Files inside the `tasks/migrations` directory are considered migrations.
+They are executed before the first execution of a module step.
+
+The migrations are executed once on the system and in alphabetical order.
+Therefore we recommend prefixing them with a number (e.g.`0001-rename-terraform-provider.yml`) to ensure
+they run in correct order.
+
+The names of executed migration files are saved in `/stackhead/migrations/[module].migrations.lock`.
+{% hint style="danger" %}
+Never rename a migration that was already released or executed on a system!
+{% endhint %}
