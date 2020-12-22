@@ -8,11 +8,13 @@
     path: "{{ item }}/terraform.tfstate"
   register: tfstate_exist
 - block:
+    - set_fact:
+        loaded_terraform_providers: []
     - include_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
     # add old provider back to list and regenerate providers
     - set_fact:
         initial_loaded_terraform_providers: "{{ loaded_terraform_providers }}"
-        loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [{'vendor': provider_old.split('/').0, 'name': provider_old.split('/').1, 'version': provider_old_version, 'nameSuffix': 'oldprovider'}] }}"
+        loaded_terraform_providers: "{{ loaded_terraform_providers + [{'vendor': provider_old.split('/').0, 'name': provider_old.split('/').1, 'version': provider_old_version, 'nameSuffix': 'oldprovider'}] }}"
     - include_tasks: "../roles/config_terraform/tasks/generate-providers.yml"
     - include_tasks: "../roles/config_terraform/tasks/execute.yml"
 
