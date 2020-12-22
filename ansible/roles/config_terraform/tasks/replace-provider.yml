@@ -1,4 +1,8 @@
 ---
+- assert:
+    name: replace-provider task must only be called in migration context!
+    that:
+      - stackhead_migration_context|default(0) == 1
 - name: "Check if tfstate exists"
   stat:
     path: "{{ item }}/terraform.tfstate"
@@ -9,8 +13,6 @@
     - set_fact:
         initial_loaded_terraform_providers: "{{ loaded_terraform_providers }}"
         loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [{'vendor': provider_old.split('/').0, 'name': provider_old.split('/').1, 'version': provider_old_version, 'nameSuffix': 'oldprovider'}] }}"
-    - debug:
-        msg: "{{ loaded_terraform_providers }}"
     - include_tasks: "../roles/config_terraform/tasks/generate-providers.yml"
     - include_tasks: "../roles/config_terraform/tasks/execute.yml"
 
