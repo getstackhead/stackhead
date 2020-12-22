@@ -3,6 +3,7 @@
 
 # internal: Path to remote main StackHead directory
 stackhead__root_folder: "/stackhead"
+stackhead__migrations_folder: "{{ stackhead__root_folder }}/migrations"
 
 # internal: Path to remote where Terraform files (and symlinks) are stored
 stackhead__tf_root_folder: "{{ stackhead__root_folder }}/terraform/project/"
