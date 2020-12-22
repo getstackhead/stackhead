@@ -11,5 +11,5 @@ container:
       image: saitho/git-file-webserver:v1
       volumes:
         - type: local
-          src: webserver_config.yml
-          dest: /config/config.yml
+          src: webserver_config
+          dest: /config
