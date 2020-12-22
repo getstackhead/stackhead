@@ -3,6 +3,7 @@
   assert:
     that:
       - provider_old is defined and provider_old != ""
+      - provider_old_version is defined and provider_old_version != ""
       - provider_new is defined and provider_new != ""
 - include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/replace-provider.yml"
   with_items:

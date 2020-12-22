@@ -1,0 +1,9 @@
+---
+- name: Create Terraform provider configurations (projects folder)
+  template:
+    src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
+    dest: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
+- name: Create Terraform provider configurations (system folder)
+  template:
+    src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
+    dest: "{{ stackhead__system_tf_root_folder }}/terraform-providers.tf"
