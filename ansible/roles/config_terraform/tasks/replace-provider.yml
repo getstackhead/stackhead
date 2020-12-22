@@ -1,6 +1,6 @@
 ---
-- assert:
-    name: replace-provider task must only be called in migration context!
+- name: replace-provider task must only be called in migration context!
+  assert:
     that:
       - stackhead_migration_context|default(0) == 1
 - name: "Check if tfstate exists"
