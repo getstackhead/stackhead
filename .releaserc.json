@@ -8,7 +8,7 @@
     ],
     [
       "@semantic-release/git",
-      {"assets": ["VERSION", "ansible/VERSION"] }
+      {"assets": ["VERSION", "ansible/VERSION", "ansible/schemas"] }
     ],
     "@semantic-release/github"
   ],
