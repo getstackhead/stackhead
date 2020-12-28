@@ -2,13 +2,11 @@ name: Release
 
 on:
   push:
-#    branches:
-#      - master
-    branches-ignore:
-      - '**'
-#  pull_request:
-#    branches:
-#      - master
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   release:
@@ -28,8 +26,6 @@ jobs:
           go get github.com/mitchellh/gox
           go get github.com/tcnksm/ghr
       - uses: actions/checkout@v2
-      # adjust and copy version file ansible/VERSION /VERSION
-      # copy schemas from schemas/**.json to ansible/schemas/
       - run: |
           ./.github/workflows/release/build.sh
       - uses: go-semantic-release/action@v1

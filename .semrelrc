@@ -6,7 +6,7 @@
     "ci-condition": {
       "name": "github",
       "options": {
-        "defaultBranch": "master"
+        "defaultBranch": "feature/release-process"
       }
     },
     "changelog-generator": {
@@ -15,11 +15,11 @@
         "emojis": "true"
       }
     },
-    "hooks": {
-      "names": ["logger"]
-    },
     "provider": {
       "name": "github"
+    },
+    "files-updater": {
+      "names": ["version"]
     }
   }
 }
