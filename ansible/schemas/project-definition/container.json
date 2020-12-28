@@ -70,19 +70,11 @@
         "hooks": {
           "additionalProperties": false,
           "properties": {
-            "after_setup": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^[^']*$"
-              }
+            "execute_after_setup": {
+              "type": "string"
             },
-            "before_destroy": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^[^']*$"
-              }
+            "execute_before_destroy": {
+              "type": "string"
             }
           }
         },

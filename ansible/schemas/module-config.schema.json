@@ -4,9 +4,34 @@
   "description": "StackHead CLI config file",
   "type": "object",
   "required": ["type"],
+  "additionalProperties": false,
   "properties": {
     "type": {
       "$ref": "#/definitions/prop-type"
+    },
+    "terraform": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "object",
+          "required": ["vendor", "name", "version", "resource_name"],
+          "properties": {
+            "vendor": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "resource_name": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -18,16 +43,8 @@
   "allOf": [
     {
       "if": {"properties": {"type": {"const": "plugin"}}},
-      "then": {
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/definitions/prop-type"
-          }
-        }
-      },
       "else": {
-        "$ref": "module-config/terraform.json"
+        "required": ["terraform"]
       }
     }
   ]

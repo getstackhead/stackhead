@@ -1,8 +1,9 @@
 ---
-type: container
+type: webserver
 terraform:
   provider:
     vendor: getstackhead
-    name: docker
+    name: nginx
     version: 1.3.2
-    resource_name: example
+    resource_name: nginx_config
+
