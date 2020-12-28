@@ -4,7 +4,7 @@
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/exec",
-      {"prepareCmd": "echo ${nextRelease.version} > VERSION && echo ${nextRelease.version} > ansible/VERSION"}
+      {"prepareCmd": "echo \"v${nextRelease.version}\" > VERSION && echo \"v${nextRelease.version}\" > ansible/VERSION && (cd schemas && find . -name \"*.json\" -exec cp --parents -R '{}' \"../ansible/schemas/\" ';')"}
     ],
     [
       "@semantic-release/git",
