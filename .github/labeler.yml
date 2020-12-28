@@ -12,5 +12,3 @@ dependencies:
   - ansible/requirements/**/*
 documentation:
   - Documentation/**/*.md
-cli:
-  - cli/**/*
