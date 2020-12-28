@@ -25,9 +25,9 @@ jobs:
       #- uses: go-semantic-release/action@v1
       #  id: semrel
       #  with:
-      #    github-token: ${{ secrets.GITHUB_TOKEN }}
+      #    github-token: ${{ secrets.GH_TOKEN }}
       - run: npm install
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
