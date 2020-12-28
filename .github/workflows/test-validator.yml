@@ -1,0 +1,28 @@
+name: Test validation schemas
+
+on:
+  push:
+    branches:
+      - master
+      - next
+    paths:
+      - schemas/**
+      - .github/workflows/test-validator.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - schemas/**
+      - .github/workflows/test-validator.yml
+
+jobs:
+  test:
+    name: Unit test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Test example file validity
+      working-directory: schemas
+      run: ./test.sh

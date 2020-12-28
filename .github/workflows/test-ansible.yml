@@ -1,0 +1,47 @@
+name: Test Ansible collection
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+    branches:
+      - master
+      - next
+    paths:
+      - ansible/**
+      - .github/workflows/test-ansible.yml
+
+jobs:
+  smoke:
+    name: Smoketest test-tf-generation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove Python 2 and old Ansible 2.9 version
+        run: sudo apt purge python ansible -y
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install Ansible v2.10.3 (GH actions currently uses 2.9)
+        run: pip install ansible==2.10.3
+      - name: Print Ansible and Python version
+        run: ansible --version && python --version
+      - run: cp VERSION ansible/VERSION && rm -rf ansible/schema && mkdir ansible/schema && (cd schemas && find . -name "*.json" -exec cp --parents -R '{}' ../ansible/schema/ ';')
+      - run: ansible-galaxy collection build -f ansible && ansible-galaxy collection install getstackhead-stackhead-* -f
+      - run: ansible-playbook ./ansible/playbooks/setup-ansible.yml
+      - run: ansible-playbook ./ansible/__tests__/test-tf-generation.yml
+      - run: ansible-playbook ./ansible/__tests__/test-version-check.yml
+      - run: ansible-playbook ./ansible/__tests__/test-constraint-check.yml
+
+  #py-unit:
+  #  name: Python Unit Tests
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: Set up Python 3
+  #      uses: actions/setup-python@v2
+  #      with:
+  #        python-version: '3.x'
+  #    - name: Install Ansible v2.10 alpha (GH actions currently uses 2.9)
+  #      run: ANSIBLE_SKIP_CONFLICT_CHECK=1 pip install --user ansible==2.10.0a9 && ansible --version
+  #    - run: (cd .. && python -m unittest stackhead/ansible/test/units/**/**/*.py)
