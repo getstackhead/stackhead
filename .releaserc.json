@@ -4,11 +4,11 @@
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/exec",
-      {"prepareCmd": "sed -i -E \"s/(\\s+version=\\\").*(\\\",)/\\1${nextRelease.version}\\2/\" setup.py && sed -i -E \"s/(\\s+\\\"version\\\": \\\").*(\\\",)/\\1${nextRelease.version}\\2/\" package.json"}
+      {"prepareCmd": "./.github/workflows/release/prepare-files.sh ${nextRelease.version}"}
     ],
     [
       "@semantic-release/git",
-      {"assets": ["package.json", "setup.py"]}
+      {"assets": ["VERSION", "ansible/VERSION", "ansible/schemas"] }
     ],
     "@semantic-release/github"
   ],

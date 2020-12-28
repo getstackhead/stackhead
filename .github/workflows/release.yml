@@ -2,37 +2,36 @@ name: Release
 
 on:
   push:
-#    branches:
-#      - master
-    branches-ignore:
-      - '**'
-#  pull_request:
-#    branches:
-#      - master
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  GITHUB_REPONAME: getstackhead/stackhead
 
 jobs:
-
   release:
-    needs: build
+    name: Release
     runs-on: ubuntu-latest
+    if: github.repository == env.GITHUB_REPONAME
     env:
       GIT_AUTHOR_EMAIL: 64205253+stackhead-bot@users.noreply.github.com
       GIT_AUTHOR_NAME: stackhead-bot
       GIT_COMMITTER_EMAIL: 64205253+stackhead-bot@users.noreply.github.com
       GIT_COMMITTER_NAME: stackhead-bot
     steps:
-      - uses: actions/checkout@master
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: PNPM install
-        run: npm i -g pnpm && pnpm i -P
-      - run: pnpm install
-      # todo: adjust Version numbers (VERSION, ansible/VERSION)
-      # todo: copy schema directory from schemas/ to ansible/)
-      # todo: copy cli binary to actions/deploy folder
-      - name: Semantic Release Action
-        uses: saitho/semantic-release-action-pnpm@master
+      - uses: actions/checkout@v2
+      #- uses: actions/setup-go@v2
+      #  with:
+      #    go-version: 1.15
+      #- uses: go-semantic-release/action@v1
+      #  id: semrel
+      #  with:
+      #    github-token: ${{ secrets.GH_TOKEN }}
+      - run: npm install
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
