@@ -4,11 +4,11 @@
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/exec",
-      {"prepareCmd": "echo ${nextRelease.version} > VERSION"}
+      {"prepareCmd": "echo ${nextRelease.version} > VERSION && echo ${nextRelease.version} > ansible/VERSION"}
     ],
     [
       "@semantic-release/git",
-      {"assets": ["VERSION"] }
+      {"assets": ["VERSION", "ansible/VERSION"] }
     ],
     "@semantic-release/github"
   ],
