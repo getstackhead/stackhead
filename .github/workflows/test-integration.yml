@@ -8,37 +8,12 @@ on:
       - next
     paths:
       - ansible/**
-      - cli/**
       - actions/integration-test/**
       - .github/workflows/test-integration.yml
 
 jobs:
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Set up Go 1.13
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.13
-        id: go
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-
-      - name: Build
-        working-directory: cli
-        run: go build -v -o bin/stackhead-cli
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: stackhead-cli
-          path: cli/bin/stackhead-cli
-
   checkLabel:
-    needs: build
     name: Please request integration test and review
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
@@ -57,6 +32,7 @@ jobs:
     env:
       DOMAIN_PREFIX: pr-${{ github.event.number }}-cli-${{ matrix.os }}
       DOMAIN: test.stackhead.io
+      CLI_BINARY: docker run --rm -v "$(pwd)":/repo -w /repo getstackhead/stackhead-cli:latest stackhead-cli
     steps:
       - uses: actions/checkout@v2
       - name: Remove Python 2 and old Ansible 2.9 version
@@ -104,19 +80,11 @@ jobs:
           proxied: 0
           token: "${{ secrets.CLOUDFLARE_TOKEN }}"
           zone: "${{ secrets.CLOUDFLARE_ZONE }}"
-      - name: Download StackHead CLI artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: stackhead-cli
-          path: /home/runner/bin
-      - name: Set execution permission on binary
-        run: chmod +x /home/runner/bin/stackhead-cli
-        working-directory: /home/runner/bin
       - name: Perform validation tests
         run: |
-          /home/runner/bin/stackhead-cli cli validate ./schemas/examples/cli-config/valid/cli.yml
-          /home/runner/bin/stackhead-cli module validate ./schemas/examples/module-config/valid/container-module.yml
-          /home/runner/bin/stackhead-cli project validate ./schemas/examples/project-definition/valid/docker_project.yml
+          ${{ env.CLI_BINARY }} cli validate ./schemas/examples/cli-config/valid/cli.yml
+          ${{ env.CLI_BINARY }} module validate ./schemas/examples/module-config/valid/container-module.yml
+          ${{ env.CLI_BINARY }} project validate ./schemas/examples/project-definition/valid/docker_project.yml
       - name: Perform integration test
         uses: ./actions/integration-test
         with:
@@ -126,7 +94,7 @@ jobs:
           webserver: nginx # when using cli "getstackhead.stackhead_webserver_" prefix is added automatically
           selftest: 1
           cli: 1
-          cli_bin_path: /home/runner/bin/stackhead-cli
+          cli_bin_path: "${{ env.CLI_BINARY }}"
           version: "${{ github.HEAD_REF }}"
       - name: PR comment if integration stage was left intact
         uses: mshick/add-pr-comment@v1
