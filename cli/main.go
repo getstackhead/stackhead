@@ -27,6 +27,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 }
 
+var VERSION = "dev"
+
 // main adds all child commands to the root command and sets flags appropriately.
 func main() {
 	if err := rootCmd.Execute(); err != nil {
@@ -37,6 +39,8 @@ func main() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	print("StackHead CLI v" + VERSION)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

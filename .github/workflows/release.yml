@@ -11,28 +11,38 @@ on:
 #      - master
 
 jobs:
-
   release:
-    needs: build
+    name: Release
     runs-on: ubuntu-latest
+    needs: build
     env:
       GIT_AUTHOR_EMAIL: 64205253+stackhead-bot@users.noreply.github.com
       GIT_AUTHOR_NAME: stackhead-bot
       GIT_COMMITTER_EMAIL: 64205253+stackhead-bot@users.noreply.github.com
       GIT_COMMITTER_NAME: stackhead-bot
     steps:
-      - uses: actions/checkout@master
-      - name: Setup node
-        uses: actions/setup-node@v1
+      - uses: actions/setup-go@v2
         with:
-          node-version: 12
-      - name: PNPM install
-        run: npm i -g pnpm && pnpm i -P
-      - run: pnpm install
-      # todo: adjust Version numbers (VERSION, ansible/VERSION)
-      # todo: copy schema directory from schemas/ to ansible/)
-      # todo: copy cli binary to actions/deploy folder
-      - name: Semantic Release Action
-        uses: saitho/semantic-release-action-pnpm@master
+          go-version: 1.15
+      - run: |
+          go get github.com/mitchellh/gox
+          go get github.com/tcnksm/ghr
+      - uses: actions/checkout@v2
+      # adjust and copy version file ansible/VERSION /VERSION
+      # copy schemas from schemas/**.json to ansible/schemas/
+      - run: |
+          ./.github/workflows/release/build.sh
+      - uses: go-semantic-release/action@v1
+        id: semrel
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+      - run: |
+          gox -parallel 4 -osarch="linux/amd64 darwin/amd64 linux/arm windows/amd64" -ldflags="-extldflags '-static' -s -w -X github.com/getstackhead/stackhead/cli/main.VERSION=${{steps.semrel.outputs.version}}" -output="bin/{{.Dir}}_v${{steps.semrel.outputs.version}}_{{.OS}}_{{.Arch}}" .
+          cd bin/ && shasum -a 256 * > ./stackhead-cli_v${{steps.semrel.outputs.version}}_checksums.txt && cd -
+        if: steps.semrel.outputs.version != ''
+        env:
+          CGO_ENABLED: 0
+      - run: ghr v${{ steps.semrel.outputs.version }} bin/
+        if: steps.semrel.outputs.version != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
