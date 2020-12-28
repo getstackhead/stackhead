@@ -32,7 +32,6 @@ jobs:
     env:
       DOMAIN_PREFIX: pr-${{ github.event.number }}-cli-${{ matrix.os }}
       DOMAIN: test.stackhead.io
-      CLI_BINARY: docker run --rm -v "$(pwd)":/repo -w /repo getstackhead/stackhead-cli:latest stackhead-cli
     steps:
       - uses: actions/checkout@v2
       - name: Remove Python 2 and old Ansible 2.9 version
@@ -80,21 +79,14 @@ jobs:
           proxied: 0
           token: "${{ secrets.CLOUDFLARE_TOKEN }}"
           zone: "${{ secrets.CLOUDFLARE_ZONE }}"
-      - name: Perform validation tests
-        run: |
-          ${{ env.CLI_BINARY }} cli validate ./schemas/examples/cli-config/valid/cli.yml
-          ${{ env.CLI_BINARY }} module validate ./schemas/examples/module-config/valid/container-module.yml
-          ${{ env.CLI_BINARY }} project validate ./schemas/examples/project-definition/valid/docker_project.yml
       - name: Perform integration test
         uses: ./actions/integration-test
         with:
           ipaddress: ${{ steps.setup_server.outputs.hcloud_server_created_ipv4 }}
           domain: '${{ env.DOMAIN_PREFIX }}.${{ env.DOMAIN }}'
           domain2: 'sub.${{ env.DOMAIN_PREFIX }}.${{ env.DOMAIN }}'
-          webserver: nginx # when using cli "getstackhead.stackhead_webserver_" prefix is added automatically
+          webserver: getstackhead.stackhead_webserver_nginx
           selftest: 1
-          cli: 1
-          cli_bin_path: "${{ env.CLI_BINARY }}"
           version: "${{ github.HEAD_REF }}"
       - name: PR comment if integration stage was left intact
         uses: mshick/add-pr-comment@v1
