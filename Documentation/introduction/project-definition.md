@@ -6,9 +6,14 @@ description: >-
 
 # Project definition
 
-Project definitions are stored at `./stackhead/[projectname].yml` Each file consists of a **domain** and an **application configuration**.
+Project definitions are stored at `./stackhead/[projectname].stackhead.yml`. Each file consists of a **domain** and an **application configuration**.
 
 Applications run in one or multiple Docker containers. While the settings are based on Docker Compose version 2.4, some may require a different syntax. Please have a closer look at the list below.
+
+{% hint style="info" %}
+The file has to end in **.stackhead.yml** or **.stackhead.yaml**.
+Otherwise the deployment will fail!
+{% endhint %}
 
 {% hint style="warning" %}
 Not all options from Docker Compose are supported right now.
