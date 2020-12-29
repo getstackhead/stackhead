@@ -20,6 +20,6 @@ jobs:
         uses: ./actions/deploy
         with:
           ipaddress: "${{ secrets.IPADDRESS_STACKHEAD_PROD }}"
-          file: ./schemas/.deploy/schemas.yml
+          file: ./schemas/.deploy/schemas.stackhead.yml
           version: next
           ssh_privatekey: "${{ secrets.SSH_PRIVATE_KEY_STACKHEAD_PROD }}"
