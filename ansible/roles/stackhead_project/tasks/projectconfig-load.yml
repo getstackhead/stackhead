@@ -1,6 +1,6 @@
 ---
 # the variable "app_config" is part of the StackHead module API (update documentation if changed)
-- name: "StackHead::Project || Extract application information"
+- name: "StackHead::Project || Extract application information (looking in {{ stackhead__config_folder }})"
   include_vars:
     file: "{{ lookup('first_found', params) }}"
     name: app_config
