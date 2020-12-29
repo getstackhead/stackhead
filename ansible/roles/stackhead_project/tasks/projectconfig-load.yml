@@ -2,9 +2,13 @@
 # the variable "app_config" is part of the StackHead module API (update documentation if changed)
 - name: "StackHead::Project || Extract application information"
   include_vars:
-    file: "{{ stackhead__local_config_file }}"
+    file: "{{ lookup('first_found', params) }}"
     name: app_config
   vars:
-    stackhead__local_config_file: "{{ lookup('first_found', {'files': [project_name ~ '.stackhead.yml', project_name ~ '.stackhead.yaml'], 'paths': stackhead__config_folder}) }}"
-    # the variable "stackhead__local_config_file" is part of the StackHead module API (update documentation if changed)
+    params:
+      files:
+        - "{{ project_name }}.stackhead.yml"
+        - "{{ project_name }}.stackhead.yaml"
+      paths:
+        - "{{ stackhead__config_folder }}"
   delegate_to: 127.0.0.1
