@@ -1,3 +1,2 @@
 ---
 stackhead__config_folder: "{{ playbook_dir }}/../stackhead" # todo: check usage? correct path?
-stackhead__local_config_file: "{{ stackhead__config_folder }}/{{ project_name }}.yml"
