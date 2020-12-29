@@ -1,5 +1,0 @@
----
-modules:
-  container: docker
-  plugins:
-    - watchtower

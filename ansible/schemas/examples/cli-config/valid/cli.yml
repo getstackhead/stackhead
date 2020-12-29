@@ -1,6 +1,0 @@
----
-modules:
-  webserver: nginx
-  container: docker
-  plugins:
-    - watchtower
