@@ -1,5 +1,0 @@
----
-modules:
-  webserver: nginx
-  plugins:
-    - watchtower

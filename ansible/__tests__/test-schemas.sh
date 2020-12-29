@@ -4,8 +4,8 @@ TEST_FAILED=0
 
 validate_files()
 {
-  SCHEMAFILE="./${1}.schema.json"
-  EXAMPLE_DIR="examples/${1}"
+  SCHEMAFILE="../schemas/${1}.schema.json"
+  EXAMPLE_DIR="../schemas/examples/${1}"
   echo "### TESTING ${SCHEMAFILE} ... START\n"
 	printf "Valid %s files should be valid:\n" "${EXAMPLE_DIR}"
 	for filename in "${EXAMPLE_DIR}"/valid/*; do
@@ -30,7 +30,6 @@ validate_files()
 
 validate_files "project-definition"
 validate_files "module-config"
-validate_files "cli-config"
 
 if [ $TEST_FAILED -eq 0 ]; then
   echo 'All tests succeeded.'
