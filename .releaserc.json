@@ -4,11 +4,13 @@
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/exec",
-      {"prepareCmd": "./.github/workflows/release/prepare-files.sh ${nextRelease.version}"}
+      {
+        "prepareCmd": "./.github/workflows/release/prepare-files.sh ${nextRelease.version}"
+      }
     ],
     [
       "@semantic-release/git",
-      {"assets": ["VERSION", "ansible/VERSION", "ansible/schemas"] }
+      {"assets": ["VERSION", "ansible/VERSION", "ansible/galaxy.yml", "ansible/schemas"] }
     ],
     "@semantic-release/github"
   ],
