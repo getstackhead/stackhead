@@ -32,6 +32,14 @@ jobs:
       #    github-token: ${{ secrets.GH_TOKEN }}
       - run: npm install
       - name: Semantic Release
+        id: semrel
         uses: cycjimmy/semantic-release-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+      - name: Publish Ansible Galaxy collection
+        uses: artis3n/ansible_galaxy_collection@v2
+        if: steps.semrel.outputs.new_release_published == 'true'
+        with:
+          api_key: '${{ secrets.GALAXY_API_KEY }}'
+          collection_dir: 'ansible'
