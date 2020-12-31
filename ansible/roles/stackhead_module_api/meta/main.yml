@@ -1,0 +1,7 @@
+galaxy_info:
+  role_name: stackhead_module_api
+  author: Mario Lubenka
+  description: Tasks for interacting with StackHead modules
+  issue_tracker_url: https://github.com/getstackhead/stackhead/issues
+  license: GPL-2.0-or-later
+  min_ansible_version: 2.9
