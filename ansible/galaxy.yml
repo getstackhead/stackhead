@@ -7,7 +7,7 @@ tags:
   - demo
   - collection
 readme: "README.md"
-license: "GPL-2.0"
+license: "GPL-2.0-or-later"
 repository: "https://github.com/getstackhead/stackhead"
 documentation: "http://docs.stackhead.io/"
 build_ignore:
