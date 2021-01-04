@@ -4,7 +4,7 @@ resource "tls_private_key" "{{ project_name }}-private_key" {
 
 resource "acme_registration" "{{ project_name }}-reg" {
   account_key_pem = tls_private_key.{{ project_name }}-private_key.private_key_pem
-  email_address   = "certificate@saitho.me"
+  email_address   = "{{ certificates_email_address }}"
 }
 
 // Create folder for acme-challenges
