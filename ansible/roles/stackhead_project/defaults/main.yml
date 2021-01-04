@@ -1,3 +1,5 @@
 ---
 stackhead__config_folder: "{{ inventory_dir }}/stackhead" # value is overridden by StackHead CLI
 # the variable "stackhead__config_folder" is part of the StackHead module API (update documentation if changed)
+
+certificates_email_address: "certificates-noreply@stackhead.io"
