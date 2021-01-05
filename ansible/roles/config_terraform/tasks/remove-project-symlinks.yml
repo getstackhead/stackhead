@@ -7,7 +7,22 @@
     file_type: link
     use_regex: yes
   register: project_tf_symlinks
-- name: "StackHead::Project || Remove project symlinks | Project: {{ project_name }}"
+
+- set_fact:
+    project_tf_symlinks_providers: "{{ project_tf_symlinks_providers|d([]) + [item] }}"
+  when: item.path | getstackhead.stackhead.endswith('.provider.tf')
+  with_items: "{{ project_tf_symlinks.files }}"
+
+- block:
+    - name: "Remove project symlinks (non-providers) | Project: {{ project_name }}"
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ project_tf_symlinks | difference(project_tf_symlinks_providers) }}"
+    - include_tasks: "../roles/config_terraform/tasks/execute.yml"
+  when: project_tf_symlinks_providers|d([]) | length > 0
+
+- name: "StackHead::Project || Remove all project symlinks | Project: {{ project_name }}"
   file:
     path: "{{ item.path }}"
     state: absent

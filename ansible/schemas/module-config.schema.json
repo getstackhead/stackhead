@@ -28,6 +28,9 @@
             },
             "resource_name": {
               "type": "string"
+            },
+            "provider_per_project": {
+              "type": "boolean"
             }
           }
         }
