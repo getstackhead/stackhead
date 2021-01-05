@@ -68,6 +68,10 @@ Per default StackHead will initialize an empty provider. If you need to setup th
 Per default Ansible paths are resolved from playbook directory. Start your path with the variable `{{ role_path }}` to point to your role.
 {% endhint %}
 
+You may set `provider_per_project` to true if your provider requires project-specific configurations.
+In this case, the provider will be created inside the project's Terraform directory.
+Make sure to set the "alias" in the provider configuration and the "provider" in your Terraform resource configurations.
+
 {% code title="stackhead-module.yml" %}
 ```yaml
 ---
@@ -78,6 +82,7 @@ terraform:
     version: 1.0.1
     init: "{{ role_path }}/templates/terraform/provider_init.tf.j2"
     resource_name: caddy_server_block
+    provider_per_project: true
 ```
 {% endcode %}
 
