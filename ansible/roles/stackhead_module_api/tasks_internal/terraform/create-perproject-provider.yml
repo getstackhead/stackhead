@@ -6,7 +6,7 @@
 
 - template:
     src: "{{ tf_provider.init }}"
-    dest: "{{ stackhead__tf_root_folder }}/{{ module }}.provider.tf"
+    dest: "{{ stackhead__tf_project_folder }}/{{ module }}.provider.tf"
   when: tf_provider.init|d("") != "" and tf_provider.provider_per_project|d(false)
   vars:
     tf_provider: "{{ module_config.config.terraform.provider|d({}) }}"
