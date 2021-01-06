@@ -2,9 +2,9 @@
 - name: "Check required variables provider_old and provider_new"
   assert:
     that:
-      - provider_old is defined and provider_old != ""
-      - provider_old_version is defined and provider_old_version != ""
-      - provider_new is defined and provider_new != ""
+      - provider_old|d("") != ""
+      - provider_old_version|d("") != ""
+      - provider_new|d("") != ""
 - include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/replace-provider.yml"
   with_items:
     - "{{ stackhead__tf_root_folder }}"

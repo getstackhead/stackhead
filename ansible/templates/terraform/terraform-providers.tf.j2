@@ -13,8 +13,8 @@ terraform {
       source  = "hashicorp/local"
       version = "1.4.0"
     }
-  {%- for provider in loaded_terraform_providers|default([]) %}
-    {{ provider.name }}{%- if provider.nameSuffix is defined %}-{{ provider.nameSuffix }}{%- endif %} = {
+  {%- for provider in loaded_terraform_providers|d([]) %}
+    {{ provider.name }}{%- if provider.nameSuffix|d("") != "" %}-{{ provider.nameSuffix }}{%- endif %} = {
       source = "{{ provider.vendor }}/{{ provider.name }}"
       version = "{{ provider.version }}"
     }
@@ -26,7 +26,7 @@ terraform {
 {%- if 'init' in provider %}
 {{ lookup('template', provider.init) }}
 {%- else %}
-provider "{{ provider.name }}{%- if provider.nameSuffix is defined %}-{{ provider.nameSuffix }}{%- endif %}" {
+provider "{{ provider.name }}{%- if provider.nameSuffix|d("") != "" %}-{{ provider.nameSuffix }}{%- endif %}" {
 }
 {%- endif %}
 {% endfor %}

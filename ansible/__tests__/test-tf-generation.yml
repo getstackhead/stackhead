@@ -9,8 +9,8 @@
     - set_fact:
         stackhead__templates: "{{ playbook_dir }}/../templates"
     - set_fact:
-        containerapp__expose: "{{ containerapp__expose|default([]) + item.expose }}"
-      when: item.expose is defined and item.expose not in containerapp__expose|default([])
+        containerapp__expose: "{{ containerapp__expose|d([]) + item.expose }}"
+      when: item.expose|d([]) != [] and item.expose not in containerapp__expose|d([])
       with_items: "{{ app_config.domains }}"
     - name: "Test filter plugin"
       template:

@@ -15,7 +15,7 @@
   - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/run-migrations.yml"
   - name: "{{ stackhead_action }} {{ module.group }} ({{ module.name }}) configuration"
     include_tasks: "{{ include_file_path }}"
-    when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not module.optional|default(false)|bool
+    when: lookup('pipe', '[ -f ' ~ include_file_path ~ ' ]; echo $?') == '0' or not module.optional|d(false)|bool
     vars:
       include_file_path: "{{ module_role_path }}/tasks/steps/{{ stackhead_action }}.yml"
   vars:
