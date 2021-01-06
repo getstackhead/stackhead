@@ -3,7 +3,7 @@
 - set_fact:
     loaded_config: "{{ ansible_facts[module.name | getstackhead.stackhead.module_vars_name] }}"
 - set_fact:
-    loaded_terraform_providers: "{{ loaded_terraform_providers|default([]) + [tf_provider] }}"
-  when: tf_provider.name is defined and  tf_provider.vendor is defined and tf_provider.version is defined and not tf_provider.provider_per_project|d(false)
+    loaded_terraform_providers: "{{ loaded_terraform_providers|d([]) + [tf_provider] }}"
+  when: tf_provider.name|d("") != "" and  tf_provider.vendor|d("") != "" and tf_provider.version|d("") != "" and not tf_provider.provider_per_project|d(false)|bool
   vars:
-    tf_provider: "{{ loaded_config.terraform.provider|default({}) }}"
+    tf_provider: "{{ loaded_config.terraform.provider|d({}) }}"

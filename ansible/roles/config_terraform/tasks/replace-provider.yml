@@ -2,7 +2,7 @@
 - name: replace-provider task must only be called in migration context!
   assert:
     that:
-      - stackhead_migration_context|default(0) == 1
+      - stackhead_migration_context|d(0) == 1
 - name: "Check if tfstate exists"
   stat:
     path: "{{ item }}/terraform.tfstate"

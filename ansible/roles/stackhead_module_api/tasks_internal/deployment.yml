@@ -1,6 +1,6 @@
 ---
 - set_fact:
-    plugin_list: "{{ plugin_list|default([]) + [{'name': item, 'group': 'plugin', 'optional': true, 'config': stackhead_config.deployment[item]|default([])}]}] }}"
+    plugin_list: "{{ plugin_list|d([]) + [{'name': item, 'group': 'plugin', 'optional': true, 'config': stackhead_config.deployment[item]|d([])}]}] }}"
   when: item != ''
   with_items: "{{ stackhead_config.plugins }}"
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/execute-module-step.yml"
@@ -9,9 +9,9 @@
   loop_control:
     loop_var: module
   with_items:
-    - { name: "{{ stackhead_config.container }}", group: 'container management', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.container]|default([]) }}" }
-    - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.webserver]|default([]) }}" }
-    - "{{ plugin_list|default([]) }}"
+    - { name: "{{ stackhead_config.container }}", group: 'container management', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.container]|d([]) }}" }
+    - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.webserver]|d([]) }}" }
+    - "{{ plugin_list|d([]) }}"
 
 # Create Terraform provider file if exists
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/terraform/create-perproject-provider.yml"

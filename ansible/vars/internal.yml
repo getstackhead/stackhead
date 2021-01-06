@@ -13,17 +13,17 @@ stackhead__system_tf_root_folder: "{{ stackhead__root_folder }}/terraform/system
 
 # internal
 stackhead_config:
-  webserver: "{{ stackhead__webserver | default('getstackhead.stackhead_webserver_nginx')}}"
-  container: "{{ stackhead__container | default('getstackhead.stackhead_container_docker')}}"
-  plugins: "{{ stackhead__plugins | default([])}}"
+  webserver: "{{ stackhead__webserver|d('getstackhead.stackhead_webserver_nginx')}}"
+  container: "{{ stackhead__container|d('getstackhead.stackhead_container_docker')}}"
+  plugins: "{{ stackhead__plugins|d([])}}"
   version:
     current: "{{ lookup('file', '../../VERSION') }}"
     installed: "{% if 'versions' in ansible_local %}{{ ansible_local.versions.stackhead.version }}{% endif %}"
   terraform:
-    manual_update: "{{ stackhead__tf_update_realtime|default('yes')|bool }}"
-  deployment: "{{ stackhead__config_deployment|default({}) }}"
-  setup: "{{ stackhead__config_setup|default({}) }}"
-  destroy: "{{ stackhead__config_destroy|default({}) }}"
+    manual_update: "{{ stackhead__tf_update_realtime|d(true)|bool }}"
+  deployment: "{{ stackhead__config_deployment|d({}) }}"
+  setup: "{{ stackhead__config_setup|d({}) }}"
+  destroy: "{{ stackhead__config_destroy|d({}) }}"
 
 ###
 # SSL certificates

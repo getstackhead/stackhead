@@ -18,7 +18,7 @@ resource "acme_registration" "{{ project_name }}-reg" {
 resource "acme_certificate" "{{ project_name }}-certificate" {
   account_key_pem           = acme_registration.{{ project_name }}-reg.account_key_pem
   common_name               = "{{ app_config.domains[0].domain }}"
-  subject_alternative_names = {{ app_config.domains[1:]|map(attribute='domain')|list|to_json|default([]) }}
+  subject_alternative_names = {{ app_config.domains[1:]|map(attribute='domain')|list|to_json|d([]) }}
 
   depends_on = [
     {{ server_resource_name }}.nginx-{{ project_name }}
