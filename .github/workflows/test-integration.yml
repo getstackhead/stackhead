@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
     if: github.event.pull_request.draft == false
     env:
-      DOMAIN_PREFIX: pr-${{ github.event.number }}-cli-${{ matrix.os }}
+      DOMAIN_PREFIX: pr-${{ github.event.number }}-main-${{ matrix.os }}
       DOMAIN: test.stackhead.io
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
         with:
           action: create
           server_name: "${{ env.DOMAIN_PREFIX }}"
-          server_image: ubuntu-18.04
+          server_image: "${{ matrix.os }}"
           server_location: fsn1
           server_ssh_key_name: gh-actions
           wait_for_ssh: 1
