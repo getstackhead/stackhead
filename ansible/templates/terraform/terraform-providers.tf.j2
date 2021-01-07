@@ -23,11 +23,13 @@ terraform {
 }
 
 {% for provider in loaded_terraform_providers|default([]) %}
+{%- if not provider.provider_per_project|d(false)|bool %}
 {%- if 'init' in provider %}
 {{ lookup('template', provider.init) }}
 {%- else %}
 provider "{{ provider.name }}{%- if provider.nameSuffix|d("") != "" %}-{{ provider.nameSuffix }}{%- endif %}" {
 }
+{%- endif %}
 {%- endif %}
 {% endfor %}
 
