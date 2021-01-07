@@ -42,10 +42,50 @@ def within_major(currentVersion, targetVersion):
     return int(major) == int(majorTarget)
 
 
+def is_gt(currentVersion, targetVersion):
+    matchCurrent = SEMVER_RE.match(currentVersion)
+    if not matchCurrent:
+        raise ValueError("invalid semantic version '%s'" % currentVersion)
+    matchTarget = SEMVER_RE.match(targetVersion)
+    if not matchTarget:
+        raise ValueError("invalid semantic version '%s'" % targetVersion)
+
+    (major, minor, patch, _, _) = matchCurrent.group(1, 2, 3, 4, 5)
+    (majorTarget, minorTarget, patchTarget, _, _) = matchTarget.group(1, 2, 3, 4, 5)
+
+    return (
+        int(major) < int(majorTarget)
+        or int(minor) < int(minorTarget)
+        or int(patch) < int(patchTarget)
+    )
+
+
+def is_lt(currentVersion, targetVersion):
+    matchCurrent = SEMVER_RE.match(currentVersion)
+    if not matchCurrent:
+        raise ValueError("invalid semantic version '%s'" % currentVersion)
+    matchTarget = SEMVER_RE.match(targetVersion)
+    if not matchTarget:
+        raise ValueError("invalid semantic version '%s'" % targetVersion)
+
+    (major, minor, patch, _, _) = matchCurrent.group(1, 2, 3, 4, 5)
+    (majorTarget, minorTarget, patchTarget, _, _) = matchTarget.group(1, 2, 3, 4, 5)
+
+    return (
+        int(major) > int(majorTarget)
+        or int(minor) > int(minorTarget)
+        or int(patch) > int(patchTarget)
+    )
+
+
 class TestModule(object):
     """
     Jinja2 tests for version compare
     """
 
     def tests(self):
-        return {"withinMajorVersion": within_major}
+        return {
+            "withinMajorVersion": within_major,
+            "isLesserThan": is_lt,
+            "isGreaterThan": is_gt,
+        }
