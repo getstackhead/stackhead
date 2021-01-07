@@ -34,7 +34,7 @@ provider "{{ provider.name }}{%- if provider.nameSuffix|d("") != "" %}-{{ provid
 {% endfor %}
 
 provider "acme" {
-  server_url = "{% if lookup('env','TEST') == '1' %}https://acme-staging-v02.api.letsencrypt.org/directory{% else %}https://acme-v02.api.letsencrypt.org/directory{% endif %}"
+  server_url = "{% if lookup('env','CI') == '1' %}https://acme-staging-v02.api.letsencrypt.org/directory{% else %}https://acme-v02.api.letsencrypt.org/directory{% endif %}"
 }
 
 provider "tls" {
