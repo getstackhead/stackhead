@@ -36,6 +36,10 @@
           "type": "string",
           "description": "Target folder on the container"
         },
+        "user": {
+          "description": "Owner of the created folder for Docker volume",
+          "type": "string"
+        },
         "mode": {
           "type": "string",
           "description": "Permissions on the mounted volume - rw=readwrite, ro=readonly",
