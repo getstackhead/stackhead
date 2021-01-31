@@ -1,6 +1,6 @@
 namespace: "getstackhead"
 name: "stackhead"
-version: "1.0.0"
+version: "1.1.0"
 authors:
   - "Mario Lubenka <mario.lubenka@googlemail.com>"
 tags:
