@@ -31,6 +31,13 @@
               }
             }
           },
+          "additional_cert_domains": {
+            "type": "array",
+            "description": "List of additional certificate domains",
+            "items": {
+              "type": "string"
+            }
+          },
           "security": {
             "type": "object",
             "$ref": "project-definition/security.json"

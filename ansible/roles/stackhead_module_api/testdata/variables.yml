@@ -33,6 +33,7 @@ app_config:
           - type: basic
             username: user2
             password: pass2
+  additional_cert_domains: [ 'example2.com' ]
   container:
     registries:
       - username: dockerhub-user
