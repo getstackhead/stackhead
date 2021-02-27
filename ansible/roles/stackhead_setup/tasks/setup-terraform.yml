@@ -42,6 +42,5 @@
           state: "started"
           options:
             Unit: "stackhead-apply-terraform.service"
-            OnActiveSec: 1sec
-            OnUnitActiveSec: 5min
+            OnCalendar: "{{ stackhead_config.terraform.update_interval }}"
             Persistent: true
