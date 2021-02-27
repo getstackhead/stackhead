@@ -18,6 +18,8 @@ modules:
   container: docker
   plugins:
     - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
+terraform:
+  update_interval: "*-*-* 4:00:00" # perform Terraform update everyday at 4am, see Unix timer "OnCalendar" setting
 config:
   setup:
     getstackhead.stackhead_webserver_nginx: # config settings for Nginx module
