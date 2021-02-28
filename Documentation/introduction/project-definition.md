@@ -34,6 +34,7 @@ domains:
       - internal_port: 80 # port inside the container
         external_port: 80 # port where service can be reached by browsers (i.e. example.com:80)
         service: app # name of service that should be exposed
+        proxy_websocket_locations: ["/socket"] # service provides a WebSocket endpoint at /socket we need to set here!
     security:
       authentication:
         - type: basic # basic authentication: users will have to authenticate with username ("user") and password ("pass")
@@ -90,6 +91,15 @@ Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatic
 {% hint style="warning" %}
 Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
 {% endhint %}
+
+#### proxy_websocket_locations
+
+If your service provides WebSocket endpoint, set them here as those need to be proxied with special parameters.
+
+{% hint style="warning" %}
+Please do not set `/` or `/.well-known/acme-challenge` as WebSocket locations.
+{% endhint %}
+
 
 ### domains.\*.security
 
