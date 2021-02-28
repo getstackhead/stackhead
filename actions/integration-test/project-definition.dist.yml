@@ -3,7 +3,7 @@ domains:
   - domain: ${domain}
     expose:
       - service: nginx
-        internal_port: 80
+        internal_port: 8080
         external_port: 80
       - service: pma
         internal_port: 80
