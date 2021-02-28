@@ -1,6 +1,10 @@
 ---
+- name: Wait until Terraform lock file is gone
+  wait_for:
+    path: "{{ stackhead__system_tf_root_folder }}.terraform.tfstate.lock.info"
+    state: absent
 - name: "Apply system terraform plans"
-  terraform:
+  community.general.terraform:
     project_path: '{{ stackhead__system_tf_root_folder }}'
     force_init: yes
     state: "present"
