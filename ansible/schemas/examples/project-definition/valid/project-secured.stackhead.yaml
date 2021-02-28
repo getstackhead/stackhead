@@ -13,6 +13,7 @@ domains:
         - type: basic
           username: user
           password: pass
+          proxy_websocket_locations: ["/socket"]
 container:
   registries:
     - username: dockerhubuser

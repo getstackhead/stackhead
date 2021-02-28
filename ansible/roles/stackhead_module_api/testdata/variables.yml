@@ -14,6 +14,7 @@ app_config:
         - service: nginx
           internal_port: 80
           external_port: 80
+          proxy_websocket_locations: ['/socket']
       security:
         authentication:
           - type: basic

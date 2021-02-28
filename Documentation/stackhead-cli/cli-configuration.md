@@ -18,6 +18,8 @@ modules:
   container: docker
   plugins:
     - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
+certificates:
+  register_email: "my-certificates-mail@mydomain.com" # Email address used for creating SSL certificates. Will receive notice when they expire.
 terraform:
   update_interval: "*-*-* 4:00:00" # perform Terraform update everyday at 4am, see Unix timer "OnCalendar" setting
 config:

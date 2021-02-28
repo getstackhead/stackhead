@@ -122,6 +122,13 @@
                 "type": "integer",
                 "description": "Port that is exposed by web server. Traffic received on this port is forwarded to the internal Docker container port. Note that HTTPS forwarding is generated automatically if external_port is 80, so port is not allowed here!"
               },
+              "proxy_websocket_locations": {
+                "type": "array",
+                "description": "Locations that serve as Websocket endpoint. Those need to be proxied separately.",
+                "items": {
+                  "type": "string"
+                }
+              },
               "required": ["service", "internal_port", "external_port"]
             }
           }
