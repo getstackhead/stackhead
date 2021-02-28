@@ -23,7 +23,7 @@ all:
       stackhead__webserver: getstackhead.stackhead_webserver_nginx # use NGINX as webserver
       stackhead__container: getstackhead.stackhead_container_docker # use Docker for containers
       stackhead__plugins: [] # list of plugins
-      stackhead__tf_update_realtime: yes # if "no" Terraform updates will be performed via cron (every 5 minutes)
+      stackhead__tf_update_realtime: yes # if "no" Terraform updates will be performed via cron (every 5 minutes of an hour)
       stackhead__tf_update_interval: *:0/5 # Terraform auto-update interval, default: 5 minutes
       ansible_host: 123.456.789.10
       stackhead:
