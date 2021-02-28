@@ -88,6 +88,9 @@ jobs:
           webserver: getstackhead.stackhead_webserver_nginx
           selftest: 1
           version: "${{ github.HEAD_REF }}"
+      - name: Debug GitHub action
+        uses: mxschmitt/action-tmate@v3
+        if: always() && contains( github.event.pull_request.labels.*.name, 'action/debug-tmate')
       - name: PR comment if integration stage was left intact
         uses: mshick/add-pr-comment@v1
         if: always() && contains( github.event.pull_request.labels.*.name, 'action/keep-integration-stage')
