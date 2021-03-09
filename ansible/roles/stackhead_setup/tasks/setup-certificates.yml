@@ -1,0 +1,5 @@
+---
+- name: Install certbot
+  package:
+    name: certbot
+    state: present

@@ -1,0 +1,5 @@
+---
+- block:
+    - name: Install certbot via migration
+      import_tasks: "{{ stackhead__roles }}/stackhead_setup/tasks/setup-certificates.yml"
+  when: stackhead_config.version.installed is version('1.3.0', '<')

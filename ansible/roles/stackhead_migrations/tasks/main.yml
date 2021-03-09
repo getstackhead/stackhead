@@ -1,4 +1,4 @@
 ---
 - include_tasks: "{{ stackhead__roles }}/stackhead_migrations/tasks/run-migrations.yml"
   vars:
-    module_name: "{{ module.name }}"
+    module_name: getstackhead.stackhead.stackhead_migrations
