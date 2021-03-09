@@ -5,6 +5,8 @@ all:
     stackhead__config_folder: "{{ inventory_dir }}"
     stackhead__webserver: ${webserver}
     stackhead__container: ${container}
+    stackhead__dns:
+      - ${dns}
     stackhead__plugins: ${plugins}
     ansible_user: root
     ansible_connection: ssh
@@ -12,6 +14,12 @@ all:
     stackhead__config_setup:
       getstackhead.stackhead_webserver_nginx:
         server_names_hash_bucket_size: 128
+    stackhead__config_deployment:
+      getstackhead.stackhead_dns_cloudflare:
+        cloudflare_api_token: ${dns_cloudflare_api_token}
+    stackhead__config_destroy:
+      getstackhead.stackhead_dns_cloudflare:
+        cloudflare_api_token: ${dns_cloudflare_api_token}
   hosts:
     hetzner1:
       ansible_host: ${ipaddress}

@@ -4,6 +4,8 @@ if [[ $INPUT_CLI != '' ]]; then
 	# Write config file
 	echo "---
 modules:
+	dns:
+		- ${INPUT_DNS}
 	webserver: ${INPUT_WEBSERVER}
 	container: ${INPUT_CONTAINER}
 	plugins: ${INPUT_PLUGINS}
@@ -11,6 +13,12 @@ config:
 	setup:
 		getstackhead.stackhead_webserver_nginx:
 			server_names_hash_bucket_size: 128
+	deployment:
+		getstackhead.stackhead_dns_cloudflare:
+			cloudflare_api_token: ${INPUT_DNS_CLOUDFLARE_APITOKEN}
+	destroy:
+		getstackhead.stackhead_dns_cloudflare:
+			cloudflare_api_token: ${INPUT_DNS_CLOUDFLARE_APITOKEN}
 " >"/tmp/.stackhead-cli.yml"
 
 	if [[ $INPUT_SELFTEST != '' ]]; then
@@ -34,11 +42,22 @@ else
 		ansible-playbook "${STACKHEAD_CLONE_LOCATION}/ansible/playbooks/setup-ansible.yml"
 	fi
 
-	ansible-galaxy install "${INPUT_WEBSERVER}"
-	ansible-galaxy install "${INPUT_CONTAINER}"
+	if [[ $INPUT_DNS != '' ]]; then
+		if [[ $INPUT_ROLENAME != "$INPUT_DNS" ]]; then
+			ansible-galaxy install "${INPUT_DNS}"
+		fi
+	fi
+
+	if [[ $INPUT_ROLENAME != "$INPUT_WEBSERVER" ]]; then
+		ansible-galaxy install "${INPUT_WEBSERVER}"
+	fi
+	if [[ $INPUT_ROLENAME != "$INPUT_CONTAINER" ]]; then
+		ansible-galaxy install "${INPUT_CONTAINER}"
+	fi
 fi
 
 if [[ $INPUT_ROLENAME != '' ]]; then
+	echo "Symlinking ${HOME}/.ansible/roles/${INPUT_ROLENAME} -> ${GITHUB_WORKSPACE}"
 	# Remove this role and set symlink
 	rm -rf "${HOME}/.ansible/roles/${INPUT_ROLENAME}"
 	ln -s "${GITHUB_WORKSPACE}" "${HOME}/.ansible/roles/${INPUT_ROLENAME}"

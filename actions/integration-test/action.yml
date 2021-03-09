@@ -15,6 +15,12 @@ inputs:
     description: 'Webserver module to use'
     required: false
     default: getstackhead.stackhead_webserver_nginx
+  dns:
+    description: 'DNS module to use'
+    required: false
+  dns_cloudflare_apitoken:
+    description: 'Cloudflare API token (if Cloudflare DNS module is used)'
+    required: false
   container:
     description: 'Container module to use'
     required: false
@@ -63,6 +69,8 @@ runs:
       shell: bash
       env:
         INPUT_ROLENAME: ${{ inputs.rolename }}
+        INPUT_DNS: ${{ inputs.dns }}
+        INPUT_DNS_CLOUDFLARE_APITOKEN: ${{ inputs.dns_cloudflare_apitoken }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_PLUGINS: ${{ inputs.plugins }}
@@ -76,6 +84,8 @@ runs:
       shell: bash
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
+        INPUT_DNS: ${{ inputs.dns }}
+        INPUT_DNS_CLOUDFLARE_APITOKEN: ${{ inputs.dns_cloudflare_apitoken }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_PLUGINS: ${{ inputs.plugins }}
@@ -93,6 +103,8 @@ runs:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
+        INPUT_DNS: ${{ inputs.dns }}
+        INPUT_DNS_CLOUDFLARE_APITOKEN: ${{ inputs.dns_cloudflare_apitoken }}
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_PLUGINS: ${{ inputs.plugins }}
