@@ -3,8 +3,9 @@
 - name: "Load config for module"
   getstackhead.stackhead.module.load_config:
     name: "{{ item }}"
-  when: item != ''
+  when: item != None
   with_items:
+    - "{{ stackhead_config.dns }}"
     - "{{ stackhead_config.container }}"
     - "{{ stackhead_config.webserver }}"
     - "{{ stackhead_config.plugins }}"

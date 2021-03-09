@@ -137,3 +137,21 @@ Syntax: `"any string"|getstackhead.stackhead.TFreplace(string projectName)`
 ${docker_container.stackhead-myproject-0.name} - ${docker_container.stackhead-myproject-1.name}
 ```
 
+### domain / subdomain
+
+The `domain`/`subdomain` filters can be used to extract the base domain or subdomain of a given domain.
+
+Syntax: `"domain string"|getstackhead.stackhead.domain` or `"domain string"|getstackhead.stackhead.subdomain`
+
+```yaml
+# Example usage
+{{ "sub.domain.com"|getstackhead.stackhead.domain }}
+{{ "sub.domain.com"|getstackhead.stackhead.subdomain }}
+{{ "domain.com"|getstackhead.stackhead.subdomain|d('@', true) }}
+
+# Result:
+
+domain.com
+sub
+@
+```

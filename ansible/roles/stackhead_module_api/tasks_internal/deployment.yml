@@ -1,24 +1,31 @@
 ---
 - set_fact:
-    plugin_list: "{{ plugin_list|d([]) + [{'name': item, 'group': 'plugin', 'optional': true, 'config': stackhead_config.deployment[item]|d([])}]}] }}"
-  when: item != ''
+    deploy_plugin_list: "{{ deploy_plugin_list|d([]) + [{'name': item, 'group': 'plugin', 'optional': true, 'config': stackhead_config.deployment[item]|d([])}]}] }}"
+  when: item != None
   with_items: "{{ stackhead_config.plugins }}"
+- set_fact:
+    deploy_dns_list: "{{ deploy_dns_list|d([]) + [{'name': item, 'group': 'DNS', 'optional': false, 'config': stackhead_config.deployment[item]|d([])}] }}"
+  when: item != None
+  with_items: "{{ stackhead_config.dns }}"
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/execute-module-step.yml"
   vars:
     stackhead_action: "deploy"
+  when: module.name != None
   loop_control:
     loop_var: module
   with_items:
+    - "{{ deploy_dns_list|d([]) }}"
     - { name: "{{ stackhead_config.container }}", group: 'container management', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.container]|d([]) }}" }
     - { name: '{{ stackhead_config.webserver }}', group: 'webserver', optional: false, config: "{{ stackhead_config.deployment[stackhead_config.webserver]|d([]) }}" }
-    - "{{ plugin_list|d([]) }}"
+    - "{{ deploy_plugin_list|d([]) }}"
 
 # Create Terraform provider file if exists
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/terraform/create-perproject-provider.yml"
   loop_control:
     loop_var: module
-  when: module != ''
+  when: module != None
   with_items:
+    - "{{ stackhead_config.dns }}"
     - "{{ stackhead_config.container }}"
     - "{{ stackhead_config.webserver }}"
     - "{{ stackhead_config.plugins }}"

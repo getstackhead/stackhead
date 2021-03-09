@@ -17,6 +17,7 @@ There are the following module types:
 
 * **webserver**: Configuration for reverse proxy webserver
 * **container**: Configuration for launching containers
+* **dns**: Configuration for creating DNS records for the (sub)domain
 * **plugin**: Any additional software to install on your server (not bound to projects)
 
 ## Role name
@@ -34,9 +35,9 @@ Make sure the following files exist and the expected behaviour is implemented ac
 
 | file path | Expected behaviour | Required for which modules? |
 | :--- | :--- | :--- |
-| `tasks/steps/setup.yml` | The software is installed. | `webserver`, `container`, `plugins` |
-| `tasks/steps/deploy.yml` | The software is configured for the given project. | `webserver`, `container` |
-| `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | `plugins` |
+| `tasks/steps/setup.yml` | The software is installed. | `webserver`, `container`, `plugin` |
+| `tasks/steps/deploy.yml` | The software is configured for the given project. | `webserver`, `container`, `dns` |
+| `tasks/steps/destroy.yml` | The project configuration for the software is removed. Usually empty as resources created via Terraform are removed automatically. | `dns`, `plugin` |
 
 {% hint style="warning" %}
 Note that `role_path` will most likely not refer to the path to your role, but to a StackHead role.

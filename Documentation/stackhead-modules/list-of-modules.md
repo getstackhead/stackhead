@@ -21,8 +21,14 @@ If no webserver is configured, **Nginx \(getstackhead.stackhead\_webserver\_ngin
 If no container manager is configured, **Docker \(getstackhead.stackhead\_webserver\_docker\)** will be used per default.
 {% endhint %}
 
+## DNS
 
+* [Cloudflare \(getstackhead.stackhead\_dns\_cloudflare\)](https://github.com/getstackhead/module-dns-cloudflare)
+
+{% hint style="info" %}
+Note that the DNS service to use for a domain needs to be set in the domain settings in project definition as well!
+{% endhint %}
 
 ## Plugins
 
-* [Watchtower \(getstackhead.stackhead\_plugin\_watchtower\)](https://github.com/getstackhead/module-plugin-watchtower)
+-
