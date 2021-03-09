@@ -101,6 +101,15 @@ Please do not set `/` or `/.well-known/acme-challenge` as WebSocket locations.
 {% endhint %}
 
 
+### domains.\*.dns
+
+Configure which DNS service to use for this domain.
+Make sure to install the required module and set the required configurations according to the DNS StackHead module's documentation.
+
+#### provider
+
+Fully-qualified name of the provider to use (e.g. `getstackhead.stackhead_dns_cloudflare`).
+
 ### domains.\*.security
 
 These options can be used to add further security to your projects.

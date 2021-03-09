@@ -15,6 +15,7 @@ stackhead__system_tf_root_folder: "{{ stackhead__root_folder }}/terraform/system
 stackhead_config:
   webserver: "{{ stackhead__webserver|d('getstackhead.stackhead_webserver_nginx')}}"
   container: "{{ stackhead__container|d('getstackhead.stackhead_container_docker')}}"
+  dns: "{{ stackhead__dns|d([])}}"
   plugins: "{{ stackhead__plugins|d([])}}"
   version:
     current: "{{ lookup('file', '../../VERSION') }}"

@@ -12,6 +12,8 @@
   loop_control:
     loop_var: var_path
 - block:
+  - debug:
+      msg: "{{ module }}"
   - include_tasks: "{{ stackhead__roles }}/stackhead_module_api/tasks_internal/run-migrations.yml"
   - name: "{{ stackhead_action }} {{ module.group }} ({{ module.name }}) configuration"
     include_tasks: "{{ include_file_path }}"
