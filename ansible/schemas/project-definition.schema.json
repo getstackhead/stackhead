@@ -20,6 +20,17 @@
             "type": "string",
             "description": "Domain name without protocols or slashes"
           },
+          "dns": {
+            "type": "object",
+            "items": {
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "description": "Name of provider module to use"
+                }
+              }
+            }
+          },
           "security": {
             "type": "object",
             "$ref": "project-definition/security.json"

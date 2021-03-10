@@ -40,13 +40,19 @@
   "definitions": {
     "prop-type": {
       "type": "string",
-      "enum": ["container", "plugin", "webserver"]
+      "enum": ["container", "plugin", "webserver","dns"]
     }
   },
   "allOf": [
     {
-      "if": {"properties": {"type": {"const": "plugin"}}},
-      "else": {
+      "if": {"properties": {"type": {"const": "webserver"}}},
+      "then": {
+        "required": ["terraform"]
+      }
+    },
+    {
+      "if": {"properties": {"type": {"const": "container"}}},
+      "then": {
         "required": ["terraform"]
       }
     }
