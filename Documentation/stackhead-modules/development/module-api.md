@@ -21,6 +21,7 @@ The following variables are set by StackHead and can be used by the role:
 | `stackhead__certificates_project_folder` | Path to project's SSL certificate folder | deployment | string |
 | `project_name` | Name of the project that is being deployed | deployment | string |
 | `app_config` | Contents of the project definition file | deployment | object |
+| `certificates_email_address` | E-Mail address to use for creating SSL certificates | global | string |
 
 Additionally the plugin configuration for the respective step set in StackHead CLI is available in `module.config`.
 
