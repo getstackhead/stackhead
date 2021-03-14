@@ -41,6 +41,14 @@ domains:
           username: user
           password: pass
 container:
+  registries:
+    # Authenticate with Docker Hub for private images
+    - username: mydockerhubuser
+      password: mydockerhubpassword
+    # Authenticate with custom Docker registry
+    - username: myuser
+      password: mypassword
+      url: https://myregistry.com
   services:
     - name: app # service name
       image: nginxdemos/hello:latest # Docker image name
@@ -136,6 +144,22 @@ domains:
 {% hint style="info" %}
 Right now, removing a single entry from the list and redeploying the project will NOT remove the user settings from the authentication file.
 {% endhint %}
+
+### container.registries
+
+The following configuration options are available inside a registry definition:
+
+#### username
+
+Username for authentication with the container registry. Required.
+
+#### password
+
+Password for authentication with the container registry. Required.
+
+#### url
+
+URL of container registry. If none given, it will try to authenticate with Docker Hub.
 
 ### container.services
 
