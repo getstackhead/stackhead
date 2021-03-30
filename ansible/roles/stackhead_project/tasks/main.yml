@@ -25,7 +25,6 @@
 # The following tasks will generate and deploy Terraform configuration files to the remote server
 - name: "Prepare certificates directory | Project: {{ project_name }}"
   import_tasks: "../roles/stackhead_project/tasks/ssl/ssl-prepare-certificates.yml"
-  when: ensure == 'present'
 
 - block:
     - name: "Collect exposed services"
