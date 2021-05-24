@@ -42,7 +42,7 @@ resource "local_file" "{{ project_name }}-acme-privkey" {
 
 resource "local_file" "{{ project_name }}-acme-fullchain" {
   filename = "{{ stackhead__project_certificates_folder }}/fullchain.pem"
-  sensitive_content = acme_certificate.{{ project_name }}-certificate.certificate_pem
+  sensitive_content = "${acme_certificate.{{ project_name }}-certificate.certificate_pem}${acme_certificate.{{ project_name }}-certificate.issuer_pem}"
   depends_on = [
     local_file.{{ project_name }}-acme-privkey
   ]
