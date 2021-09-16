@@ -3,7 +3,21 @@
   template:
     src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
     dest: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
-- name: Create Terraform provider configurations (system folder)
-  template:
-    src: "{{ stackhead__templates }}/terraform/terraform-providers.tf.j2"
+- name: Symlink Terraform provider file into existing projects
+  block:
+    - find:
+        paths: "{{ stackhead__projects_root_folder }}"
+        recurse: no
+        file_type: directory
+      register: projectfolders
+    - file:
+        state: link
+        src: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
+        dest: "{{ item.path }}/terraform/terraform-providers.tf"
+      with_items: "{{ projectfolders.files }}"
+
+- name: Symlink Terraform provider configuration into system folder
+  file:
+    state: link
+    src: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
     dest: "{{ stackhead__system_tf_root_folder }}/terraform-providers.tf"
