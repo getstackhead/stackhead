@@ -25,5 +25,6 @@ In order to interact with projects deployed with StackHead v1, they need to be m
 * In each project Terraform directory: `/stackhead/projects/[name]/terraform`
   1. Symlink the terraform-providers.tf file: `ln -s /stackhead/terraform/projects/terraform-providers.tf /stackhead/projects/[name]/terraform/terraform-providers.tf`
   2. Run Terraform apply with TF_DATA_DIR: `TF_DATA_DIR=/stackhead/terraform/.terraform terraform apply -auto-approve`
+  3. _Optional:_ Create a new `env.sh` file with `export TF_DATA_DIR="/stackhead/terraform/.terraform"` as content, if you also intend to run Terraform manually. If you do, run `source env.sh` before that to load the environment.
 5. Remove system terraform-providers.tf file: `rm -rf /stackhead/terraform/system/terraform-providers.tf`
 6. Symlink the system terraform-providers.tf file: `ln -s /stackhead/terraform/projects/terraform-providers.tf /stackhead/terraform/system/terraform-providers.tf`
