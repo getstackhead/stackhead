@@ -17,12 +17,13 @@ function http_check() {
 }
 
 function service_check() {
-	SERVICE_OUTPUT=$(ssh root@"${INPUT_IPADDRESS}" systemctl status "stackhead-apply-terraform.${1}")
+	# shellcheck disable=SC2029
+	SERVICE_OUTPUT=$(ssh root@"${INPUT_IPADDRESS}" systemctl status "stackhead-apply-terraform-${2}.${1}")
 	if [[ $SERVICE_OUTPUT != *"Loaded: loaded"* ]]; then
 		echo "${1} check (loaded) failed."
 		exit 1
 	fi
-	if [[ $SERVICE_OUTPUT != *"stackhead-apply-terraform.${1}; enabled"* ]]; then
+	if [[ $SERVICE_OUTPUT != *"stackhead-apply-terraform-${2}.${1}; enabled"* ]]; then
 		echo "${1} check (enabled) failed."
 		exit 1
 	fi
@@ -44,5 +45,5 @@ http_check "${INPUT_DOMAIN}" "Hello world!"
 http_check "${INPUT_DOMAIN}:81" "phpMyAdmin"
 http_check "${INPUT_DOMAIN2}" "phpMyAdmin" "user" "pass"
 
-service_check "timer"
-service_check "service"
+service_check "timer" "container"
+service_check "service" "container"

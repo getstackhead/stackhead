@@ -38,17 +38,42 @@
 - include_tasks: "../roles/stackhead_module_api/tasks_internal/destroy.yml"
   when: ensure == 'absent'
 
-# Symlink Terraform configurations from project to main folder and execute them
-- import_tasks: "../roles/config_terraform/tasks/update-project-symlinks.yml"
+- name: Symlink Terraform providers
+  file:
+    state: link
+    src: "{{ stackhead__tf_root_folder }}/terraform-providers.tf"
+    dest: "{{ stackhead__tf_project_folder }}/terraform-providers.tf"
   when: ensure == 'present'
-- import_tasks: "../roles/config_terraform/tasks/remove-project-symlinks.yml"
+- name: Remove Terraform files
+  block:
+    - name: Find all terraform files except symlinks
+      find:
+        paths: "{{ stackhead__tf_project_folder }}"
+        patterns: '*.tf'
+        excludes: '*.provider.tf'
+        file_type: file
+      register: terraform_files
+    - file:
+        state: absent
+        path: "{{ item.path }}"
+      with_items: "{{ terraform_files.files }}"
   when: ensure == 'absent'
 - import_tasks: "../roles/config_terraform/tasks/execute.yml"
-  when: stackhead_config.terraform.manual_update
+  vars:
+    terraform_folder: "{{ stackhead__tf_project_folder }}"
+  when: stackhead_config.terraform.manual_update or ensure == 'absent'
 - file:
     path: "{{ item }}"
     state: absent
   with_items:
     - "{{ stackhead__project_folder }}"
     - "{{ stackhead__certificates_project_folder }}"
+  when: ensure == 'absent'
+
+
+- name: Create project specific crontab
+  include_tasks: "../roles/config_terraform/tasks/setup_crontab.yml"
+  when: ensure == 'present'
+- name: Remove project specific crontab
+  include_tasks: "../roles/config_terraform/tasks/remove_crontab.yml"
   when: ensure == 'absent'
