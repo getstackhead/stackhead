@@ -6,6 +6,3 @@
       - provider_old_version|d("") != ""
       - provider_new|d("") != ""
 - include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/replace-provider.yml"
-  with_items:
-    - "{{ stackhead__tf_root_folder }}"
-    - "{{ stackhead__system_tf_root_folder }}"
