@@ -3,10 +3,6 @@
   assert:
     that:
       - stackhead_migration_context|d(0) == 1
-- name: "Check if tfstate exists"
-  stat:
-    path: "{{ item }}/terraform.tfstate"
-  register: tfstate_exist
 - block:
     - set_fact:
         loaded_terraform_providers: []
@@ -18,23 +14,23 @@
         loaded_terraform_providers: "{{ loaded_terraform_providers + [{'vendor': provider_old.split('/').0, 'name': provider_old.split('/').1, 'version': provider_old_version, 'nameSuffix': 'oldprovider'}] }}"
     - include_tasks: "../roles/config_terraform/tasks/generate-providers.yml"
 
+    # Replace provider in all projects
+    - find:
+        paths: "{{ stackhead__projects_root_folder }}"
+        recurse: no
+        file_type: directory
+      register: projectfolders
     - include_tasks: "../roles/config_terraform/tasks/replace-provider-in-project.yml"
       vars:
-        project_folder: this_project_folder.path
+        terraform_folder: "{{ this_project_folder.path }}/terraform/"
       loop_control:
         loop_var: this_project_folder
       with_items: "{{ projectfolders.files }}"
-      when: item == stackhead__tf_root_folder
-    - block:
-        - include_tasks: "../roles/config_terraform/tasks/execute.yml"
-          vars:
-            terraform_folder: "{{ item }}"
-        - name: "Replace Terraform provider {{ provider_old }} -> {{ provider_new }}"
-          shell:
-            cmd: "terraform state replace-provider -auto-approve '{{ provider_old }}' '{{ provider_new }}'"
-            chdir: "{{ item }}"
-      when: item != stackhead__tf_root_folder
+
+    # Replace in system folder
+    - include_tasks: "../roles/config_terraform/tasks/replace-provider-in-project.yml"
+      vars:
+        terraform_folder: "{{ stackhead__system_tf_root_folder }}"
 
     # Regenerate used providers
     - include_tasks: "../roles/config_terraform/tasks/regenerate-dependencies.yml"
-  when: tfstate_exist.stat.exists
