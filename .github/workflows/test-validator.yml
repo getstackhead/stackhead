@@ -26,3 +26,6 @@ jobs:
     - name: Test example file validity
       working-directory: ansible/__tests__
       run: ./test-schemas.sh
+    - name: Test CLI example file validity
+      working-directory: schemas
+      run: ./test.sh

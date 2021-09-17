@@ -1,0 +1,6 @@
+---
+modules:
+  webserver: nginx
+  container: docker
+  dns:
+    - cloudflare

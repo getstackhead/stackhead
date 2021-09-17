@@ -1,3 +1,9 @@
 .idea
 *.iml
 .semrelrc
+node_modules
+super-linter.log
+bin
+stackhead-cli
+.stackhead-cli.yml
+pkged.go
