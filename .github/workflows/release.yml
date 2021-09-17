@@ -9,8 +9,22 @@ on:
       - master
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.17
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Build
+        run: sh ./.build/build.sh
   release:
     name: Release
+    needs:
+      - build
     runs-on: ubuntu-latest
     if: github.repository == 'getstackhead/stackhead'
     env:
@@ -19,24 +33,25 @@ jobs:
       GIT_COMMITTER_EMAIL: 64205253+stackhead-bot@users.noreply.github.com
       GIT_COMMITTER_NAME: stackhead-bot
     steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - run: |
+          go get github.com/mitchellh/gox
+          go get github.com/tcnksm/ghr
       - uses: actions/checkout@v2
-      #- uses: actions/setup-go@v2
-      #  with:
-      #    go-version: 1.15
-      #- uses: go-semantic-release/action@v1
-      #  id: semrel
-      #  with:
-      #    github-token: ${{ secrets.GH_TOKEN }}
-      - run: npm install
-      - name: Semantic Release
+      - uses: go-semantic-release/action@v1
         id: semrel
-        uses: cycjimmy/semantic-release-action@v2
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          ghr: true
+      - run: |
+          gox -parallel 4 -osarch="linux/amd64 darwin/amd64 linux/arm windows/amd64" -ldflags="-extldflags '-static' -s -w -X github.com/getstackhead/stackhead/main.VERSION=${{steps.semrel.outputs.version}}" -output="bin/{{.Dir}}_v${{steps.semrel.outputs.version}}_{{.OS}}_{{.Arch}}" .
+          cd bin/ && shasum -a 256 * > ./stackhead-cli_v${{steps.semrel.outputs.version}}_checksums.txt && cd -
+        if: steps.semrel.outputs.version != ''
+        env:
+          CGO_ENABLED: 0
+      - run: ghr $(cat .ghr) bin/
+        if: steps.semrel.outputs.version != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
-      - name: Publish Ansible Galaxy collection
-        uses: artis3n/ansible_galaxy_collection@v2
-        if: steps.semrel.outputs.new_release_published == 'true'
-        with:
-          api_key: '${{ secrets.GALAXY_API_KEY }}'
-          collection_dir: 'ansible'

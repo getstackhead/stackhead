@@ -1,12 +1,9 @@
 {
   "plugins": {
-    "commit-analyzer": {
-      "name": "default"
-    },
     "ci-condition": {
       "name": "github",
       "options": {
-        "defaultBranch": "feature/release-process"
+        "defaultBranch": "master"
       }
     },
     "changelog-generator": {
@@ -17,9 +14,6 @@
     },
     "provider": {
       "name": "github"
-    },
-    "files-updater": {
-      "names": ["version"]
     }
   }
 }

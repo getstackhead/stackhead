@@ -1,0 +1,6 @@
+---
+modules:
+  webserver: nginx
+  container: docker
+certificates:
+  register_email: "noreply@stackhead.io"
