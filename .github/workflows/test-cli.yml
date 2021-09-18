@@ -7,7 +7,6 @@ on:
       - master
       - next
     paths:
-      - cli/**
       - .github/workflows/test-cli.yml
 
 jobs:
@@ -68,11 +67,11 @@ jobs:
         run: |
           /home/runner/bin/stackhead-cli init
           /home/runner/bin/stackhead-cli cli validate ./schemas/examples/cli-config/valid/cli.yml
-          /home/runner/bin/stackhead-cli module validate ansible/schemas/examples/module-config/valid/container-module.yml
-          /home/runner/bin/stackhead-cli project validate ansible/schemas/examples/project-definition/valid/project.stackhead.yml
-          /home/runner/bin/stackhead-cli project validate ansible/schemas/examples/project-definition/valid/project-secured.stackhead.yaml
-          cp ansible/schemas/examples/project-definition/valid/project.stackhead.yml ansible/schemas/examples/project-definition/invalid/project.yml
-          /home/runner/bin/stackhead-cli project validate ansible/schemas/examples/project-definition/invalid/project.yml && returncode=$? || returncode=$?
+          /home/runner/bin/stackhead-cli module validate ./schemas/examples/module-config/valid/container-module.yml
+          /home/runner/bin/stackhead-cli project validate ./schemas/examples/project-definition/valid/project.stackhead.yml
+          /home/runner/bin/stackhead-cli project validate ./schemas/examples/project-definition/valid/project-secured.stackhead.yaml
+          cp ./schemas/examples/project-definition/valid/project.stackhead.yml ./schemas/examples/project-definition/invalid/project.yml
+          /home/runner/bin/stackhead-cli project validate ./schemas/examples/project-definition/invalid/project.yml && returncode=$? || returncode=$?
           if [ $returncode -eq 0 ]; then
             echo "File above should not have validated due to invalid file extension!"
             exit 1

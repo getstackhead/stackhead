@@ -1,5 +1,0 @@
----
-- set_fact:
-    loaded_terraform_providers: []
-- include_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
-- include_tasks: "../roles/config_terraform/tasks/generate-providers.yml"

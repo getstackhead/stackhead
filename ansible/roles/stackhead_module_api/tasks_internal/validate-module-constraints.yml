@@ -1,6 +1,0 @@
----
-- assert:
-    that:
-      - included_module_config.constraints is not defined or included_module_config.constraints is getstackhead.stackhead.constraintsFulfilled(stackhead_config)
-  vars:
-    included_module_config: "{{ ansible_facts[module.name | getstackhead.stackhead.module_vars_name] }}"

@@ -1,5 +1,0 @@
-# Set up basic dependencies
----
-- name: Update apt caches
-  apt:
-    update_cache: yes
