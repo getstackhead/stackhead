@@ -1,2 +1,0 @@
----
-stackhead__config_folder: "{{ inventory_dir }}/stackhead" # value is overridden by StackHead CLI

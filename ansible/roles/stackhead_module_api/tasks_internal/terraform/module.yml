@@ -1,9 +1,0 @@
-# excluded to own file as we can't look blocks...
----
-- set_fact:
-    loaded_config: "{{ ansible_facts[module.name | getstackhead.stackhead.module_vars_name] }}"
-- set_fact:
-    loaded_terraform_providers: "{{ loaded_terraform_providers|d([]) + [tf_provider] }}"
-  when: tf_provider.name|d("") != "" and  tf_provider.vendor|d("") != "" and tf_provider.version|d("") != ""
-  vars:
-    tf_provider: "{{ loaded_config.terraform.provider|d({}) }}"

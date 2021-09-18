@@ -1,7 +1,0 @@
-galaxy_info:
-  role_name: stackhead_project
-  author: Mario Lubenka
-  description: Tasks for deploying a project
-  issue_tracker_url: https://github.com/getstackhead/stackhead/issues
-  license: GPL-2.0-or-later
-  min_ansible_version: 2.9

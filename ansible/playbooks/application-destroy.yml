@@ -1,8 +1,0 @@
----
-- hosts: all
-  become_user: stackhead
-  tasks:
-    - include_role:
-        name: getstackhead.stackhead.stackhead_project
-      vars:
-        ensure: 'absent'

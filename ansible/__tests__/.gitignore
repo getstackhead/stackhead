@@ -1,6 +1,0 @@
-*.yml
-!*.dist.yml
-*.cfg
-!*.dist.cfg
-*.tf
-*.txt

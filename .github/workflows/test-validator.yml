@@ -12,7 +12,7 @@ on:
     branches:
       - master
     paths:
-      - ansible/schemas/**
+      - schemas/**
       - .github/workflows/test-validator.yml
 
 jobs:
@@ -23,9 +23,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
-    - name: Test example file validity
-      working-directory: ansible/__tests__
-      run: ./test-schemas.sh
     - name: Test CLI example file validity
       working-directory: schemas
       run: ./test.sh

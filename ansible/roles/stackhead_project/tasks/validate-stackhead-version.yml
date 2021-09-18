@@ -1,9 +1,0 @@
----
-- debug:
-    msg: "StackHead version used for setup is {{ stackhead_config.version.installed }} - Current version: {{ stackhead_config.version.current }}"
-- name: Abort if current StackHead version requires a server setup
-  assert:
-    that:
-      - stackhead_config.version.installed is getstackhead.stackhead.withinMajorVersion(stackhead_config.version.current)
-    fail_msg: "StackHead version check failed. Please re-setup this server with StackHead version {{ stackhead_config.version.current }}"
-    success_msg: "StackHead version check succeeded."

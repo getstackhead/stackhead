@@ -1,4 +1,0 @@
----
-- include_tasks: "{{ stackhead__roles }}/config_terraform/tasks/execute.yml"
-  vars:
-    terraform_folder: "{{ stackhead__tf_project_folder}}"

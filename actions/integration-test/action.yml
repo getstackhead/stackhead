@@ -35,9 +35,6 @@ inputs:
   selftest:
     description: 'Set if this test is run on the StackHead main repository'
     required: false
-  cli:
-    description: 'Set if this test should be run with StackHead CLI instead of Ansible'
-    required: false
   cli_bin_path:
     description: 'Path to CLI binary'
     required: false
@@ -74,7 +71,6 @@ runs:
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_PLUGINS: ${{ inputs.plugins }}
-        INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
         INPUT_VERSION: ${{ inputs.version }}
@@ -91,7 +87,6 @@ runs:
         INPUT_PLUGINS: ${{ inputs.plugins }}
         INPUT_ROLENAME: ${{ inputs.rolename }}
         INPUT_SELFTEST: ${{ inputs.selftest }}
-        INPUT_CLI: ${{ inputs.cli }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
@@ -108,7 +103,6 @@ runs:
         INPUT_WEBSERVER: ${{ inputs.webserver }}
         INPUT_CONTAINER: ${{ inputs.container }}
         INPUT_PLUGINS: ${{ inputs.plugins }}
-        INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
     - name: "Validate deployment"
@@ -118,13 +112,11 @@ runs:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
         INPUT_DOMAIN: ${{ inputs.domain }}
         INPUT_DOMAIN2: ${{ inputs.domain2 }}
-        INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
     - name: "Destroy deployment"
       shell: bash
       run: ${{ github.action_path }}/steps/destroy.sh
       env:
         INPUT_IPADDRESS: ${{ inputs.ipaddress }}
-        INPUT_CLI: ${{ inputs.cli }}
         INPUT_CLI_BIN_PATH: ${{ inputs.cli_bin_path }}
         STACKHEAD_CLONE_LOCATION: ${{ steps.action_tag.outputs.STACKHEAD_CLONE_LOCATION }}
