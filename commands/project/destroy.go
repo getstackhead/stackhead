@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/spf13/cobra"
 
@@ -21,11 +20,9 @@ var DestroyApplication = &cobra.Command{
 	Long:    `destroy will tear down the given project that has been deployed onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		routines.RunTask(
-			routines.Text(fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1])),
-			routines.Execute(func(wg *sync.WaitGroup, result chan routines.TaskResult) {
-				defer wg.Done()
-
+		routines.RunTask(routines.Task{
+			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
+			Run: func(r routines.RunningTask) error {
 				// Generate Inventory file
 				inventoryFile, err := ansible.CreateInventoryFile(args[1], args[0])
 
@@ -35,16 +32,8 @@ var DestroyApplication = &cobra.Command{
 					options["project_name"] = strings.TrimSuffix(strings.TrimSuffix(filepath.Base(args[0]), ".stackhead.yml"), ".stackhead.yaml")
 					err = routines.ExecAnsiblePlaybook("application-destroy", inventoryFile, options)
 				}
-
-				taskResult := routines.TaskResult{
-					Error: err != nil,
-				}
-				if err != nil {
-					taskResult.Message = err.Error()
-				}
-
-				result <- taskResult
-			}),
-		)
+				return err
+			},
+		})
 	},
 }

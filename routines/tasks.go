@@ -3,89 +3,82 @@ package routines
 import (
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/spf13/viper"
+	"github.com/theckman/yacspin"
 )
 
-const (
-	// ErrorColor colors the first text red and the second text default color
-	ErrorColor = "\033[1;31m%s\033[0m%s\n"
-	// SuccessColor colors the first text green and the second text default color
-	SuccessColor = "\033[1;32m%s\033[0m%s\n"
-)
-
-// TaskOptions is a configuration used to define the behaviour of tasks and processing functions
-type TaskOptions struct {
-	Text    string
-	Execute func(wg *sync.WaitGroup, results chan TaskResult)
+type Task struct {
+	Name                string
+	Run                 func(r RunningTask) error
+	ErrorAsErrorMessage bool
 }
 
-// TaskResult is the result of a task execution and expected to be returned into the respective channel
-type TaskResult struct {
-	// internal name
-	Name    string
-	Message string
-	Error   bool
+type RunningTaskObj struct {
+	Spinner *yacspin.Spinner
 }
 
-// Text assigns the given text to TaskOption.Text
-func Text(text string) TaskOption {
-	return func(args *TaskOptions) {
-		args.Text = text
+func (r *RunningTaskObj) PrintLn(text string) {
+	if r.Spinner != nil {
+		r.Spinner.Message(text)
+	} else {
+		_, _ = fmt.Fprintf(os.Stdout, text)
+	}
+}
+func (r *RunningTaskObj) SetSuccessMessage(text string) {
+	if r.Spinner != nil {
+		r.Spinner.StopMessage(text)
+	}
+}
+func (r *RunningTaskObj) SetFailMessage(text string) {
+	if r.Spinner != nil {
+		r.Spinner.StopFailMessage(text)
 	}
 }
 
-// Execute assigns the given execution function to TaskOption.Execute
-func Execute(executeFunc func(wg *sync.WaitGroup, results chan TaskResult)) TaskOption {
-	return func(args *TaskOptions) {
-		args.Execute = executeFunc
-	}
+type RunningTask interface {
+	PrintLn(text string)
+	SetSuccessMessage(text string)
+	SetFailMessage(text string)
 }
 
-// TaskOption is a single task setting
-type TaskOption func(*TaskOptions)
-
-// RunTask executes a task that can be configured using task options
-func RunTask(options ...TaskOption) {
-	t := &TaskOptions{
-		Text: "Processing...",
+func RunTask(task Task) {
+	cfg := yacspin.Config{
+		Frequency:         150 * time.Millisecond,
+		CharSet:           yacspin.CharSets[11],
+		Suffix:            " " + task.Name,
+		SuffixAutoColon:   true,
+		Message:           "",
+		StopCharacter:     "✓",
+		StopColors:        []string{"fgGreen"},
+		StopFailCharacter: "✗",
+		StopFailColors:    []string{"fgRed"},
 	}
-	for _, setter := range options {
-		setter(t)
-	}
 
-	// Disable spinner when verbose mode is enabled as it does not like additional stdout messages
-	var s *spinner.Spinner
+	var s *yacspin.Spinner
 	if viper.GetBool("verbose") {
-		_, _ = fmt.Fprintf(os.Stdout, "⌛ %s\n", t.Text)
+		_, _ = fmt.Fprintf(os.Stdout, "⌛ %s\n", task.Name)
 	} else {
-		s = spinner.New(spinner.CharSets[11], 150*time.Millisecond)
-		// s.ShowTimeElapsed = true
-		s.Reverse()
-		s.Suffix = " " + t.Text
-		s.Start()
+		spinner, err := yacspin.New(cfg)
+		s = spinner
+		if err == nil {
+			s.Reverse()
+			s.Start()
+		}
 	}
-
-	var wg sync.WaitGroup
-	wg.Add(1)
-	results := make(chan TaskResult, 1)
-	go t.Execute(&wg, results)
-	wg.Wait()
-
-	if !viper.GetBool("verbose") {
-		s.Stop()
-	}
-	result := <-results
-	if len(result.Message) == 0 {
-		result.Message = t.Text
-	}
-	if result.Error {
-		fmt.Fprintf(os.Stdout, ErrorColor, "✗ ", result.Message)
-		os.Exit(1)
+	runningTask := &RunningTaskObj{Spinner: s}
+	err := task.Run(runningTask)
+	if err != nil {
+		if s != nil {
+			if task.ErrorAsErrorMessage {
+				s.StopFailMessage(err.Error())
+			}
+			s.StopFail()
+		}
 	} else {
-		fmt.Fprintf(os.Stdout, SuccessColor, "✓ ", result.Message)
+		if s != nil {
+			s.Stop()
+		}
 	}
 }
