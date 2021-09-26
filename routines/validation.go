@@ -3,24 +3,21 @@ package routines
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path/filepath"
-
 	"github.com/markbates/pkger"
 	"github.com/markbates/pkger/pkging"
 	jsonschema "github.com/saitho/jsonschema-validator/validator"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
-
-	"github.com/getstackhead/stackhead/ansible"
+	"io/ioutil"
+	"net/http"
+	"os"
 )
 
 type ValidationSource string
 
-func CobraValidationBase(source string, schemaFile string, version string, branch string, ignoreSslCertificate bool) func(cmd *cobra.Command, args []string) {
+func CobraValidationBase(schemaFile string, version string, branch string, ignoreSslCertificate bool) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
+		source := "stackhead_cli"
 		if len(version) > 0 {
 			source = "https://schema.stackhead.io/stackhead-cli/tag/" + version + "/-"
 		} else if len(branch) > 0 {
@@ -36,25 +33,10 @@ func CobraValidationBase(source string, schemaFile string, version string, branc
 }
 
 func Validate(filePath string, schemaFile string, source string) {
-	var sourceDir, absSourceDir string
 	var err error
 	var result *gojsonschema.Result
 
 	switch source {
-	case "ansible_collection":
-		sourceDir, err = ansible.GetStackHeadCollectionLocation()
-		if err != nil {
-			panic(err)
-		}
-		absSourceDir, err = filepath.Abs(sourceDir)
-		if err != nil {
-			panic(err)
-		}
-		schemaPath := filepath.Join(absSourceDir, "schemas", schemaFile)
-		result, err = jsonschema.ValidateFile(filePath, schemaPath)
-		if err != nil {
-			panic(err.Error())
-		}
 	case "stackhead_cli":
 		// Use schema stored in binary
 		var f pkging.File

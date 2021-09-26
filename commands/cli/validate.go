@@ -16,7 +16,6 @@ func Validate() *cobra.Command {
 		Long:    `validate is used to make sure your StackHead CLI configuration file meets the required syntax.`,
 		Args:    cobra.ExactArgs(1),
 		Run: routines.CobraValidationBase(
-			"stackhead_cli",
 			"cli-config.schema.json",
 			version,
 			branch,

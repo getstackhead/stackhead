@@ -2,11 +2,9 @@ package commands
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
-	"github.com/getstackhead/stackhead/ansible"
 	"github.com/getstackhead/stackhead/routines"
 )
 
@@ -21,12 +19,11 @@ var SetupServer = &cobra.Command{
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),
 			Run: func(r routines.RunningTask) error {
-				// Generate Inventory file
-				inventoryFile, err := ansible.CreateInventoryFile(args[0], "")
-				if err == nil {
-					defer os.Remove(inventoryFile)
-					err = routines.ExecAnsiblePlaybook("server-provision", inventoryFile, nil)
-				}
+				var err error
+
+				// todo: run setup
+				r.PrintLn("Setup not yet implemented.")
+
 				return err
 			},
 			ErrorAsErrorMessage: true,

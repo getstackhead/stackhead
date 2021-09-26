@@ -20,7 +20,6 @@ func Validate() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			routines.CobraValidationBase(
-				"ansible_collection",
 				"project-definition.schema.json",
 				version,
 				branch,

@@ -8,149 +8,127 @@ import (
 )
 
 const (
-	// ModuleWebserver is the string that identifies a package name as webserver package
-	ModuleWebserver = "stackhead_webserver"
-	// ModuleContainer is the string that identifies a package name as container package
-	ModuleContainer = "stackhead_container"
-	// ModulePlugin is the string that identifies a package name as plugin package
-	ModulePlugin = "stackhead_plugin"
-	// ModuleDNS is the string that identifies a package name as dns package
-	ModuleDNS = "stackhead_dns"
+	// PluginProxy is the string that identifies a package name as webserver package
+	PluginProxy = "stackhead_webserver"
+	// PluginContainer is the string that identifies a package name as container package
+	PluginContainer = "stackhead_container"
+	// PluginApplication is the string that identifies a package name as application package
+	PluginApplication = "stackhead_application"
+	// PluginDNS is the string that identifies a package name as dns package
+	PluginDNS = "stackhead_dns"
 )
 
-// SplitModuleName splits a given module name into vendor, module type and base name
-func SplitModuleName(moduleName string) (string, string, string) {
-	return ExtractVendor(moduleName), GetModuleType(moduleName), GetModuleBaseName(moduleName)
+// SplitPluginName splits a given module name into vendor, module type and base name
+func SplitPluginName(pluginName string) (string, string, string) {
+	return ExtractVendor(pluginName), GetModuleType(pluginName), GetModuleBaseName(pluginName)
 }
 
 // GetModuleBaseName returns the base name of a given module name (e.g. nginx in getstackhead.stackhead_webserver_nginx)
-func GetModuleBaseName(moduleName string) string {
-	moduleName = RemoveVendor(moduleName)
-	moduleType := GetModuleType(moduleName)
-	return strings.TrimPrefix(moduleName, moduleType+"_")
+func GetModuleBaseName(pluginName string) string {
+	pluginName = RemoveVendor(pluginName)
+	pluginType := GetModuleType(pluginName)
+	return strings.TrimPrefix(pluginName, pluginType+"_")
 }
 
 // ExtractVendor returns the vendor name of a given module name (e.g. getstackhead in getstackhead.stackhead_webserver_nginx)
-func ExtractVendor(moduleName string) string {
-	if !strings.ContainsRune(moduleName, '.') {
+func ExtractVendor(pluginName string) string {
+	if !strings.ContainsRune(pluginName, '.') {
 		return ""
 	}
-	var split = strings.Split(moduleName, ".")
+	var split = strings.Split(pluginName, ".")
 	return split[0]
 }
 
 // RemoveVendor removes the vendor name from a given module name (e.g. getstackhead.stackhead_webserver_nginx => stackhead_webserver_nginx)
-func RemoveVendor(moduleName string) string {
-	if !strings.ContainsRune(moduleName, '.') {
-		return moduleName
+func RemoveVendor(pluginName string) string {
+	if !strings.ContainsRune(pluginName, '.') {
+		return pluginName
 	}
-	var split = strings.Split(moduleName, ".")
+	var split = strings.Split(pluginName, ".")
 	return split[1]
 }
 
-// IsWebserverModule checks if the given module is a webserver module based on its name
-func IsWebserverModule(moduleName string) bool {
-	moduleName = RemoveVendor(moduleName)
-	return strings.HasPrefix(moduleName, ModuleWebserver)
+// IsProxyPlugin checks if the given module is a webserver module based on its name
+func IsProxyPlugin(pluginName string) bool {
+	pluginName = RemoveVendor(pluginName)
+	return strings.HasPrefix(pluginName, PluginProxy)
 }
 
-// IsContainerModule checks if the given module is a container module based on its name
-func IsContainerModule(moduleName string) bool {
-	moduleName = RemoveVendor(moduleName)
-	return strings.HasPrefix(moduleName, ModuleContainer)
+// IsContainerPlugin checks if the given module is a container module based on its name
+func IsContainerPlugin(pluginName string) bool {
+	pluginName = RemoveVendor(pluginName)
+	return strings.HasPrefix(pluginName, PluginContainer)
 }
 
-// IsPluginModule checks if the given module is a plugin module based on its name
-func IsPluginModule(moduleName string) bool {
-	moduleName = RemoveVendor(moduleName)
-	return strings.HasPrefix(moduleName, ModulePlugin)
+// IsApplicationPlugin checks if the given module is an application module based on its name
+func IsApplicationPlugin(pluginName string) bool {
+	pluginName = RemoveVendor(pluginName)
+	return strings.HasPrefix(pluginName, PluginApplication)
 }
 
-// IsDNSModule checks if the given module is a dns module based on its name
-func IsDNSModule(moduleName string) bool {
-	moduleName = RemoveVendor(moduleName)
-	return strings.HasPrefix(moduleName, ModuleDNS)
+// IsDNSPlugin checks if the given module is a dns module based on its name
+func IsDNSPlugin(pluginName string) bool {
+	pluginName = RemoveVendor(pluginName)
+	return strings.HasPrefix(pluginName, PluginDNS)
 }
 
 // GetModuleType returns the module type for the given module according its name
-// Will return the values of ModulePlugin, ModuleContainer and ModuleWebserver constants.
-func GetModuleType(moduleName string) string {
-	if IsContainerModule(moduleName) {
-		return ModuleContainer
+// Will return the values of PluginMisc, PluginContainer and PluginProxy constants.
+func GetModuleType(pluginName string) string {
+	if IsContainerPlugin(pluginName) {
+		return PluginContainer
 	}
-	if IsPluginModule(moduleName) {
-		return ModulePlugin
+	if IsApplicationPlugin(pluginName) {
+		return PluginApplication
 	}
-	if IsWebserverModule(moduleName) {
-		return ModuleWebserver
+	if IsProxyPlugin(pluginName) {
+		return PluginProxy
 	}
-	if IsDNSModule(moduleName) {
-		return ModuleDNS
+	if IsDNSPlugin(pluginName) {
+		return PluginDNS
 	}
 	return ""
 }
 
-// AutoCompleteModuleName will try to auto-complete module names
+// AutoCompletePluginName will try to auto-complete module names
 // if no vendor is given, it will use "getstackhead"
 // if no module type is given, it will use the given target type
-func AutoCompleteModuleName(moduleNameFragment string, targetType string) (string, error) {
-	var vendorName, moduleType, baseName = SplitModuleName(moduleNameFragment)
-	if moduleType != "" && moduleType != targetType {
+func AutoCompletePluginName(pluginNameFragment string, targetType string) (string, error) {
+	var vendorName, pluginType, baseName = SplitPluginName(pluginNameFragment)
+	if pluginType != "" && pluginType != targetType {
 		return "", fmt.Errorf("invalid module name")
 	}
 
 	if vendorName == "" {
 		vendorName = "getstackhead"
 	}
-	if moduleType == "" {
-		moduleType = targetType
+	if pluginType == "" {
+		pluginType = targetType
 	}
 
-	return vendorName + "." + strings.Join([]string{moduleType, baseName}, "_"), nil
+	return vendorName + "." + strings.Join([]string{pluginType, baseName}, "_"), nil
 }
 
-func GetWebserverModule() (string, error) {
-	var module = viper.GetString("modules.webserver")
+func GetProxyPlugin() string {
+	var module = viper.GetString("modules.proxy")
 	if len(module) == 0 {
-		module = "getstackhead.stackhead_webserver_nginx"
+		module = "github.com/getstackhead/plugin-proxy-nginx"
 	}
-	return AutoCompleteModuleName(module, ModuleWebserver)
+	return module
 }
 
-func GetContainerModule() (string, error) {
+func GetContainerPlugin() string {
 	var module = viper.GetString("modules.container")
 	if len(module) == 0 {
-		module = "getstackhead.stackhead_container_docker"
+		module = "github.com/getstackhead/plugin-container-docker"
 	}
-	return AutoCompleteModuleName(module, ModuleContainer)
+	return module
 }
 
-func GetDNSModules() ([]string, error) {
-	var plugins = viper.GetStringSlice("modules.dns")
-	var modules []string
-	if len(plugins) > 0 {
-		for _, plugin := range plugins {
-			moduleName, err := AutoCompleteModuleName(plugin, ModuleDNS)
-			if err != nil {
-				return []string{}, err
-			}
-			modules = append(modules, moduleName)
-		}
-	}
-	return modules, nil
+func GetDNSPlugins() []string {
+	return viper.GetStringSlice("modules.dns")
 }
 
-func GetPluginModules() ([]string, error) {
-	var plugins = viper.GetStringSlice("modules.plugins")
-	var modules []string
-	if len(plugins) > 0 {
-		for _, plugin := range plugins {
-			moduleName, err := AutoCompleteModuleName(plugin, ModulePlugin)
-			if err != nil {
-				return []string{}, err
-			}
-			modules = append(modules, moduleName)
-		}
-	}
-	return modules, nil
+func GetApplicationPlugins() []string {
+	return viper.GetStringSlice("modules.applications")
 }
