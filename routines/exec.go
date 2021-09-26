@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/viper"
-
-	"github.com/getstackhead/stackhead/ansible"
 )
 
 // Exec is a wrapper function around exec.Command with additional settings for this CLI
-func Exec(name string, arg ...string) error {
+func Exec(name string, arg []string) error {
 	cmd := exec.Command(name, arg...)
 	var outBuffer = new(bytes.Buffer)
 	var errBuffer = new(bytes.Buffer)
@@ -41,55 +38,4 @@ func Exec(name string, arg ...string) error {
 		return fmt.Errorf(strings.Join(filtered, "\n"))
 	}
 	return nil
-}
-
-// ExecAnsibleGalaxy is shortcut for executing a command via ansible-galaxy binary
-func ExecAnsibleGalaxy(args ...string) error {
-	return Exec("ansible-galaxy", args...)
-}
-
-// ExecAnsibleGalaxyCollection is shortcut for executing a collection command via ansible-galaxy binary
-func ExecAnsibleGalaxyCollection(args ...string) error {
-	collectionDir, err := ansible.GetCollectionDirs()
-	if err != nil {
-		return err
-	}
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	// We have to set a relative path, otherwise ansible-galaxy will do weird things...
-	relCollectionsPath, err := filepath.Rel(cwd, "/")
-	if err != nil {
-		return err
-	}
-	args = append(args, "-p "+relCollectionsPath+"/../.."+collectionDir[0])
-
-	// Prepend "collection" task to args
-	args = append([]string{"collection"}, args...)
-	return ExecAnsibleGalaxy(args...)
-}
-
-// ExecAnsiblePlaybook is shortcut for executing a playbook within the StackHead collection via ansible-playbook binary
-func ExecAnsiblePlaybook(playbookName string, inventoryPath string, options map[string]string) error {
-	stackHeadLocation, err := ansible.GetStackHeadCollectionLocation()
-	if err != nil {
-		return err
-	}
-
-	args := []string{stackHeadLocation + "/playbooks/" + playbookName + ".yml"}
-	if inventoryPath != "" {
-		args = append(args, "-i", inventoryPath)
-	}
-	if len(options) > 0 {
-		var extraVars []string
-		for i, arg := range options {
-			extraVars = append(extraVars, i+"="+arg)
-		}
-		args = append(args, "--extra-vars", strings.Join(extraVars, ","))
-	}
-
-	return Exec("ansible-playbook", args...)
 }

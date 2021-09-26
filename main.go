@@ -3,12 +3,10 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/markbates/pkger"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 
 	"github.com/getstackhead/stackhead/commands"
 	"github.com/getstackhead/stackhead/commands/cli"
@@ -45,7 +43,6 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is ./.stackhead-cli.yaml or $HOME/.stackhead-cli.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&collectionPath, "collection-path", "p", "", "Path to Ansible collection directory")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show more output")
 
 	rootCmd.AddCommand(project.GetCommands())
@@ -69,7 +66,7 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
-		home, err := homedir.Dir()
+		home, err := os.UserHomeDir()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

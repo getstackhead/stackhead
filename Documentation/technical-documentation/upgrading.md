@@ -28,3 +28,28 @@ In order to interact with projects deployed with StackHead v1, they need to be m
   3. _Optional:_ Create a new `env.sh` file with `export TF_DATA_DIR="/stackhead/terraform/.terraform"` as content, if you also intend to run Terraform manually. If you do, run `source env.sh` before that to load the environment.
 5. Remove system terraform-providers.tf file: `rm -rf /stackhead/terraform/system/terraform-providers.tf`
 6. Symlink the system terraform-providers.tf file: `ln -s /stackhead/terraform/projects/terraform-providers.tf /stackhead/terraform/system/terraform-providers.tf`
+
+### StackHead CLI configuration
+
+```diff
+---
+modules:
+-  webserver: nginx
++  proxy: github.com/getstackhead/plugin-proxy-nginx
+-  container: docker
++  container: github.com/getstackhead/plugin-container-docker
+-  dns: cloudflare
++  dns: github.com/getstackhead/plugin-dns-cloudflare
+-  plugins:
+-    - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
++  applications:
++    - github.com/getstackhead/plugin-application-watchtower # load getstackhead.stackhead_plugin_watchtower plugin
+certificates:
+  register_email: "my-certificates-mail@mydomain.com" # Email address used for creating SSL certificates. Will receive notice when they expire.
+terraform:
+  update_interval: "*-*-* 4:00:00" # perform Terraform update everyday at 4am, see Unix timer "OnCalendar" setting
+config:
+  setup:
+    github.com/getstackhead/plugin-proxy-nginx: # config settings for Nginx module
+      server_names_hash_bucket_size: 128
+```

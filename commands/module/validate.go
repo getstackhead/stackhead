@@ -16,7 +16,6 @@ func Validate() *cobra.Command {
 		Long:    `validate is used to make sure your StackHead module file meets the required syntax.`,
 		Args:    cobra.ExactArgs(1),
 		Run: routines.CobraValidationBase(
-			"ansible_collection",
 			"module-config.schema.json",
 			version,
 			branch,
