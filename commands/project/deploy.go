@@ -2,9 +2,11 @@ package project
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/getstackhead/stackhead/plugins"
 	"github.com/getstackhead/stackhead/routines"
 )
 
@@ -21,8 +23,18 @@ var DeployApplication = &cobra.Command{
 			Run: func(r routines.RunningTask) error {
 				var err error
 
-				// TODO: run deploy
-				r.PrintLn("Deploy not yet implemented.")
+				p, err := plugins.LoadPlugins()
+				if err != nil {
+					return err
+				}
+				for _, plugin := range p {
+					if plugin.DeployProgram != nil {
+						if err := plugin.DeployProgram.Run(nil); err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+					}
+				}
 
 				return err
 			},
