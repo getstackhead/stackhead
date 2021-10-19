@@ -3,10 +3,12 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/markbates/pkger"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 
 	"github.com/getstackhead/stackhead/commands"
 	"github.com/getstackhead/stackhead/commands/cli"
@@ -30,6 +32,7 @@ to quickly create a Cobra application.`,
 // main adds all child commands to the root command and sets flags appropriately.
 func main() {
 	_ = pkger.Include("/schemas")
+	_ = pkger.Include("/templates")
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -59,6 +62,7 @@ func initConfig() {
 	}
 	if verbose {
 		viper.Set("verbose", verbose)
+		log.SetLevel(log.DebugLevel)
 	}
 
 	if cfgFile != "" {

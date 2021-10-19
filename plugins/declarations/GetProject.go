@@ -2,9 +2,9 @@ package declarations
 
 import (
 	"github.com/getstackhead/stackhead/pluginlib"
-	"github.com/getstackhead/stackhead/stackhead"
+	"github.com/getstackhead/stackhead/system"
 )
 
 var GetProject = func() *pluginlib.Project {
-	return stackhead.Context.Project
+	return system.Context.Project
 }

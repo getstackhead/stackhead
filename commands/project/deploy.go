@@ -9,7 +9,7 @@ import (
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/plugins"
 	"github.com/getstackhead/stackhead/routines"
-	"github.com/getstackhead/stackhead/stackhead"
+	"github.com/getstackhead/stackhead/system"
 )
 
 // DeployApplication is a command object for Cobra that provides the deploy command
@@ -24,7 +24,7 @@ var DeployApplication = &cobra.Command{
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}
-		stackhead.InitializeContext(args[1], stackhead.ContextActionProjectDeploy, config)
+		system.InitializeContext(args[1], system.ContextActionProjectDeploy, config)
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Deploying project \"%s\" onto server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {

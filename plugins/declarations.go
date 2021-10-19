@@ -3,9 +3,11 @@ package plugins
 import (
 	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/open2b/scriggo/native"
 
+	"github.com/getstackhead/stackhead/pluginlib"
 	"github.com/getstackhead/stackhead/plugins/declarations"
 )
 
@@ -16,6 +18,11 @@ func getPluginLib() native.Package {
 			"StackHeadExecute": declarations.StackHeadExecute,
 			"InstallPackage":   declarations.InstallPackage,
 			"GetProject":       declarations.GetProject,
+
+			// Structs
+			"Package":          reflect.TypeOf(pluginlib.Package{}),
+			"PackageVendorApt": pluginlib.PackageVendorApt,
+			"PackageVendorApk": pluginlib.PackageVendorApk,
 		},
 	}
 }
