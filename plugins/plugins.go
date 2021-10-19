@@ -2,6 +2,8 @@ package plugins
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"os"
 	"path"
 	"regexp"
@@ -10,11 +12,15 @@ import (
 	"github.com/open2b/scriggo"
 
 	"github.com/getstackhead/stackhead/config"
+	"github.com/getstackhead/stackhead/pluginlib"
 	"github.com/getstackhead/stackhead/stackhead"
 )
 
 type Plugin struct {
+	Name           string
 	Path           string
+	Config         *pluginlib.PluginConfig
+	InitProgram    *scriggo.Program
 	SetupProgram   *scriggo.Program
 	DeployProgram  *scriggo.Program
 	DestroyProgram *scriggo.Program
@@ -59,11 +65,44 @@ func LoadPlugins() ([]*Plugin, error) {
 	return plugins, nil
 }
 
-func LoadPlugin(path string) (*Plugin, error) {
+func LoadPlugin(pluginPath string) (*Plugin, error) {
+	pluginCfg, err := loadPluginConfig(pluginPath)
+	if err != nil {
+		return nil, err
+	}
 	return &Plugin{
-		Path:          path,
-		DeployProgram: getProgram(path, "deploy"),
+		Name:           path.Base(pluginPath),
+		Path:           pluginPath,
+		Config:         pluginCfg,
+		InitProgram:    getProgram(pluginPath, "init"),
+		DeployProgram:  getProgram(pluginPath, "deploy"),
+		SetupProgram:   getProgram(pluginPath, "setup"),
+		DestroyProgram: getProgram(pluginPath, "destroy"),
 	}, nil
+}
+
+func loadPluginConfig(pluginPath string) (*pluginlib.PluginConfig, error) {
+	p := &pluginlib.PluginConfig{}
+
+	yamlFile, err := ioutil.ReadFile(path.Join(pluginPath, "stackhead-module.yml"))
+	if err != nil {
+		return nil, err
+	}
+
+	if err = yaml.Unmarshal(yamlFile, &p); err != nil {
+		return nil, err
+	}
+
+	// Add plugin path to Init path
+	if p.Terraform.Provider.Init != "" {
+		p.Terraform.Provider.Init = path.Join(pluginPath, p.Terraform.Provider.Init)
+		// Ensure new path is still in plugin path
+		if !strings.HasPrefix(p.Terraform.Provider.Init, pluginPath) {
+			return nil, fmt.Errorf("path security violated: Init path does not resolve to plugin path")
+		}
+	}
+
+	return p, nil
 }
 
 func getProgram(path string, fileName string) *scriggo.Program {

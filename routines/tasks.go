@@ -23,7 +23,7 @@ func (r *RunningTaskObj) PrintLn(text string) {
 	if r.Spinner != nil {
 		r.Spinner.Message(text)
 	} else {
-		_, _ = fmt.Fprintf(os.Stdout, text)
+		_, _ = fmt.Fprintf(os.Stdout, text+"\n")
 	}
 }
 func (r *RunningTaskObj) SetSuccessMessage(text string) {
@@ -75,6 +75,8 @@ func RunTask(task Task) {
 				s.StopFailMessage(err.Error())
 			}
 			s.StopFail()
+		} else {
+			_, _ = fmt.Fprintf(os.Stdout, "✗ %s\n", err.Error())
 		}
 	} else {
 		if s != nil {
