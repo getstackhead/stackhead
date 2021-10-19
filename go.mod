@@ -14,9 +14,10 @@ require (
 )
 
 require (
-	github.com/getstackhead/stackhead/pluginlib master
+	github.com/getstackhead/stackhead/pluginlib v0.0.0-ad306be27c51b06bdb5d8d87df8d4f882ca96714
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/open2b/scriggo v0.52.2
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 require (

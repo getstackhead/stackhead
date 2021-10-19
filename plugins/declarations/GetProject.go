@@ -1,8 +1,10 @@
 package declarations
 
-import "github.com/getstackhead/stackhead/pluginlib"
+import (
+	"github.com/getstackhead/stackhead/pluginlib"
+	"github.com/getstackhead/stackhead/stackhead"
+)
 
 var GetProject = func() *pluginlib.Project {
-	// todo: how to deal with method input objects?! e.g. project...
-	return nil
+	return stackhead.Context.Project
 }
