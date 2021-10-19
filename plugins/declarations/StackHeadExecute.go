@@ -1,9 +1,9 @@
 package declarations
 
-import "fmt"
+import (
+	"github.com/getstackhead/stackhead/stackhead"
+)
 
-var StackHeadExecute = func(command string, args interface{}) {
-	// todo
-	fmt.Println(command)
-	fmt.Println(args)
+var StackHeadExecute = func(command string) error {
+	return stackhead.RemoteRun(command)
 }
