@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -31,5 +32,9 @@ func LoadProjectDefinition(filepath string) (*pluginlib.Project, error) {
 	if err = yaml.Unmarshal(yamlFile, &p); err != nil {
 		return nil, err
 	}
+
+	// Set project name. Right now we do not want to allow a "name" attribute in project definition file
+	p.Name = strings.TrimRight(path.Base(filepath), ".stackhead.yml")
+
 	return p, nil
 }

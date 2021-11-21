@@ -39,8 +39,14 @@ func GenerateSSHKeyPair() (*rsa.PrivateKey, error) {
 
 func getRemoteSshAuths(user string) ([]ssh.AuthMethod, error) {
 	var auths []ssh.AuthMethod
+	var signers []ssh.Signer
 	if aconn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
-		auths = append(auths, ssh.PublicKeysCallback(agent.NewClient(aconn).Signers))
+		localSigners, err := agent.NewClient(aconn).Signers()
+		if err != nil {
+			log.Errorf("Unable to load local SSH keys.")
+		} else {
+			signers = append(signers, localSigners...)
+		}
 	}
 
 	// Load private key from local StackHead directory
@@ -49,17 +55,14 @@ func getRemoteSshAuths(user string) ([]ssh.AuthMethod, error) {
 		if err != nil {
 			return auths, err
 		}
-		p, err := ssh.ParseRawPrivateKey(dat)
+		signer, err := ssh.ParsePrivateKey(dat)
 		if err != nil {
 			return auths, err
 		}
-		signer, err := ssh.NewSignerFromKey(p)
-		if err != nil {
-			return auths, err
-		}
-		auths = append(auths, ssh.PublicKeys(signer))
+		signers = append(signers, signer)
 	}
 
+	auths = append(auths, ssh.PublicKeys(signers...))
 	return auths, nil
 }
 
@@ -95,12 +98,14 @@ func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
 	remoteCmd := fmt.Sprintf("%s %s", cmd, strings.Join(args, " "))
 	log.Debugln(fmt.Sprintf("SSH [%s@%s]: %s", getRemoteUser(), Context.TargetHost, remoteCmd))
 
-	identity := ""
+	var cmdArgs []string
 	if user == "stackhead" {
-		identity = Context.Authentication.GetPrivateKeyPath()
+		cmdArgs = []string{"-i", Context.Authentication.GetPrivateKeyPath()}
 	}
 
-	command := exec.Command("ssh", identity, fmt.Sprintf("%s@%s", user, Context.TargetHost), remoteCmd)
+	cmdArgs = append(cmdArgs, fmt.Sprintf("%s@%s", user, Context.TargetHost))
+	cmdArgs = append(cmdArgs, remoteCmd)
+	command := exec.Command("ssh", cmdArgs...)
 	var out, outErr bytes.Buffer
 	command.Stdout = &out
 	command.Stderr = &outErr
