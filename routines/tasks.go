@@ -43,7 +43,7 @@ type RunningTask interface {
 	SetFailMessage(text string)
 }
 
-func RunTask(task Task) {
+func RunTask(task Task) error {
 	cfg := yacspin.Config{
 		Frequency:         150 * time.Millisecond,
 		CharSet:           yacspin.CharSets[11],
@@ -78,9 +78,10 @@ func RunTask(task Task) {
 		} else {
 			_, _ = fmt.Fprintf(os.Stdout, "✗ %s\n", err.Error())
 		}
-	} else {
-		if s != nil {
-			s.Stop()
-		}
+		return err
 	}
+	if s != nil {
+		s.Stop()
+	}
+	return nil
 }

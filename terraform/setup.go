@@ -5,6 +5,8 @@ import (
 	"path"
 	"text/template"
 
+	logger "github.com/sirupsen/logrus"
+
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/pluginlib"
 	"github.com/getstackhead/stackhead/plugins"
@@ -78,7 +80,10 @@ func BuildAndWriteProviders(p []*plugins.Plugin) error {
 }
 
 func SymlinkProviders(project *pluginlib.Project) error {
-	_, _, err := system.RemoteRun("ln", "-s "+terraformProvidersFile+" "+config.GetProjectTerraformDirectoryPath(project))
+	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(config.GetProjectTerraformDirectoryPath(project), "terraform-providers.tf"))
+	if err != nil {
+		logger.Errorln(errMsg.String())
+	}
 	return err
 }
 
