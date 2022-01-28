@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	xfs "github.com/saitho/golang-extended-fs"
 
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -47,19 +48,19 @@ var DeployApplication = &cobra.Command{
 						var err error
 
 						r.PrintLn("Create project directory if not exists")
-						if err := system.CreateFolder("ssh://" + config.GetProjectDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.GetProjectDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
 
 						r.PrintLn("Prepare certificates directory")
-						if err := system.CreateFolder("ssh://" + config.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
-						if err := system.CreateFolder("ssh://" + config.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
 							return err
 						}
 						r.PrintLn("Prepare Terraform directory")
-						if err := system.CreateFolder("ssh://" + config.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
 

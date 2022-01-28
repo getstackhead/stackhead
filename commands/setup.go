@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
@@ -24,7 +25,7 @@ func basicSetup() {
 
 func folderSetup() error {
 	// Create StackHead root folder
-	if err := system.CreateFolder("ssh://" + config.RootDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.RootDirectory); err != nil {
 		return err
 	}
 	if err := xfs.Chown("ssh://"+config.RootDirectory, 1412, 1412); err != nil {
@@ -32,7 +33,7 @@ func folderSetup() error {
 	}
 
 	// Create certificates folder
-	if err := system.CreateFolder("ssh://" + config.CertificatesDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.CertificatesDirectory); err != nil {
 		return err
 	}
 	if err := xfs.Chown("ssh://"+config.CertificatesDirectory, 1412, 1412); err != nil {
@@ -109,7 +110,7 @@ func userSetup() error {
 
 	// Set includedir in sudoers
 	sudoersInclude := "\n#includedir /etc/sudoers.d\n"
-	if err := system.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
+	if err := xfs.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to append to sudoers file")
 	}
@@ -124,10 +125,10 @@ func userSetup() error {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to read local stackhead public SSH key")
 	}
-	if err := system.CreateFolder("ssh:///stackhead/.ssh"); err != nil {
+	if err := xfs.CreateFolder("ssh:///stackhead/.ssh"); err != nil {
 		return err
 	}
-	return system.WriteFile(
+	return xfs.WriteFile(
 		"ssh:///stackhead/.ssh/authorized_keys",
 		string(publicKeyBytes),
 	)
@@ -147,6 +148,11 @@ var SetupServer = &cobra.Command{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),
 			Run: func(r routines.RunningTask) error {
 				var err error
+
+				//deployedProjects, err := stackhead.GetDeployedProjects()
+				//if err != nil {
+				//	return err
+				//}
 
 				//- import_tasks: "../roles/stackhead_module_api/tasks_internal/load-all-modules-config.yml"
 				//
@@ -182,8 +188,6 @@ var SetupServer = &cobra.Command{
 					fmt.Println("\nUnable to write version. (" + err.Error() + ")")
 					os.Exit(1)
 				}
-
-				r.PrintLn("Setting up StackHead plugins.")
 
 				//- import_tasks: "../roles/stackhead_module_api/tasks_internal/setup.yml"
 
