@@ -5,21 +5,21 @@ import (
 	"path"
 
 	"github.com/blang/semver/v4"
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/system"
 )
 
 var currentVersion = "2.0.0"
 var remoteVersionFilePath = "ssh://" + path.Join(config.RootDirectory, "VERSION")
 
 func WriteVersion() error {
-	return system.WriteFile(remoteVersionFilePath, currentVersion)
+	return xfs.WriteFile(remoteVersionFilePath, currentVersion)
 }
 
 func ValidateVersion() (bool, error) {
-	remoteVersion, err := system.ReadFile(remoteVersionFilePath)
+	remoteVersion, err := xfs.ReadFile(remoteVersionFilePath)
 	if err != nil {
 		return false, err
 	}

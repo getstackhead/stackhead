@@ -19,6 +19,7 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/open2b/scriggo v0.52.2
 	github.com/pkg/sftp v1.13.4
+	github.com/saitho/golang-extended-fs v0.0.6
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519

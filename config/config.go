@@ -1,11 +1,11 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 
+	xfs "github.com/saitho/golang-extended-fs"
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/getstackhead/stackhead/pluginlib"
@@ -24,12 +24,12 @@ var GetPluginDir = func() (string, error) {
 func LoadProjectDefinition(filepath string) (*pluginlib.Project, error) {
 	p := &pluginlib.Project{}
 
-	yamlFile, err := ioutil.ReadFile(filepath)
+	yamlFile, err := xfs.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = yaml.Unmarshal(yamlFile, &p); err != nil {
+	if err = yaml.Unmarshal([]byte(yamlFile), &p); err != nil {
 		return nil, err
 	}
 

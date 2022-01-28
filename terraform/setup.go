@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"bytes"
+	xfs "github.com/saitho/golang-extended-fs"
 	"path"
 	"text/template"
 
@@ -17,7 +18,7 @@ import (
 var terraformProvidersFile = path.Join(config.RootTerraformDirectory, "terraform-providers.tf")
 
 func Setup() error {
-	if err := system.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
 		return err
 	}
 
@@ -70,7 +71,7 @@ func BuildAndWriteProviders(p []*plugins.Plugin) error {
 		return err
 	}
 	// Write file
-	if err := system.WriteFile("ssh://"+terraformProvidersFile, fileContents.String()); err != nil {
+	if err := xfs.WriteFile("ssh://"+terraformProvidersFile, fileContents.String()); err != nil {
 		return err
 	}
 
@@ -161,7 +162,7 @@ func buildProviders(providers []pluginlib.PluginTerraformConfigProvider) (bytes.
 
 func buildProvider(filePath string, data Data) (bytes.Buffer, error) {
 	var buf bytes.Buffer
-	fileContents, err := system.ReadFile(filePath)
+	fileContents, err := xfs.ReadFile(filePath)
 	if err != nil {
 		return buf, err
 	}
