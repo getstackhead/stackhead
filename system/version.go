@@ -1,4 +1,4 @@
-package stackhead
+package system
 
 import (
 	"fmt"
@@ -26,7 +26,13 @@ func ValidateVersion() (bool, error) {
 	logger.Infoln(fmt.Sprintf("StackHead version used for setup is %s - Current version: %s", remoteVersion, currentVersion))
 
 	v1, err := semver.Make(remoteVersion)
+	if err != nil {
+		return false, err
+	}
 	v2, err := semver.Make(currentVersion)
+	if err != nil {
+		return false, err
+	}
 
 	return v1.Major == v2.Major, nil
 }

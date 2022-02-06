@@ -2,16 +2,14 @@ package project
 
 import (
 	"fmt"
-	xfs "github.com/saitho/golang-extended-fs"
 
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/pluginlib"
-	"github.com/getstackhead/stackhead/plugins"
+	"github.com/getstackhead/stackhead/commands"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
-	"github.com/getstackhead/stackhead/stackhead"
 	"github.com/getstackhead/stackhead/system"
 	"github.com/getstackhead/stackhead/terraform"
 )
@@ -24,16 +22,16 @@ var DeployApplication = &cobra.Command{
 	Long:    `deploy will deploy the given project onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		projectDefinition, err := config.LoadProjectDefinition(args[0])
+		projectDefinition, err := project.LoadProjectDefinition(args[0])
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}
-		system.InitializeContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
+		commands.PrepareContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
 		_ = routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Deploying project \"%s\" onto server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {
 				// Validate StackHead version
-				isValid, err := stackhead.ValidateVersion()
+				isValid, err := system.ValidateVersion()
 				if err != nil {
 					logger.Debugln(err)
 					return fmt.Errorf("Unable to validate StackHead version.")
@@ -48,19 +46,12 @@ var DeployApplication = &cobra.Command{
 						var err error
 
 						r.PrintLn("Create project directory if not exists")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetDirectoryPath()); err != nil {
 							return err
 						}
 
-						r.PrintLn("Prepare certificates directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
-							return err
-						}
-						if err := xfs.CreateFolder("ssh://" + config.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
-							return err
-						}
 						r.PrintLn("Prepare Terraform directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
 
@@ -74,13 +65,8 @@ var DeployApplication = &cobra.Command{
 				if err := routines.RunTask(routines.Task{
 					Name: "Generating Terraform files",
 					Run: func(r routines.RunningTask) error {
-						p, err := plugins.LoadPlugins()
-						if err != nil {
-							return err
-						}
-
 						// Collect exposed services
-						var exposedServices []pluginlib.DomainExpose
+						var exposedServices []project.DomainExpose
 						for _, domain := range projectDefinition.Domains {
 							exposedServices = append(exposedServices, domain.Expose...)
 						}
@@ -90,12 +76,21 @@ var DeployApplication = &cobra.Command{
 							return fmt.Errorf("Unable to symlink Terraform providers")
 						}
 
-						for _, plugin := range p {
-							if plugin.DeployProgram != nil {
-								r.PrintLn("Running deploy step of plugin \"" + plugin.Name + "\"")
-								if err := plugin.DeployProgram.Run(nil); err != nil {
-									return err
-								}
+						r.PrintLn("Generate project-specific Terraform providers")
+						providers := terraform.CollectProvidersFromModules(system.Context.GetModulesInOrder())
+						fileContents, err := terraform.BuildProviders(providers, terraform.ONLY_PER_PROJECT)
+						if err != nil {
+							return fmt.Errorf("Unable to generate project-specific Terraform providers: " + err.Error())
+						}
+						if fileContents.Len() > 0 {
+							if err := xfs.WriteFile("ssh://"+projectDefinition.GetTerraformProjectProvidersFilePath(), fileContents.String()); err != nil {
+								return err
+							}
+						}
+
+						for _, module := range system.Context.GetModulesInOrder() {
+							if err := module.Deploy(); err != nil {
+								return err
 							}
 						}
 						return nil
@@ -108,10 +103,10 @@ var DeployApplication = &cobra.Command{
 				if err := routines.RunTask(routines.Task{
 					Name: "Applying Terraform plans",
 					Run: func(r routines.RunningTask) error {
-						if err := terraform.Init(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Init(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
-						if err := terraform.Apply(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Apply(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
 						return nil
@@ -122,11 +117,11 @@ var DeployApplication = &cobra.Command{
 
 				/**
 				- name: Create project specific crontab
-				  include_tasks: "../roles/config_terraform/tasks/setup_crontab.yml"
-				  when: ensure == 'present'
+					include_tasks: "../roles/config_terraform/tasks/setup_crontab.yml"
+					when: ensure == 'present'
 				- name: Remove project specific crontab
-				  include_tasks: "../roles/config_terraform/tasks/remove_crontab.yml"
-				  when: ensure == 'absent'
+					include_tasks: "../roles/config_terraform/tasks/remove_crontab.yml"
+					when: ensure == 'absent'
 				*/
 
 				return nil
