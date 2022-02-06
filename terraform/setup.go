@@ -2,16 +2,14 @@ package terraform
 
 import (
 	"bytes"
-	xfs "github.com/saitho/golang-extended-fs"
 	"path"
 	"text/template"
 
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/pluginlib"
-	"github.com/getstackhead/stackhead/plugins"
-	"github.com/getstackhead/stackhead/plugins/declarations"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
 )
 
@@ -22,16 +20,16 @@ func Setup() error {
 		return err
 	}
 
-	if _, _, err := declarations.StackHeadExecute("curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"); err != nil {
+	if _, _, err := system.RemoteRun("curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"); err != nil {
 		return err
 	}
-	if _, _, err := declarations.StackHeadExecute("sudo apt-add-repository \"deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main\""); err != nil {
+	if _, _, err := system.RemoteRun("sudo apt-add-repository \"deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main\""); err != nil {
 		return err
 	}
-	if err := declarations.InstallPackage([]pluginlib.Package{
+	if err := system.InstallPackage([]system.Package{
 		{
 			Name:   "terraform=1.0.9",
-			Vendor: pluginlib.PackageVendorApt,
+			Vendor: system.PackageVendorApt,
 		},
 	}); err != nil {
 		return err
@@ -47,7 +45,7 @@ func Setup() error {
 }
 
 type Data struct {
-	Providers []pluginlib.PluginTerraformConfigProvider
+	Providers []system.ModuleTerraformConfigProvider
 	Context   system.ContextStruct
 
 	AdditionalContent string
@@ -57,14 +55,15 @@ type Data struct {
 	SnakeoilPrivkeyPath   string
 }
 
-func BuildAndWriteProviders(p []*plugins.Plugin) error {
-	var providers []pluginlib.PluginTerraformConfigProvider
-	for _, plugin := range p {
-		emptyProvider := pluginlib.PluginTerraformConfigProvider{}
-		if plugin.Config.Terraform.Provider == emptyProvider {
+func BuildAndWriteProviders() error {
+	var providers []system.ModuleTerraformConfigProvider
+	emptyProvider := system.ModuleTerraformConfigProvider{}
+	for _, module := range system.Context.GetModulesInOrder() {
+		moduleCfg := module.GetConfig()
+		if moduleCfg.Terraform.Provider == emptyProvider {
 			continue
 		}
-		providers = append(providers, plugin.Config.Terraform.Provider)
+		providers = append(providers, moduleCfg.Terraform.Provider)
 	}
 	fileContents, err := buildProviders(providers)
 	if err != nil {
@@ -80,8 +79,8 @@ func BuildAndWriteProviders(p []*plugins.Plugin) error {
 	return nil
 }
 
-func SymlinkProviders(project *pluginlib.Project) error {
-	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(config.GetProjectTerraformDirectoryPath(project), "terraform-providers.tf"))
+func SymlinkProviders(project *project.Project) error {
+	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(project.GetTerraformDirectoryPath(), "terraform-providers.tf"))
 	if err != nil {
 		logger.Errorln(errMsg.String())
 	}
@@ -126,7 +125,7 @@ func getSnakeoilPaths() (string, string) {
 	return path.Join(config.CertificatesDirectory, "fullchain_snakeoil.pem"), path.Join(config.CertificatesDirectory, "privkey_snakeoil.pem")
 }
 
-func buildProviders(providers []pluginlib.PluginTerraformConfigProvider) (bytes.Buffer, error) {
+func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buffer, error) {
 	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
 	data := Data{
 		Providers:             providers,

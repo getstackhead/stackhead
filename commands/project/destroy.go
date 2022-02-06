@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/getstackhead/stackhead/config"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
 )
@@ -20,7 +20,7 @@ var DestroyApplication = &cobra.Command{
 	Long:    `destroy will tear down the given project that has been deployed onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		config, err := config.LoadProjectDefinition(args[0])
+		config, err := project.LoadProjectDefinition(args[0])
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}

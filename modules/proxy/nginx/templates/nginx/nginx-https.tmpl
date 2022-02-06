@@ -1,0 +1,39 @@
+{{define "listen_params"}}http2 {{if $.Options.NginxUseHttps}}ssl{{end}}{{end}}
+
+{{define "options"}}
+    gzip off;
+{{end}}
+
+{{ define "main_location" -}}
+        return 301 https://{{ .root.Domain.Domain }}$request_uri;
+{{- end}}
+
+{{define "location_file"}}
+        proxy_pass http://localhost:{~ docker_ports[{{ .root.PortIndex }}] ~};
+        proxy_http_version 1.1;
+        proxy_redirect off;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Host $host;
+        proxy_set_header Referer $http_referer;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+
+        add_header Strict-Transport-Security 'max-age=15552000; includeSubDomains' always;
+
+{{ if ge (dict_index_str $.root.Expose.ProxyWebsocketLocations $.path) 0 }}
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+{{- end}}
+{{end}}
+
+{{ define "sslcertificates" -}}
+{{ if $.Options.NginxUseHttps }}
+    ssl_certificate {{$.Paths.CertificatesProjectDirectory}}/fullchain.pem;
+    ssl_certificate_key {{$.Paths.CertificatesProjectDirectory}}/privkey.pem;
+    include /etc/nginx/h5bp/ssl/policy_intermediate.conf;
+    client_max_body_size 10G;
+{{ end }}
+{{- end }}

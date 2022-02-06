@@ -12,7 +12,6 @@ import (
 	"os"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/plugins"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/stackhead"
 	"github.com/getstackhead/stackhead/system"
@@ -201,13 +200,8 @@ var SetupServer = &cobra.Command{
 			Run: func(r routines.RunningTask) error {
 				var err error
 
-				p, err := plugins.LoadPlugins()
-				if err != nil {
-					return err
-				}
-
 				r.PrintLn("Installing Terraform providers for plugins.")
-				if err := terraform.BuildAndWriteProviders(p); err != nil {
+				if err := terraform.BuildAndWriteProviders(); err != nil {
 					return err
 				}
 
@@ -216,12 +210,9 @@ var SetupServer = &cobra.Command{
 					return err
 				}
 
-				for _, plugin := range p {
-					if plugin.SetupProgram != nil {
-						r.PrintLn("Setup StackHead plugin " + plugin.Name)
-						if err := plugin.SetupProgram.Run(nil); err != nil {
-							return err
-						}
+				for _, module := range system.Context.GetModulesInOrder() {
+					if err := module.Install(); err != nil {
+						return err
 					}
 				}
 

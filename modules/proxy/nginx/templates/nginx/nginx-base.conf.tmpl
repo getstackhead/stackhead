@@ -1,0 +1,35 @@
+{{define "listen_params"}}{{end}}
+{{define "options"}}{{end}}
+{{define "sslcertificates"}}{{end}}
+{{define "location"}}{{end}}
+{{define "main_location"}}{{end}}
+{{define "location_file"}}{{end}}
+
+{{define "authentication"}}
+{{ if and .root.Domain.Security.Authentication (getBasicAuths .root.Domain.Security.Authentication) -}}
+        # Authentication
+        auth_basic           "Restricted area";
+        auth_basic_user_file "/etc/nginx/passwd/.{{ .root.Domain.Domain }}";
+{{- end }}
+{{ end }}
+
+{{ define "base" }}
+server {
+    listen {{ $.Expose.ExternalPort }} {{ template "listen_params" $ }};
+    listen [::]:{{$.Expose.ExternalPort}} {{ template "listen_params" $ }};
+    server_name {{$.Domain.Domain}};
+
+    {{- template "options" $ -}}
+    {{- template "sslcertificates" $ -}}
+    {{- template "location" $ -}}
+
+    {{- $locations := (append $.Expose.ProxyWebsocketLocations "/") -}}
+    {{ range $key, $path := $locations }}
+    location {{ $path }} {
+        {{ template "location_file" (dict "root" $ "path" $path) }}
+        {{ template "main_location" (dict "root" $ "path" $path) }}
+        {{ template "authentication" (dict "root" $ "path" $path) }}
+    }
+    {{- end }}
+}
+{{ end }}

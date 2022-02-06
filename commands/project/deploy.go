@@ -7,9 +7,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/pluginlib"
-	"github.com/getstackhead/stackhead/plugins"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/stackhead"
 	"github.com/getstackhead/stackhead/system"
@@ -24,7 +22,7 @@ var DeployApplication = &cobra.Command{
 	Long:    `deploy will deploy the given project onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		projectDefinition, err := config.LoadProjectDefinition(args[0])
+		projectDefinition, err := project.LoadProjectDefinition(args[0])
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}
@@ -48,19 +46,19 @@ var DeployApplication = &cobra.Command{
 						var err error
 
 						r.PrintLn("Create project directory if not exists")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetDirectoryPath()); err != nil {
 							return err
 						}
 
 						r.PrintLn("Prepare certificates directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetCertificateDirectoryPath()); err != nil {
 							return err
 						}
-						if err := xfs.CreateFolder("ssh://" + config.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetCertificatesDirectory()); err != nil {
 							return err
 						}
 						r.PrintLn("Prepare Terraform directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
 
@@ -74,13 +72,8 @@ var DeployApplication = &cobra.Command{
 				if err := routines.RunTask(routines.Task{
 					Name: "Generating Terraform files",
 					Run: func(r routines.RunningTask) error {
-						p, err := plugins.LoadPlugins()
-						if err != nil {
-							return err
-						}
-
 						// Collect exposed services
-						var exposedServices []pluginlib.DomainExpose
+						var exposedServices []project.DomainExpose
 						for _, domain := range projectDefinition.Domains {
 							exposedServices = append(exposedServices, domain.Expose...)
 						}
@@ -90,14 +83,9 @@ var DeployApplication = &cobra.Command{
 							return fmt.Errorf("Unable to symlink Terraform providers")
 						}
 
-						for _, plugin := range p {
-							if plugin.DeployProgram != nil {
-								r.PrintLn("Running deploy step of plugin \"" + plugin.Name + "\"")
-								if err := plugin.DeployProgram.Run(nil); err != nil {
-									return err
-								}
-							}
-						}
+						//for _, module := range system.Context.GetModulesInOrder() {
+						//	//module.Deploy()
+						//}
 						return nil
 					},
 				}); err != nil {
@@ -108,10 +96,10 @@ var DeployApplication = &cobra.Command{
 				if err := routines.RunTask(routines.Task{
 					Name: "Applying Terraform plans",
 					Run: func(r routines.RunningTask) error {
-						if err := terraform.Init(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Init(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
-						if err := terraform.Apply(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Apply(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
 							return err
 						}
 						return nil

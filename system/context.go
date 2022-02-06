@@ -8,7 +8,7 @@ import (
 	"github.com/saitho/golang-extended-fs/sftp"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/pluginlib"
+	"github.com/getstackhead/stackhead/project"
 )
 
 var ContextActionProjectDeploy = "project.deploy"
@@ -30,9 +30,15 @@ func (c ContextAuthenticationStruct) GetPublicKeyPath() string {
 type ContextStruct struct {
 	TargetHost     net.IP
 	CurrentAction  string
-	Project        *pluginlib.Project
+	Project        *project.Project
 	IsCI           bool
 	Authentication ContextAuthenticationStruct
+
+	ProxyModule Module
+}
+
+func (c ContextStruct) GetModulesInOrder() []Module {
+	return []Module{c.ProxyModule}
 }
 
 var Context = ContextStruct{}
@@ -41,7 +47,7 @@ var Context = ContextStruct{}
 //    host = IP address string
 //    action = any of ContextAction* constants
 //    projectDefinition = project definition object
-func InitializeContext(host string, action string, projectDefinition *pluginlib.Project) {
+func InitializeContext(host string, action string, projectDefinition *project.Project) {
 	Context.TargetHost = net.ParseIP(host)
 	Context.CurrentAction = action
 	Context.Project = projectDefinition
@@ -57,4 +63,8 @@ func InitializeContext(host string, action string, projectDefinition *pluginlib.
 		sftp.Config.LoadLocalSigners = false
 		sftp.Config.SshIdentity = Context.Authentication.GetPrivateKeyPath()
 	}
+}
+
+func ContextSetProxyModule(proxyModule Module) {
+	Context.ProxyModule = proxyModule
 }
