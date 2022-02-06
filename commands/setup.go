@@ -12,9 +12,7 @@ import (
 	"os"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/plugins"
 	"github.com/getstackhead/stackhead/routines"
-	"github.com/getstackhead/stackhead/stackhead"
 	"github.com/getstackhead/stackhead/system"
 	"github.com/getstackhead/stackhead/terraform"
 )
@@ -29,14 +27,6 @@ func folderSetup() error {
 		return err
 	}
 	if err := xfs.Chown("ssh://"+config.RootDirectory, 1412, 1412); err != nil {
-		return err
-	}
-
-	// Create certificates folder
-	if err := xfs.CreateFolder("ssh://" + config.CertificatesDirectory); err != nil {
-		return err
-	}
-	if err := xfs.Chown("ssh://"+config.CertificatesDirectory, 1412, 1412); err != nil {
 		return err
 	}
 	return nil
@@ -114,6 +104,11 @@ func userSetup() error {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to append to sudoers file")
 	}
+	// Create empty sudoers file for additional permissions of stackhead user
+	if err := xfs.WriteFile("ssh:///etc/sudoers.d/stackhead", ""); err != nil {
+		return fmt.Errorf("unable to create empty stackhead sudoers file")
+	}
+
 	// Validate sudoers file
 	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
@@ -142,7 +137,7 @@ var SetupServer = &cobra.Command{
 	Long:    `setup will install all required software on a server. You are then able to deploy projects onto it.`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		system.InitializeContext(args[0], system.ContextActionServerSetup, nil)
+		PrepareContext(args[0], system.ContextActionServerSetup, nil)
 
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),
@@ -184,7 +179,7 @@ var SetupServer = &cobra.Command{
 					os.Exit(1)
 				}
 
-				if err := stackhead.WriteVersion(); err != nil {
+				if err := system.WriteVersion(); err != nil {
 					fmt.Println("\nUnable to write version. (" + err.Error() + ")")
 					os.Exit(1)
 				}
@@ -201,13 +196,8 @@ var SetupServer = &cobra.Command{
 			Run: func(r routines.RunningTask) error {
 				var err error
 
-				p, err := plugins.LoadPlugins()
-				if err != nil {
-					return err
-				}
-
 				r.PrintLn("Installing Terraform providers for plugins.")
-				if err := terraform.BuildAndWriteProviders(p); err != nil {
+				if err := terraform.BuildAndWriteProviders(); err != nil {
 					return err
 				}
 
@@ -216,12 +206,9 @@ var SetupServer = &cobra.Command{
 					return err
 				}
 
-				for _, plugin := range p {
-					if plugin.SetupProgram != nil {
-						r.PrintLn("Setup StackHead plugin " + plugin.Name)
-						if err := plugin.SetupProgram.Run(nil); err != nil {
-							return err
-						}
+				for _, module := range system.Context.GetModulesInOrder() {
+					if err := module.Install(); err != nil {
+						return err
 					}
 				}
 

@@ -2,16 +2,16 @@ package terraform
 
 import (
 	"bytes"
-	xfs "github.com/saitho/golang-extended-fs"
+	"fmt"
 	"path"
 	"text/template"
 
+	"github.com/google/go-cmp/cmp"
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"
-	"github.com/getstackhead/stackhead/pluginlib"
-	"github.com/getstackhead/stackhead/plugins"
-	"github.com/getstackhead/stackhead/plugins/declarations"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
 )
 
@@ -21,17 +21,20 @@ func Setup() error {
 	if err := xfs.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
 		return err
 	}
+	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
+		return err
+	}
 
-	if _, _, err := declarations.StackHeadExecute("curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"); err != nil {
+	if _, _, err := system.RemoteRun("curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"); err != nil {
 		return err
 	}
-	if _, _, err := declarations.StackHeadExecute("sudo apt-add-repository \"deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main\""); err != nil {
+	if _, _, err := system.RemoteRun("sudo apt-add-repository \"deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main\""); err != nil {
 		return err
 	}
-	if err := declarations.InstallPackage([]pluginlib.Package{
+	if err := system.InstallPackage([]system.Package{
 		{
 			Name:   "terraform=1.0.9",
-			Vendor: pluginlib.PackageVendorApt,
+			Vendor: system.PackageVendorApt,
 		},
 	}); err != nil {
 		return err
@@ -47,26 +50,28 @@ func Setup() error {
 }
 
 type Data struct {
-	Providers []pluginlib.PluginTerraformConfigProvider
+	Providers []system.ModuleTerraformConfigProvider
 	Context   system.ContextStruct
 
 	AdditionalContent string
-
-	// SSL certificate information
-	SnakeoilFullchainPath string
-	SnakeoilPrivkeyPath   string
 }
 
-func BuildAndWriteProviders(p []*plugins.Plugin) error {
-	var providers []pluginlib.PluginTerraformConfigProvider
-	for _, plugin := range p {
-		emptyProvider := pluginlib.PluginTerraformConfigProvider{}
-		if plugin.Config.Terraform.Provider == emptyProvider {
+func CollectProvidersFromModules(modules []system.Module) []system.ModuleTerraformConfigProvider {
+	var providers []system.ModuleTerraformConfigProvider
+	emptyProvider := system.ModuleTerraformConfigProvider{}
+	for _, module := range modules {
+		moduleCfg := module.GetConfig()
+		if cmp.Equal(moduleCfg.Terraform.Provider, emptyProvider) {
 			continue
 		}
-		providers = append(providers, plugin.Config.Terraform.Provider)
+		providers = append(providers, moduleCfg.Terraform.Provider)
 	}
-	fileContents, err := buildProviders(providers)
+	return providers
+}
+
+func BuildAndWriteProviders() error {
+	providers := CollectProvidersFromModules(system.Context.GetModulesInOrder())
+	fileContents, err := BuildProviders(providers, NO_PER_PROJECT)
 	if err != nil {
 		return err
 	}
@@ -80,8 +85,8 @@ func BuildAndWriteProviders(p []*plugins.Plugin) error {
 	return nil
 }
 
-func SymlinkProviders(project *pluginlib.Project) error {
-	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(config.GetProjectTerraformDirectoryPath(project), "terraform-providers.tf"))
+func SymlinkProviders(project *project.Project) error {
+	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(project.GetTerraformDirectoryPath(), "terraform-providers.tf"))
 	if err != nil {
 		logger.Errorln(errMsg.String())
 	}
@@ -89,14 +94,16 @@ func SymlinkProviders(project *pluginlib.Project) error {
 }
 
 func Init(directory string) error {
-	if _, _, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("init") + ")"); err != nil {
+	if _, outErr, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("init") + ")"); err != nil {
+		logger.Errorln(outErr.String())
 		return err
 	}
 	return nil
 }
 
 func Apply(directory string) error {
-	if _, _, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("apply -auto-approve") + ")"); err != nil {
+	if _, outErr, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("apply -auto-approve") + ")"); err != nil {
+		logger.Errorln(outErr.String())
 		return err
 	}
 	return nil
@@ -109,44 +116,39 @@ func InstallProviders() error {
 	if err := Apply(config.RootTerraformDirectory); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
+	// full access to stackhead user to Terraform folder
+	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", path.Join(config.RootTerraformDirectory)); err != nil {
 		return err
 	}
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
-	if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
-		return err
-	}
-	if err := xfs.Chown("ssh://"+SnakeoilPrivkeyPath, 1412, 1412); err != nil {
+	// keep root permissions on base file terraform-providers.tf
+	if _, _, err := system.RemoteRun("chown", "-R", "root:root", path.Join(config.RootTerraformDirectory, "terraform-providers.tf")); err != nil {
 		return err
 	}
 	return nil
 }
 
-func getSnakeoilPaths() (string, string) {
-	return path.Join(config.CertificatesDirectory, "fullchain_snakeoil.pem"), path.Join(config.CertificatesDirectory, "privkey_snakeoil.pem")
-}
+type BuildProviderMode int
 
-func buildProviders(providers []pluginlib.PluginTerraformConfigProvider) (bytes.Buffer, error) {
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
+var ONLY_PER_PROJECT BuildProviderMode = 1
+var NO_PER_PROJECT BuildProviderMode = 2
+
+func BuildProviders(providers []system.ModuleTerraformConfigProvider, mode BuildProviderMode) (bytes.Buffer, error) {
 	data := Data{
-		Providers:             providers,
-		Context:               system.Context,
-		SnakeoilFullchainPath: SnakeoilFullchainPath,
-		SnakeoilPrivkeyPath:   SnakeoilPrivkeyPath,
-		AdditionalContent:     "",
+		Providers:         providers,
+		Context:           system.Context,
+		AdditionalContent: "",
 	}
 
 	// Additional provider configuration from plugins
 	var suffix string
 	for _, provider := range providers {
-		if provider.ProviderPerProject {
+		if (mode == ONLY_PER_PROJECT && !provider.ProviderPerProject) || (mode == NO_PER_PROJECT && provider.ProviderPerProject) {
 			continue
 		}
 		if provider.Init != "" {
-			// todo: load template from .Init
-			providerInitContent, err := buildProvider(provider.Init, data)
+			providerInitContent, err := buildProvider("pkging:///templates/modules/"+provider.Init, data, provider.InitFuncMap)
 			if err != nil {
-				return bytes.Buffer{}, err
+				return bytes.Buffer{}, fmt.Errorf("Unable to load module init file \"" + provider.Init + "\": " + err.Error())
 			}
 			data.AdditionalContent += "\n" + providerInitContent.String() + "\n"
 		} else {
@@ -157,16 +159,28 @@ func buildProviders(providers []pluginlib.PluginTerraformConfigProvider) (bytes.
 			data.AdditionalContent += "\nprovider \"" + provider.Name + suffix + "\" {\n}\n"
 		}
 	}
-	return buildProvider("pkging:///templates/terraform-providers.tf.tmpl", data)
+	if mode == ONLY_PER_PROJECT {
+		returnBuf := bytes.Buffer{}
+		returnBuf.WriteString(data.AdditionalContent)
+		return returnBuf, nil
+	}
+	return buildProvider("pkging:///templates/terraform-providers.tf.tmpl", data, nil)
 }
 
-func buildProvider(filePath string, data Data) (bytes.Buffer, error) {
+func buildProvider(filePath string, data Data, funcMap template.FuncMap) (bytes.Buffer, error) {
 	var buf bytes.Buffer
 	fileContents, err := xfs.ReadFile(filePath)
 	if err != nil {
 		return buf, err
 	}
-	tmpl, err := template.New("providers").Parse(fileContents)
+
+	baseTmpl := template.New("providers")
+
+	if funcMap != nil {
+		baseTmpl.Funcs(funcMap)
+	}
+
+	tmpl, err := baseTmpl.Parse(fileContents)
 	if err != nil {
 		return buf, err
 	}
