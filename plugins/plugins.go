@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 	"path"
@@ -10,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/open2b/scriggo"
+	logger "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/pluginlib"
@@ -70,15 +71,25 @@ func LoadPlugin(pluginPath string) (*Plugin, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Plugin{
-		Name:           path.Base(pluginPath),
-		Path:           pluginPath,
-		Config:         pluginCfg,
-		InitProgram:    getProgram(pluginPath, "init"),
-		DeployProgram:  getProgram(pluginPath, "deploy"),
-		SetupProgram:   getProgram(pluginPath, "setup"),
-		DestroyProgram: getProgram(pluginPath, "destroy"),
-	}, nil
+	plugin := &Plugin{
+		Name:   path.Base(pluginPath),
+		Path:   pluginPath,
+		Config: pluginCfg,
+	}
+
+	if plugin.InitProgram, err = getProgram(pluginPath, "init"); err != nil {
+		return nil, fmt.Errorf("Plugin Error (" + pluginPath + " - init: " + err.Error())
+	}
+	if plugin.DeployProgram, err = getProgram(pluginPath, "deploy"); err != nil {
+		return nil, fmt.Errorf("Plugin Error (" + pluginPath + " - deploy: " + err.Error())
+	}
+	if plugin.SetupProgram, err = getProgram(pluginPath, "setup"); err != nil {
+		return nil, fmt.Errorf("Plugin Error (" + pluginPath + " - setup: " + err.Error())
+	}
+	if plugin.DestroyProgram, err = getProgram(pluginPath, "destroy"); err != nil {
+		return nil, fmt.Errorf("Plugin Error (" + pluginPath + " - destroy: " + err.Error())
+	}
+	return plugin, nil
 }
 
 func loadPluginConfig(pluginPath string) (*pluginlib.PluginConfig, error) {
@@ -105,10 +116,10 @@ func loadPluginConfig(pluginPath string) (*pluginlib.PluginConfig, error) {
 	return p, nil
 }
 
-func getProgram(path string, fileName string) *scriggo.Program {
+func getProgram(path string, fileName string) (*scriggo.Program, error) {
 	src, err := os.ReadFile(path + "/" + fileName + ".go")
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	// Adapt method name to main()
@@ -127,8 +138,8 @@ func getProgram(path string, fileName string) *scriggo.Program {
 	opts := &scriggo.BuildOptions{Packages: getPackages()}
 	program, err := scriggo.Build(fsys, opts)
 	if err != nil {
-		fmt.Println("Unable to execute StackHead plugin (" + path + "): " + err.Error())
-		return nil
+		logger.Error(err)
+		return nil, err
 	}
-	return program
+	return program, err
 }

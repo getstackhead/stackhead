@@ -220,8 +220,7 @@ var SetupServer = &cobra.Command{
 					if plugin.SetupProgram != nil {
 						r.PrintLn("Setup StackHead plugin " + plugin.Name)
 						if err := plugin.SetupProgram.Run(nil); err != nil {
-							fmt.Println(err)
-							os.Exit(1)
+							return err
 						}
 					}
 				}
