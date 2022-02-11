@@ -12,7 +12,7 @@ import (
 )
 
 var currentVersion = "2.0.0"
-var remoteVersionFilePath = "ssh://" + path.Join(config.RootDirectory, "VERSION")
+var remoteVersionFilePath = "ssh://" + path.Join(config.Paths.Root, "VERSION")
 
 func WriteVersion() error {
 	return xfs.WriteFile(remoteVersionFilePath, currentVersion)

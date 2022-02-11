@@ -7,5 +7,5 @@ import (
 )
 
 func GetCommand(command string) string {
-	return "TF_DATA_DIR=" + path.Join(config.RootTerraformDirectory, ".terraform") + " terraform " + command
+	return "TF_DATA_DIR=" + path.Join(config.Paths.RootTerraform, ".terraform") + " terraform " + command
 }

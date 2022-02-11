@@ -17,9 +17,9 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/getstackhead/stackhead/pluginlib v0.0.0-ad306be27c51b06bdb5d8d87df8d4f882ca96714
 	github.com/go-git/go-git/v5 v5.4.2
-	github.com/open2b/scriggo v0.52.2
 	github.com/pkg/sftp v1.13.4
-	github.com/saitho/golang-extended-fs v0.0.6
+	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
+	github.com/saitho/golang-extended-fs v0.0.7
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
@@ -69,6 +69,7 @@ require (
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
+	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

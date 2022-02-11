@@ -15,10 +15,10 @@ import (
 	"github.com/getstackhead/stackhead/system"
 )
 
-var terraformProvidersFile = path.Join(config.RootTerraformDirectory, "terraform-providers.tf")
+var terraformProvidersFile = path.Join(config.Paths.RootTerraform, "terraform-providers.tf")
 
 func Setup() error {
-	if err := xfs.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.Paths.RootTerraform); err != nil {
 		return err
 	}
 
@@ -31,7 +31,7 @@ func Setup() error {
 	if err := declarations.InstallPackage([]pluginlib.Package{
 		{
 			Name:   "terraform=1.0.9",
-			Vendor: pluginlib.PackageVendorApt,
+			Vendor: "apt",
 		},
 	}); err != nil {
 		return err
@@ -81,7 +81,7 @@ func BuildAndWriteProviders(p []*plugins.Plugin) error {
 }
 
 func SymlinkProviders(project *pluginlib.Project) error {
-	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(config.GetProjectTerraformDirectoryPath(project), "terraform-providers.tf"))
+	_, errMsg, err := system.RemoteRun("ln", "-sf "+terraformProvidersFile+" "+path.Join(config.Paths.GetProjectTerraformDirectoryPath(project), "terraform-providers.tf"))
 	if err != nil {
 		logger.Errorln(errMsg.String())
 	}
@@ -103,16 +103,17 @@ func Apply(directory string) error {
 }
 
 func InstallProviders() error {
-	if err := Init(config.RootTerraformDirectory); err != nil {
+	if err := Init(config.Paths.RootTerraform); err != nil {
 		return err
 	}
-	if err := Apply(config.RootTerraformDirectory); err != nil {
+	if err := Apply(config.Paths.RootTerraform); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
+	if err := xfs.Chown("ssh://"+config.Paths.RootTerraform, 1412, 1412); err != nil {
 		return err
 	}
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
+	SnakeoilFullchainPath := config.Paths.GetSnakeoilFullchainPath()
+	SnakeoilPrivkeyPath := config.Paths.GetSnakeoilPrivKeyPath()
 	if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
 		return err
 	}
@@ -122,17 +123,12 @@ func InstallProviders() error {
 	return nil
 }
 
-func getSnakeoilPaths() (string, string) {
-	return path.Join(config.CertificatesDirectory, "fullchain_snakeoil.pem"), path.Join(config.CertificatesDirectory, "privkey_snakeoil.pem")
-}
-
 func buildProviders(providers []pluginlib.PluginTerraformConfigProvider) (bytes.Buffer, error) {
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
 	data := Data{
 		Providers:             providers,
 		Context:               system.Context,
-		SnakeoilFullchainPath: SnakeoilFullchainPath,
-		SnakeoilPrivkeyPath:   SnakeoilPrivkeyPath,
+		SnakeoilFullchainPath: config.Paths.GetSnakeoilFullchainPath(),
+		SnakeoilPrivkeyPath:   config.Paths.GetSnakeoilPrivKeyPath(),
 		AdditionalContent:     "",
 	}
 

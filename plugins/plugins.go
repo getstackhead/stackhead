@@ -2,14 +2,13 @@ package plugins
 
 import (
 	"fmt"
+	"github.com/getstackhead/stackhead/system"
 	"io/ioutil"
 	"os"
 	"path"
-	"regexp"
 	"strings"
 
-	"github.com/open2b/scriggo"
-	logger "github.com/sirupsen/logrus"
+	"github.com/robertkrimen/otto"
 	"gopkg.in/yaml.v3"
 
 	"github.com/getstackhead/stackhead/config"
@@ -17,14 +16,29 @@ import (
 	"github.com/getstackhead/stackhead/stackhead"
 )
 
+type PluginProgram struct {
+	OriginalPath string
+	Source       string
+}
+
+func (p PluginProgram) Run() error {
+	vm := otto.New()
+	vm.Set("Stackhead", StackheadPluginFuncs)
+	vm.Set("Project", system.Context.Project)
+	vm.Set("__dirname", path.Dir(p.OriginalPath))
+	vm.Set("__filename", p.OriginalPath)
+	_, err := vm.Run(p.Source)
+	return err
+}
+
 type Plugin struct {
 	Name           string
 	Path           string
 	Config         *pluginlib.PluginConfig
-	InitProgram    *scriggo.Program
-	SetupProgram   *scriggo.Program
-	DeployProgram  *scriggo.Program
-	DestroyProgram *scriggo.Program
+	InitProgram    *PluginProgram
+	SetupProgram   *PluginProgram
+	DeployProgram  *PluginProgram
+	DestroyProgram *PluginProgram
 }
 
 func SplitPluginPath(modulePath string) (string, string) {
@@ -116,30 +130,16 @@ func loadPluginConfig(pluginPath string) (*pluginlib.PluginConfig, error) {
 	return p, nil
 }
 
-func getProgram(path string, fileName string) (*scriggo.Program, error) {
-	src, err := os.ReadFile(path + "/" + fileName + ".go")
+func getProgram(path string, fileName string) (*PluginProgram, error) {
+	fullPath := path + "/" + fileName + ".js"
+	src, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
 	}
 
-	// Adapt method name to main()
-	var re = regexp.MustCompile(`(?m)^func\s+` + regexp.QuoteMeta(fileName) + `\s*\(\s*\)\s+{$`)
-	var count = 1 // negative counter is equivalent to global case (replace all)
-	src = []byte(re.ReplaceAllStringFunc(string(src), func(s string) string {
-		if count == 0 {
-			return s
-		}
-
-		count -= 1
-		return re.ReplaceAllString(s, "func main() {")
-	}))
-
-	fsys := scriggo.Files{"main.go": src}
-	opts := &scriggo.BuildOptions{Packages: getPackages()}
-	program, err := scriggo.Build(fsys, opts)
-	if err != nil {
-		logger.Error(err)
-		return nil, err
+	program := &PluginProgram{
+		OriginalPath: fullPath,
+		Source:       string(src),
 	}
 	return program, err
 }

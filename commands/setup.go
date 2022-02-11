@@ -4,6 +4,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/getstackhead/stackhead/stackhead"
+	"github.com/getstackhead/stackhead/terraform"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -14,9 +16,7 @@ import (
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/plugins"
 	"github.com/getstackhead/stackhead/routines"
-	"github.com/getstackhead/stackhead/stackhead"
 	"github.com/getstackhead/stackhead/system"
-	"github.com/getstackhead/stackhead/terraform"
 )
 
 func basicSetup() {
@@ -25,18 +25,18 @@ func basicSetup() {
 
 func folderSetup() error {
 	// Create StackHead root folder
-	if err := xfs.CreateFolder("ssh://" + config.RootDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.Paths.Root); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+config.RootDirectory, 1412, 1412); err != nil {
+	if err := xfs.Chown("ssh://"+config.Paths.Root, 1412, 1412); err != nil {
 		return err
 	}
 
 	// Create certificates folder
-	if err := xfs.CreateFolder("ssh://" + config.CertificatesDirectory); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.Paths.Certificates); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+config.CertificatesDirectory, 1412, 1412); err != nil {
+	if err := xfs.Chown("ssh://"+config.Paths.Certificates, 1412, 1412); err != nil {
 		return err
 	}
 	return nil
@@ -219,7 +219,7 @@ var SetupServer = &cobra.Command{
 				for _, plugin := range p {
 					if plugin.SetupProgram != nil {
 						r.PrintLn("Setup StackHead plugin " + plugin.Name)
-						if err := plugin.SetupProgram.Run(nil); err != nil {
+						if err := plugin.SetupProgram.Run(); err != nil {
 							return err
 						}
 					}

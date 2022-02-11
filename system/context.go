@@ -1,6 +1,7 @@
 package system
 
 import (
+	logger "github.com/sirupsen/logrus"
 	"net"
 	"os"
 	"path"
@@ -37,6 +38,17 @@ type ContextStruct struct {
 
 var Context = ContextStruct{}
 
+type XfsLogger struct {
+}
+
+func (l XfsLogger) Debug(obj interface{}) {
+	logger.Debug(obj)
+}
+
+func (l XfsLogger) Error(obj interface{}) {
+	logger.Error(obj)
+}
+
 // InitializeContext will set the context object for the current host, action and project
 //    host = IP address string
 //    action = any of ContextAction* constants
@@ -50,6 +62,7 @@ func InitializeContext(host string, action string, projectDefinition *pluginlib.
 		LocalAuthenticationDir: config.GetLocalRemoteKeyDir(Context.TargetHost),
 	}
 
+	sftp.Config.Logger = XfsLogger{}
 	sftp.Config.SshHost = host
 	if action != ContextActionServerSetup {
 		// only use private key specifically created during server setup

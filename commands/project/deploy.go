@@ -3,7 +3,6 @@ package project
 import (
 	"fmt"
 	xfs "github.com/saitho/golang-extended-fs"
-
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
@@ -48,19 +47,19 @@ var DeployApplication = &cobra.Command{
 						var err error
 
 						r.PrintLn("Create project directory if not exists")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.Paths.GetProjectDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
 
 						r.PrintLn("Prepare certificates directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.Paths.GetProjectCertificateDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
-						if err := xfs.CreateFolder("ssh://" + config.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.Paths.GetCertificatesDirectoryForProject(projectDefinition)); err != nil {
 							return err
 						}
 						r.PrintLn("Prepare Terraform directory")
-						if err := xfs.CreateFolder("ssh://" + config.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
+						if err := xfs.CreateFolder("ssh://" + config.Paths.GetProjectTerraformDirectoryPath(projectDefinition)); err != nil {
 							return err
 						}
 
@@ -93,7 +92,7 @@ var DeployApplication = &cobra.Command{
 						for _, plugin := range p {
 							if plugin.DeployProgram != nil {
 								r.PrintLn("Running deploy step of plugin \"" + plugin.Name + "\"")
-								if err := plugin.DeployProgram.Run(nil); err != nil {
+								if err := plugin.DeployProgram.Run(); err != nil {
 									return err
 								}
 							}
@@ -108,10 +107,10 @@ var DeployApplication = &cobra.Command{
 				if err := routines.RunTask(routines.Task{
 					Name: "Applying Terraform plans",
 					Run: func(r routines.RunningTask) error {
-						if err := terraform.Init(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Init(config.Paths.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
 							return err
 						}
-						if err := terraform.Apply(config.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
+						if err := terraform.Apply(config.Paths.GetProjectTerraformDirectoryPath(system.Context.Project)); err != nil {
 							return err
 						}
 						return nil
