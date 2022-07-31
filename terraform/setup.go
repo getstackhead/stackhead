@@ -88,14 +88,16 @@ func SymlinkProviders(project *project.Project) error {
 }
 
 func Init(directory string) error {
-	if _, _, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("init") + ")"); err != nil {
+	if _, outErr, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("init") + ")"); err != nil {
+		logger.Errorln(outErr.String())
 		return err
 	}
 	return nil
 }
 
 func Apply(directory string) error {
-	if _, _, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("apply -auto-approve") + ")"); err != nil {
+	if _, outErr, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("apply -auto-approve") + ")"); err != nil {
+		logger.Errorln(outErr.String())
 		return err
 	}
 	return nil
@@ -111,7 +113,7 @@ func InstallProviders() error {
 	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
 		return err
 	}
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
+	SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
 	if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
 		return err
 	}
@@ -121,12 +123,8 @@ func InstallProviders() error {
 	return nil
 }
 
-func getSnakeoilPaths() (string, string) {
-	return path.Join(config.CertificatesDirectory, "fullchain_snakeoil.pem"), path.Join(config.CertificatesDirectory, "privkey_snakeoil.pem")
-}
-
 func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buffer, error) {
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := getSnakeoilPaths()
+	SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
 	data := Data{
 		Providers:             providers,
 		Context:               system.Context,
