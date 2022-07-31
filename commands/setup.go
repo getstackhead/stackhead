@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	container_docker "github.com/getstackhead/stackhead/modules/container/docker"
 	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
@@ -149,6 +150,7 @@ var SetupServer = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		system.InitializeContext(args[0], system.ContextActionServerSetup, nil)
 		system.ContextSetProxyModule(proxy_nginx.NginxProxyModule{})
+		system.ContextSetContainerModule(container_docker.DockerContainerModule{})
 
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),

@@ -34,11 +34,12 @@ type ContextStruct struct {
 	IsCI           bool
 	Authentication ContextAuthenticationStruct
 
-	ProxyModule Module
+	ProxyModule     Module
+	ContainerModule Module
 }
 
 func (c ContextStruct) GetModulesInOrder() []Module {
-	return []Module{c.ProxyModule}
+	return []Module{c.ContainerModule, c.ProxyModule}
 }
 
 var Context = ContextStruct{}
@@ -67,4 +68,8 @@ func InitializeContext(host string, action string, projectDefinition *project.Pr
 
 func ContextSetProxyModule(proxyModule Module) {
 	Context.ProxyModule = proxyModule
+}
+
+func ContextSetContainerModule(containerModule Module) {
+	Context.ContainerModule = containerModule
 }

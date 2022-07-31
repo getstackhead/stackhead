@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -35,6 +36,22 @@ func getRemoteUser() string {
 		return "root"
 	}
 	return "stackhead"
+}
+
+func ResolveRemoteUserIntoUid(username string) (int, error) {
+	output, _, err := RemoteRun("id", "-u "+username)
+	if err != nil {
+		return -1, err
+	}
+	return strconv.Atoi(fmt.Sprintf("%d", output))
+}
+
+func ResolveRemoteGroupIntoGid(groupname string) (int, error) {
+	output, _, err := RemoteRun("cut", "-d: -f3 < <(getent group "+groupname+")")
+	if err != nil {
+		return -1, err
+	}
+	return strconv.Atoi(fmt.Sprintf("%d", output))
 }
 
 func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {

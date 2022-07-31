@@ -141,7 +141,7 @@ func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buf
 		}
 		if provider.Init != "" {
 			// todo: load template from .Init
-			providerInitContent, err := buildProvider(provider.Init, data)
+			providerInitContent, err := buildProvider("pkging:///templates/modules/"+provider.Init, data)
 			if err != nil {
 				return bytes.Buffer{}, err
 			}

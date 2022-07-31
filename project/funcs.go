@@ -14,6 +14,10 @@ func (project *Project) GetCertificateDirectoryPath() string {
 	return path.Join(config.ProjectsRootDirectory, project.Name, "certificates")
 }
 
+func (project *Project) GetRuntimeDataDirectoryPath() string {
+	return path.Join(config.ProjectsRootDirectory, project.Name, "runtime")
+}
+
 func (project *Project) GetTerraformDirectoryPath() string {
 	return path.Join(config.ProjectsRootDirectory, project.Name, "terraform")
 }

@@ -58,4 +58,5 @@ type ContainerServiceVolume struct {
 	Type string
 	Src  string
 	Dest string
+	User string
 }
