@@ -2,13 +2,15 @@ package proxy_nginx
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"os"
+	"github.com/Masterminds/sprig/v3"
 	"strings"
 	"text/template"
 
+	xfs "github.com/saitho/golang-extended-fs"
+
 	"github.com/getstackhead/stackhead/config"
+	"github.com/getstackhead/stackhead/modules/proxy"
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
 )
@@ -18,6 +20,7 @@ type Data struct {
 	AllPortsTfString    string
 	ServerConfig        string
 	DependentContainers string
+	Paths               Paths
 }
 
 type Data2 struct {
@@ -35,38 +38,32 @@ type Paths struct {
 	CertificatesProjectDirectory string
 	RootTerraformDirectory       string
 	ProjectsRootDirectory        string
+	SnakeoilFullchainPath        string
+	SnakeoilPrivkeyPath          string
 }
 
 type Options struct {
 	NginxUseHttps bool
 }
 
-type PortService struct {
-	Expose                project.DomainExpose
-	ContainerResourceName string
-	Index                 int
-}
-
-func (p PortService) getTfString() string {
-	return "${" + p.ContainerResourceName + ".ports[" + string(rune(p.Index)) + "].external}"
-}
-
-func buildSingleServerConfig(templateName string, portIndex int, expose project.DomainExpose, domain project.Domains) string {
-	var files = []string{"./templates/nginx/nginx-base.conf.tmpl"}
-	files = append(files, "./templates/nginx/nginx-"+templateName+".tmpl")
-
-	paths := Paths{
+func getPaths() Paths {
+	SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
+	return Paths{
 		RootDirectory:                config.RootDirectory,
 		CertificatesDirectory:        config.CertificatesDirectory,
 		CertificatesProjectDirectory: system.Context.Project.GetCertificateDirectoryPath(),
 		RootTerraformDirectory:       config.RootTerraformDirectory,
 		ProjectsRootDirectory:        config.ProjectsRootDirectory,
+		SnakeoilFullchainPath:        SnakeoilFullchainPath,
+		SnakeoilPrivkeyPath:          SnakeoilPrivkeyPath,
 	}
+}
+
+func buildSingleServerConfig(templateName string, portIndex int, expose project.DomainExpose, domain project.Domains) string {
+	var files = []string{"pkging:///templates/modules/proxy/nginx/nginx/nginx-base.conf.tmpl"}
+	files = append(files, "pkging:///templates/modules/proxy/nginx/nginx/nginx-"+templateName+".tmpl")
 
 	var funcMap = template.FuncMap{
-		"append": func(list []string, str string) []string {
-			return append(list, str)
-		},
 		"dict_index_str": func(list []string, str string) int {
 			for i, item := range list {
 				if item == str {
@@ -75,56 +72,20 @@ func buildSingleServerConfig(templateName string, portIndex int, expose project.
 			}
 			return -1
 		},
-		"dict": func(values ...interface{}) (map[string]interface{}, error) {
-			if len(values)%2 != 0 {
-				return nil, errors.New("invalid dictionary call")
-			}
-
-			root := make(map[string]interface{})
-
-			for i := 0; i < len(values); i += 2 {
-				dict := root
-				var key string
-				switch v := values[i].(type) {
-				case string:
-					key = v
-				case []string:
-					for i := 0; i < len(v)-1; i++ {
-						key = v[i]
-						var m map[string]interface{}
-						v, found := dict[key]
-						if found {
-							m = v.(map[string]interface{})
-						} else {
-							m = make(map[string]interface{})
-							dict[key] = m
-						}
-						dict = m
-					}
-					key = v[len(v)-1]
-				default:
-					return nil, errors.New("invalid dictionary key")
-				}
-				dict[key] = values[i+1]
-			}
-
-			return root, nil
-		},
-		"getBasicAuths": func(s []project.DomainSecurityAuthentication) []project.DomainSecurityAuthentication {
-			var auths []project.DomainSecurityAuthentication
-			for _, authentication := range s {
-				if authentication.Type != "basic" {
-					continue
-				}
-				auths = append(auths, authentication)
-			}
-			return auths
-		},
 	}
 
-	var tmpl = template.Must(template.New("").Funcs(funcMap).ParseFiles(files...))
+	var text string
+	for _, file := range files {
+		fsContent, err := xfs.ReadFile(file)
+		if err != nil {
+			panic("Unable to read template file \"" + file + "\": " + err.Error())
+		}
+		text += fsContent
+	}
+
+	var tmpl = template.Must(template.New("").Funcs(funcMap).Funcs(proxy.FuncMap).Funcs(sprig.TxtFuncMap()).Parse(text))
 	data := Data2{
-		Paths:     paths,
+		Paths:     getPaths(),
 		Domain:    domain,
 		Expose:    expose,
 		PortIndex: portIndex,
@@ -141,7 +102,7 @@ func buildSingleServerConfig(templateName string, portIndex int, expose project.
 	return buf.String()
 }
 
-func buildServerConfig(project *project.Project, allServices []PortService) string {
+func buildServerConfig(project *project.Project, allServices []proxy.PortService) string {
 	for _, domain := range project.Domains {
 		for _, expose := range domain.Expose {
 			if expose.ExternalPort == 443 {
@@ -155,9 +116,10 @@ func buildServerConfig(project *project.Project, allServices []PortService) stri
 			}
 
 			if expose.ExternalPort == 80 {
-				//{{ lookup('template', "{{ module_role_path | default(role_path) }}/templates/nginx/serverblock.http.j2", template_vars=dict(domainConfig=ns.domainCfg,expose=nginx_expose)) }}
-				//{{ lookup('template', "{{ module_role_path | default(role_path) }}/templates/nginx/serverblock.https.j2", template_vars=dict(port_index=port_index,expose=nginx_expose,domainConfig=ns.domainCfg)) }}
-				return buildSingleServerConfig("https", portIndex, expose, domain)
+				httpConfig := buildSingleServerConfig("http", portIndex, expose, domain)
+				expose.ExternalPort = 443
+				httpsConfig := buildSingleServerConfig("https", portIndex, expose, domain)
+				return httpConfig + "\n" + httpsConfig
 			} else {
 				return buildSingleServerConfig("https", portIndex, expose, domain)
 				//{{ lookup('template', "{{ module_role_path | default(role_path) }}/templates/nginx/serverblock.https.j2", template_vars=dict(port_index=port_index,expose=nginx_expose,port=nginx_expose.external_port,domainConfig=ns.domainCfg)) }}
@@ -167,30 +129,28 @@ func buildServerConfig(project *project.Project, allServices []PortService) stri
 	return ""
 }
 
-func Deploy() {
+func (NginxProxyModule) Deploy() error {
 	fmt.Println("Deploy step")
 	var buf bytes.Buffer
-	fileContents, err := os.ReadFile("./templates/nginx.tf.tmpl")
+	fileContents, err := xfs.ReadFile("pkging:///templates/modules/proxy/nginx/nginx.tf.tmpl")
 	if err != nil {
-		panic(err)
+		return err
 	}
-	tmpl, err := template.New("nginx").Parse(string(fileContents))
+	tmpl, err := template.New("nginx").Parse(fileContents)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	var AllPorts []PortService
 	var DependentContainers []string
 
-	project := system.Context.Project
-	for _, domain := range project.Domains {
+	for _, domain := range system.Context.Project.Domains {
 		for i, expose := range domain.Expose {
-			ContainerResourceName := "docker_container.stackhead-" + project.Name + "-" + expose.Service
+			ContainerResourceName := "docker_container.stackhead-" + system.Context.Project.Name + "-" + expose.Service
 			if expose.ExternalPort != 443 {
 				DependentContainers = append(DependentContainers, ContainerResourceName)
 			}
 			//expose.Service
-			AllPorts = append(AllPorts, PortService{
+			proxy.Context.AllPorts = append(proxy.Context.AllPorts, proxy.PortService{
 				Expose:                expose,
 				ContainerResourceName: ContainerResourceName,
 				Index:                 i,
@@ -199,17 +159,28 @@ func Deploy() {
 	}
 
 	var AllPortsTfStrings []string
-	for _, port := range AllPorts {
-		AllPortsTfStrings = append(AllPortsTfStrings, port.getTfString())
+	for _, port := range proxy.Context.AllPorts {
+		AllPortsTfStrings = append(AllPortsTfStrings, port.GetTfString())
 	}
 
-	serverConfig := buildServerConfig(project, AllPorts)
+	serverConfig := buildServerConfig(system.Context.Project, proxy.Context.AllPorts)
 
 	data := Data{
-		ProjectName:         project.Name,
+		ProjectName:         system.Context.Project.Name,
 		AllPortsTfString:    strings.Join(AllPortsTfStrings, ","),
 		ServerConfig:        serverConfig,
 		DependentContainers: strings.Join(DependentContainers, ","),
+		Paths:               getPaths(),
 	}
 	err = tmpl.Execute(&buf, data)
+
+	if err != nil {
+		return err
+	}
+
+	err = xfs.WriteFile("ssh://"+system.Context.Project.GetTerraformDirectoryPath()+"/nginx.tf", buf.String())
+
+	// Todo: generate ssl certificates
+
+	return err
 }

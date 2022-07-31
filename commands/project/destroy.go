@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
 	"path/filepath"
 	"strings"
 
@@ -25,6 +26,7 @@ var DestroyApplication = &cobra.Command{
 			panic("unable to load project definition file. " + err.Error())
 		}
 		system.InitializeContext(args[1], system.ContextActionProjectDestroy, config)
+		system.ContextSetProxyModule(proxy_nginx.NginxProxyModule{})
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {

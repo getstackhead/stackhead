@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -113,6 +114,11 @@ func userSetup() error {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to append to sudoers file")
 	}
+	// Create empty sudoers file for additional permissions of stackhead user
+	if err := xfs.WriteFile("ssh:///etc/sudoers.d/stackhead", ""); err != nil {
+		return fmt.Errorf("unable to create empty stackhead sudoers file")
+	}
+
 	// Validate sudoers file
 	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
@@ -142,6 +148,7 @@ var SetupServer = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		system.InitializeContext(args[0], system.ContextActionServerSetup, nil)
+		system.ContextSetProxyModule(proxy_nginx.NginxProxyModule{})
 
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),

@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
 	xfs "github.com/saitho/golang-extended-fs"
 
 	logger "github.com/sirupsen/logrus"
@@ -27,6 +28,7 @@ var DeployApplication = &cobra.Command{
 			panic("unable to load project definition file. " + err.Error())
 		}
 		system.InitializeContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
+		system.ContextSetProxyModule(proxy_nginx.NginxProxyModule{})
 		_ = routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Deploying project \"%s\" onto server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {
@@ -83,9 +85,11 @@ var DeployApplication = &cobra.Command{
 							return fmt.Errorf("Unable to symlink Terraform providers")
 						}
 
-						//for _, module := range system.Context.GetModulesInOrder() {
-						//	//module.Deploy()
-						//}
+						for _, module := range system.Context.GetModulesInOrder() {
+							if err := module.Deploy(); err != nil {
+								return err
+							}
+						}
 						return nil
 					},
 				}); err != nil {

@@ -4,10 +4,6 @@
     gzip off;
 {{end}}
 
-{{ define "main_location" -}}
-        return 301 https://{{ .root.Domain.Domain }}$request_uri;
-{{- end}}
-
 {{define "location_file"}}
         proxy_pass http://localhost:{~ docker_ports[{{ .root.PortIndex }}] ~};
         proxy_http_version 1.1;
@@ -33,7 +29,11 @@
 {{ if $.Options.NginxUseHttps }}
     ssl_certificate {{$.Paths.CertificatesProjectDirectory}}/fullchain.pem;
     ssl_certificate_key {{$.Paths.CertificatesProjectDirectory}}/privkey.pem;
-    include /etc/nginx/h5bp/ssl/policy_intermediate.conf;
+
+    ssl_protocols TLSv1.2;
+    ssl_ciphers EECDH+CHACHA20:EECDH+AES;
+    ssl_ecdh_curve X25519:prime256v1:secp521r1:secp384r1;
+
     client_max_body_size 10G;
 {{ end }}
 {{- end }}

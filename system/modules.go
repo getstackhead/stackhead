@@ -21,5 +21,6 @@ type ModuleTerraformConfig struct {
 
 type Module interface {
 	Install() error
+	Deploy() error
 	GetConfig() ModuleConfig
 }
