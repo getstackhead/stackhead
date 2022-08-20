@@ -12,7 +12,6 @@ import (
 
 	"github.com/getstackhead/stackhead/commands"
 	"github.com/getstackhead/stackhead/commands/cli"
-	"github.com/getstackhead/stackhead/commands/module"
 	"github.com/getstackhead/stackhead/commands/project"
 )
 
@@ -49,7 +48,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show more output")
 
 	rootCmd.AddCommand(project.GetCommands())
-	rootCmd.AddCommand(module.GetCommands())
 	rootCmd.AddCommand(cli.GetCommands())
 	rootCmd.AddCommand(commands.SetupServer)
 }
