@@ -3,14 +3,17 @@ package routines
 import (
 	"crypto/tls"
 	"fmt"
+	"io/fs"
+	"net/http"
+	"os"
+	"path"
+	"strings"
+
 	"github.com/markbates/pkger"
-	"github.com/markbates/pkger/pkging"
+	xfs "github.com/saitho/golang-extended-fs"
 	jsonschema "github.com/saitho/jsonschema-validator/validator"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
-	"io/ioutil"
-	"net/http"
-	"os"
 )
 
 type ValidationSource string
@@ -38,20 +41,34 @@ func Validate(filePath string, schemaFile string, source string) {
 
 	switch source {
 	case "stackhead_cli":
+		var tempDirName string
 		// Use schema stored in binary
-		var f pkging.File
-		f, err = pkger.Open("/schemas/" + schemaFile)
+		tempDirName, err = os.MkdirTemp("", "")
 		if err != nil {
-			panic(err.Error())
+			panic("unable to create temporary folder: " + err.Error())
 		}
-		defer f.Close()
+		defer os.RemoveAll(tempDirName)
 
-		var sl []byte
-		sl, err = ioutil.ReadAll(f)
+		// Workaround to resolve references correctly: copy everything to local file system
+		err = pkger.Walk("/schemas/", func(filePath string, info fs.FileInfo, err error) error {
+			actualFilePath := strings.TrimPrefix(filePath, "github.com/getstackhead/stackhead:")
+			fullFilePath := path.Join(tempDirName, actualFilePath)
+			if info.IsDir() {
+				if err := os.MkdirAll(fullFilePath, os.ModeDir|os.ModePerm); err != nil {
+					return fmt.Errorf("unable to create temporary folder at " + fullFilePath)
+				}
+			} else {
+				if err := xfs.CopyFile("pkging://"+actualFilePath, path.Join(fullFilePath)); err != nil {
+					return fmt.Errorf("unable to create temporary file at " + fullFilePath + ": " + err.Error())
+				}
+			}
+			return nil
+		})
+
 		if err != nil {
 			panic(err.Error())
 		}
-		result, err = jsonschema.ValidateFileWithInput(filePath, sl)
+		result, err = jsonschema.ValidateFile(filePath, path.Join(tempDirName, "schemas", schemaFile))
 		if err != nil {
 			panic(err.Error())
 		}
