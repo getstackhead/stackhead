@@ -42,10 +42,11 @@ type Container struct {
 
 type ContainerService struct {
 	Name        string
-	image       string
+	Image       string
+	User        string
 	Volumes     []ContainerServiceVolume `yaml:"volumes,omitempty"`
 	Hooks       ContainerServiceHooks    `yaml:"hooks,omitempty"`
-	VolumesFrom string                   `yaml:"volumes_from,omitempty"`
+	VolumesFrom []string                 `yaml:"volumes_from,omitempty"`
 	Environment map[string]string        `yaml:"environment,omitempty"`
 }
 

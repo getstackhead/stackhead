@@ -2,13 +2,12 @@ package project
 
 import (
 	"fmt"
-	container_docker "github.com/getstackhead/stackhead/modules/container/docker"
-	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
-	xfs "github.com/saitho/golang-extended-fs"
 
+	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
+	"github.com/getstackhead/stackhead/commands"
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/stackhead"
@@ -28,9 +27,7 @@ var DeployApplication = &cobra.Command{
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}
-		system.InitializeContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
-		system.ContextSetProxyModule(proxy_nginx.NginxProxyModule{})
-		system.ContextSetContainerModule(container_docker.DockerContainerModule{})
+		commands.PrepareContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
 		_ = routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Deploying project \"%s\" onto server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {
@@ -85,6 +82,18 @@ var DeployApplication = &cobra.Command{
 						r.PrintLn("Symlinking Terraform providers")
 						if err := terraform.SymlinkProviders(system.Context.Project); err != nil {
 							return fmt.Errorf("Unable to symlink Terraform providers")
+						}
+
+						r.PrintLn("Generate project-specific Terraform providers")
+						providers := terraform.CollectProvidersFromModules(system.Context.GetModulesInOrder())
+						fileContents, err := terraform.BuildProviders(providers, terraform.ONLY_PER_PROJECT)
+						if err != nil {
+							return fmt.Errorf("Unable to generate project-specific Terraform providers: " + err.Error())
+						}
+						if fileContents.Len() > 0 {
+							if err := xfs.WriteFile("ssh://"+projectDefinition.GetTerraformProjectProvidersFilePath(), fileContents.String()); err != nil {
+								return err
+							}
 						}
 
 						for _, module := range system.Context.GetModulesInOrder() {

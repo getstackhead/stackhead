@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"bytes"
+	"fmt"
 	"path"
 	"text/template"
 
@@ -17,6 +18,9 @@ var terraformProvidersFile = path.Join(config.RootTerraformDirectory, "terraform
 
 func Setup() error {
 	if err := xfs.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
+		return err
+	}
+	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
 		return err
 	}
 
@@ -55,17 +59,22 @@ type Data struct {
 	SnakeoilPrivkeyPath   string
 }
 
-func BuildAndWriteProviders() error {
+func CollectProvidersFromModules(modules []system.Module) []system.ModuleTerraformConfigProvider {
 	var providers []system.ModuleTerraformConfigProvider
 	emptyProvider := system.ModuleTerraformConfigProvider{}
-	for _, module := range system.Context.GetModulesInOrder() {
+	for _, module := range modules {
 		moduleCfg := module.GetConfig()
 		if moduleCfg.Terraform.Provider == emptyProvider {
 			continue
 		}
 		providers = append(providers, moduleCfg.Terraform.Provider)
 	}
-	fileContents, err := buildProviders(providers)
+	return providers
+}
+
+func BuildAndWriteProviders() error {
+	providers := CollectProvidersFromModules(system.Context.GetModulesInOrder())
+	fileContents, err := BuildProviders(providers, NO_PER_PROJECT)
 	if err != nil {
 		return err
 	}
@@ -110,20 +119,30 @@ func InstallProviders() error {
 	if err := Apply(config.RootTerraformDirectory); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+config.RootTerraformDirectory, 1412, 1412); err != nil {
+	// full access to stackhead user to Terraform folder
+	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", path.Join(config.RootTerraformDirectory)); err != nil {
 		return err
 	}
-	SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
-	if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
+	// keep root permissions on base file terraform-providers.tf
+	if _, _, err := system.RemoteRun("chown", "-R", "root:root", path.Join(config.RootTerraformDirectory, "terraform-providers.tf")); err != nil {
 		return err
 	}
-	if err := xfs.Chown("ssh://"+SnakeoilPrivkeyPath, 1412, 1412); err != nil {
-		return err
-	}
+	//SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
+	//if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
+	//	return err
+	//}
+	//if err := xfs.Chown("ssh://"+SnakeoilPrivkeyPath, 1412, 1412); err != nil {
+	//	return err
+	//}
 	return nil
 }
 
-func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buffer, error) {
+type BuildProviderMode int
+
+var ONLY_PER_PROJECT BuildProviderMode = 1
+var NO_PER_PROJECT BuildProviderMode = 2
+
+func BuildProviders(providers []system.ModuleTerraformConfigProvider, mode BuildProviderMode) (bytes.Buffer, error) {
 	SnakeoilFullchainPath, SnakeoilPrivkeyPath := config.GetSnakeoilPaths()
 	data := Data{
 		Providers:             providers,
@@ -136,14 +155,13 @@ func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buf
 	// Additional provider configuration from plugins
 	var suffix string
 	for _, provider := range providers {
-		if provider.ProviderPerProject {
+		if (mode == ONLY_PER_PROJECT && !provider.ProviderPerProject) || (mode == NO_PER_PROJECT && provider.ProviderPerProject) {
 			continue
 		}
 		if provider.Init != "" {
-			// todo: load template from .Init
 			providerInitContent, err := buildProvider("pkging:///templates/modules/"+provider.Init, data)
 			if err != nil {
-				return bytes.Buffer{}, err
+				return bytes.Buffer{}, fmt.Errorf("Unable to load module init file \"" + provider.Init + "\": " + err.Error())
 			}
 			data.AdditionalContent += "\n" + providerInitContent.String() + "\n"
 		} else {
@@ -153,6 +171,11 @@ func buildProviders(providers []system.ModuleTerraformConfigProvider) (bytes.Buf
 			}
 			data.AdditionalContent += "\nprovider \"" + provider.Name + suffix + "\" {\n}\n"
 		}
+	}
+	if mode == ONLY_PER_PROJECT {
+		returnBuf := bytes.Buffer{}
+		returnBuf.WriteString(data.AdditionalContent)
+		return returnBuf, nil
 	}
 	return buildProvider("pkging:///templates/terraform-providers.tf.tmpl", data)
 }

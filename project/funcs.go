@@ -22,6 +22,10 @@ func (project *Project) GetTerraformDirectoryPath() string {
 	return path.Join(config.ProjectsRootDirectory, project.Name, "terraform")
 }
 
+func (project *Project) GetTerraformProjectProvidersFilePath() string {
+	return path.Join(project.GetTerraformDirectoryPath(), "terraform-providers-project.tf")
+}
+
 func (project *Project) GetCertificatesDirectory() string {
 	return path.Join(config.CertificatesDirectory, project.Name)
 }
