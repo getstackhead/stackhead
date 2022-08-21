@@ -1,0 +1,32 @@
+resource "nginx_server_block" "nginx-{{$.Project.Name}}" {
+  filename = "{{$.Project.Name}}.conf"
+  enable = true
+
+  markers = {
+    docker_ports = "{{$.AllPortsTfString}}"
+  }
+  markers_split = {
+    docker_ports = ","
+  }
+
+  content = <<EOF
+{{$.ServerConfig}}
+EOF
+
+{{if $.DependentContainers}}
+  depends_on = [{{$.DependentContainers}}]
+{{end}}
+
+  provisioner "local-exec" {
+    # Symlink project certificate files to snakeoil files after initial creation
+    command = <<EOT
+            (ln -s {{ .Paths.SnakeoilFullchainPath }} {{ .Paths.CertificatesProjectDirectory }}/fullchain.pem || true) &&
+            (ln -s {{ .Paths.SnakeoilPrivkeyPath }} {{ .Paths.CertificatesProjectDirectory }}/privkey.pem || true) &&
+            sudo systemctl reload nginx
+EOT
+  }
+  provisioner "local-exec" {
+    when = destroy
+    command = "sudo systemctl reload nginx"
+  }
+}
