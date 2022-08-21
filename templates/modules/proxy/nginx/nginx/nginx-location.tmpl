@@ -1,0 +1,9 @@
+{{define "location"}}
+    location /.well-known/acme-challenge {
+        alias {{$.Paths.RootDirectory}}/acme-challenges/{{ $.Domain.Domain }};
+        location ~ /.well-known/acme-challenge/(.*) {
+            default_type text/plain;
+        }
+    }
+    {{template "location_file" (dict "root" $ "path" $path)}}
+{{end}}

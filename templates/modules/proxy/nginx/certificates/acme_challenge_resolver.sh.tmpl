@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+CHALLENGE_FOLDER={{ $.Paths.AcmeChallengesDirectory }}/{{ (index $.Project.Domains 0).Domain }}
+mkdir -p "$CHALLENGE_FOLDER"
+
+if [ $# -ne 5 ]
+then
+  echo "Command expects exactly 5 arguments."
+  exit 1
+fi
+
+if [ "$1" = "present" ]
+then
+  echo "$5" > "$CHALLENGE_FOLDER/$4"
+elif [ "$1" = "cleanup" ]
+then
+  rm "$CHALLENGE_FOLDER/$4"
+fi
