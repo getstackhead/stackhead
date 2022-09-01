@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 
 	container_docker "github.com/getstackhead/stackhead/modules/container/docker"
+	plugin_portainer "github.com/getstackhead/stackhead/modules/plugin/portainer"
 	proxy_caddy "github.com/getstackhead/stackhead/modules/proxy/caddy"
 	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
 	"github.com/getstackhead/stackhead/project"
@@ -39,7 +40,10 @@ func PrepareContext(host string, action string, projectDefinition *project.Proje
 	pluginNames := viper.GetStringMapStringSlice("modules")["plugins"]
 	for _, pluginName := range pluginNames {
 		switch pluginName {
-		// todo: add available plugin modules here
+		case "portainer":
+			system.ContextAddPluginModule(plugin_portainer.Module{})
 		}
 	}
+
+	// todo: validate modules
 }

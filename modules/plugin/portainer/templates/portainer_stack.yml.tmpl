@@ -1,0 +1,15 @@
+services:
+  {{ range $index, $service := $.Context.Project.Container.Services }}
+  {{$service.Name }}:
+    image: {{ $service.Image }}
+
+    ports:
+  {{ range $index, $domainConfig := $.Context.Project.Domains }}
+  {{ range $index2, $expose := $domainConfig.Expose }}
+  {{ if and $expose.InternalPort (eq $expose.Service $service.Name) }}
+    - "${PROXY_PORT_{{$index}}_{{$index2}}}:{{ $expose.InternalPort }}"
+  {{end}}
+  {{ end }}
+  {{ end }}
+  {{ end }}
+
