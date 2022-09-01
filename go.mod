@@ -15,6 +15,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/blang/semver/v4 v4.0.0
 	github.com/google/go-cmp v0.5.8
+	github.com/gookit/event v1.0.6
 	github.com/hairyhenderson/gomplate/v3 v3.11.2
 	github.com/saitho/golang-extended-fs v0.0.10
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0

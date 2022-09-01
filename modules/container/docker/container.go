@@ -7,6 +7,7 @@ type DockerContainerModule struct {
 
 func (DockerContainerModule) GetConfig() system.ModuleConfig {
 	return system.ModuleConfig{
+		Name: "docker",
 		Type: "container",
 		Terraform: system.ModuleTerraformConfig{
 			Provider: system.ModuleTerraformConfigProvider{

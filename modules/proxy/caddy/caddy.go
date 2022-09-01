@@ -7,6 +7,7 @@ type CaddyProxyModule struct {
 
 func (CaddyProxyModule) GetConfig() system.ModuleConfig {
 	return system.ModuleConfig{
+		Name: "caddy",
 		Type: "proxy",
 		Terraform: system.ModuleTerraformConfig{
 			Provider: system.ModuleTerraformConfigProvider{
