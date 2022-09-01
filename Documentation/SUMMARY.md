@@ -8,6 +8,11 @@
 * [Project definition](introduction/project-definition.md)
 * [Getting started](introduction/getting-started.md)
 
+## Development
+
+* [Basics](development/basics.md)
+* [Events](development/events.md)
+
 ## StackHead CLI
 
 * [Installation](stackhead-cli/installation.md)

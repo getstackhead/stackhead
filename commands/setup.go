@@ -4,12 +4,14 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
+	"os"
+
+	"github.com/gookit/event"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"
-	"io/ioutil"
-	"os"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/routines"
@@ -22,6 +24,7 @@ func basicSetup() {
 }
 
 func folderSetup() error {
+	event.MustFire("setup.folders.pre-install", event.M{})
 	// Create StackHead root folder
 	if err := xfs.CreateFolder("ssh://" + config.RootDirectory); err != nil {
 		return err
@@ -29,10 +32,12 @@ func folderSetup() error {
 	if err := xfs.Chown("ssh://"+config.RootDirectory, 1412, 1412); err != nil {
 		return err
 	}
+	event.MustFire("setup.folders.post-install", event.M{})
 	return nil
 }
 
 func setupSshKeys() error {
+	event.MustFire("setup.ssh.pre-install", event.M{})
 	// Create local StackHead folder
 	localRemoteKeyDir := system.Context.Authentication.LocalAuthenticationDir
 	if _, err := os.Stat(localRemoteKeyDir); err != nil {
@@ -70,17 +75,22 @@ func setupSshKeys() error {
 			return err
 		}
 		// Save public key in PEM format
-		return ioutil.WriteFile(
+		err = ioutil.WriteFile(
 			system.Context.Authentication.GetPublicKeyPath(),
 			ssh.MarshalAuthorizedKey(publicRsaKey),
 			0600,
 		)
+		if err != nil {
+			return err
+		}
 	}
+	event.MustFire("setup.ssh.post-install", event.M{})
 
 	return nil
 }
 
 func userSetup() error {
+	event.MustFire("setup.users.pre-install", event.M{})
 	// Add stackhead group
 	if _, _, err := system.RemoteRun("groupadd", "--system stackhead --gid 1412 -f"); err != nil {
 		return fmt.Errorf("unable to add stackhead group")
@@ -123,10 +133,14 @@ func userSetup() error {
 	if err := xfs.CreateFolder("ssh:///stackhead/.ssh"); err != nil {
 		return err
 	}
-	return xfs.WriteFile(
+	if err := xfs.WriteFile(
 		"ssh:///stackhead/.ssh/authorized_keys",
 		string(publicKeyBytes),
-	)
+	); err != nil {
+		return err
+	}
+	event.MustFire("setup.users.post-install", event.M{})
+	return nil
 }
 
 // SetupServer is a command object for Cobra that provides the setup command
@@ -206,11 +220,22 @@ var SetupServer = &cobra.Command{
 					return err
 				}
 
-				for _, module := range system.Context.GetModulesInOrder() {
+				modules := system.Context.GetModulesInOrder()
+				event.MustFire("setup.modules.pre-install", event.M{"modules": modules})
+				for _, module := range modules {
+					event.MustFire(
+						"setup.modules.pre-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
+						event.M{"module": module},
+					)
 					if err := module.Install(); err != nil {
 						return err
 					}
+					event.MustFire(
+						"setup.modules.post-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
+						event.M{"module": module},
+					)
 				}
+				event.MustFire("setup.modules.post-install", event.M{"modules": modules})
 
 				return err
 			},

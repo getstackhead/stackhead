@@ -12,6 +12,7 @@ type NginxProxyModule struct {
 func (NginxProxyModule) GetConfig() system.ModuleConfig {
 	SnakeoilFullchainPath, SnakeoilPrivkeyPath := GetSnakeoilPaths()
 	return system.ModuleConfig{
+		Name: "nginx",
 		Type: "proxy",
 		Terraform: system.ModuleTerraformConfig{
 			Provider: system.ModuleTerraformConfigProvider{

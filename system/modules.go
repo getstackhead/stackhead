@@ -13,6 +13,7 @@ import (
 )
 
 type ModuleConfig struct {
+	Name      string
 	Type      string
 	Terraform ModuleTerraformConfig
 }

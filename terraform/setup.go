@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/gookit/event"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
 
@@ -18,6 +19,7 @@ import (
 var terraformProvidersFile = path.Join(config.RootTerraformDirectory, "terraform-providers.tf")
 
 func Setup() error {
+	event.MustFire("setup.terraform.pre-install", event.M{})
 	if err := xfs.CreateFolder("ssh://" + config.RootTerraformDirectory); err != nil {
 		return err
 	}
@@ -39,6 +41,7 @@ func Setup() error {
 	}); err != nil {
 		return err
 	}
+	event.MustFire("setup.terraform.post-install", event.M{})
 
 	//# Setup Terraform components of modules
 	//- import_tasks: "../roles/stackhead_module_api/tasks_internal/terraform.yml"
