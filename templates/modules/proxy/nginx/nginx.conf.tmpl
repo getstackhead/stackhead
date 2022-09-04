@@ -1,0 +1,262 @@
+user  {{ $.User }};
+worker_processes  {{ $.WorkerProcesses }};
+pid {{ $.PidFile }};
+include /etc/nginx/modules-enabled/*.conf;
+
+{{ if $.ExtraConfOptions }}
+{{ range $key, $value := $.ExtraConfOptions }}
+{{ $key }}  {{ $value }};
+{{ end }}
+{{ end }}
+
+events {
+  worker_connections  {{ $.WorkerConnections }};
+  multi_accept {{ $.MultiAccept }};
+}
+
+http {
+{{ if $.ExtraConfHttpOptions }}
+{{ range $key, $value := $.ExtraConfHttpOptions }}
+  {{ $key }}  {{ $value }};
+{{ end }}
+{{ end }}
+
+  # Enable gzip compression.
+  # Default: off
+  gzip on;
+
+  # Compression level (1-9).
+  # 5 is a perfect compromise between size and CPU usage, offering about 75%
+  # reduction for most ASCII files (almost identical to level 9).
+  # Default: 1
+  gzip_comp_level 5;
+
+  # Don't compress anything that's already small and unlikely to shrink much if at
+  # all (the default is 20 bytes, which is bad as that usually leads to larger
+  # files after gzipping).
+  # Default: 20
+  gzip_min_length 256;
+
+  # Compress data even for clients that are connecting to us via proxies,
+  # identified by the "Via" header (required for CloudFront).
+  # Default: off
+  gzip_proxied any;
+
+  # Tell proxies to cache both the gzipped and regular version of a resource
+  # whenever the client's Accept-Encoding capabilities header varies;
+  # Avoids the issue where a non-gzip capable client (which is extremely rare
+  # today) would display gibberish if their proxy gave them the gzipped version.
+  # Default: off
+  gzip_vary on;
+
+  # Compress all output labeled with one of the following MIME-types.
+  # `text/html` is always compressed by gzip module.
+  # Default: text/html
+  gzip_types
+    application/atom+xml
+    application/geo+json
+    application/javascript
+    application/x-javascript
+    application/json
+    application/ld+json
+    application/manifest+json
+    application/rdf+xml
+    application/rss+xml
+    application/vnd.ms-fontobject
+    application/wasm
+    application/x-web-app-manifest+json
+    application/xhtml+xml
+    application/xml
+    font/eot
+    font/otf
+    font/ttf
+    image/bmp
+    image/svg+xml
+    image/vnd.microsoft.icon
+    image/x-icon
+    text/cache-manifest
+    text/calendar
+    text/css
+    text/javascript
+    text/markdown
+    text/plain
+    text/xml
+    text/vcard
+    text/vnd.rim.location.xloc
+    text/vtt
+    text/x-component
+    text/x-cross-domain-policy;
+
+  # Specify file cache expiration.
+  map $sent_http_content_type $expires {
+    default                                 1y;
+
+    # No content
+    ""                                      off;
+
+    # CSS
+    ~*text/css                              1y;
+
+    # Data interchange
+    ~*application/atom\+xml                 1h;
+    ~*application/rdf\+xml                  1h;
+    ~*application/rss\+xml                  1h;
+
+    ~*application/json                      0;
+    ~*application/ld\+json                  0;
+    ~*application/schema\+json              0;
+    ~*application/geo\+json                 0;
+    ~*application/xml                       0;
+    ~*text/calendar                         0;
+    ~*text/xml                              0;
+
+    # Favicon (cannot be renamed!) and cursor images
+    ~*image/vnd.microsoft.icon              1w;
+    ~*image/x-icon                          1w;
+
+    # HTML
+    ~*text/html                             0;
+
+    # JavaScript
+    ~*application/javascript                1y;
+    ~*application/x-javascript              1y;
+    ~*text/javascript                       1y;
+
+    # Manifest files
+    ~*application/manifest\+json            1w;
+    ~*application/x-web-app-manifest\+json  0;
+    ~*text/cache-manifest                   0;
+
+    # Markdown
+    ~*text/markdown                         0;
+
+    # Media files
+    ~*audio/                                1y;
+    ~*image/                                1y;
+    ~*video/                                1y;
+
+    # WebAssembly
+    ~*application/wasm                      1y;
+
+    # Web fonts
+    ~*font/                                 1y;
+    ~*application/vnd.ms-fontobject         1y;
+    ~*application/x-font-ttf                1y;
+    ~*application/x-font-woff               1y;
+    ~*application/font-woff                 1y;
+    ~*application/font-woff2                1y;
+
+    # Other
+    ~*text/x-cross-domain-policy            1w;
+  }
+
+  expires $expires;
+
+  # Add X-XSS-Protection for HTML documents.
+  map $sent_http_content_type $x_xss_protection {
+    #           (1)    (2)
+    ~*text/html "1; mode=block";
+  }
+
+  # Add X-Frame-Options for HTML documents.
+  map $sent_http_content_type $x_frame_options {
+    ~*text/html DENY;
+  }
+
+  # Add Content-Security-Policy for HTML documents.
+  map $sent_http_content_type $content_security_policy {
+    ~*text/html "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
+  }
+
+  # Add Referrer-Policy for HTML documents.
+  map $sent_http_content_type $referrer_policy {
+    ~*text/html "strict-origin-when-cross-origin";
+  }
+
+  # Add X-UA-Compatible for HTML documents.
+  map $sent_http_content_type $x_ua_compatible {
+    ~*text/html "IE=edge";
+  }
+
+  # Add Access-Control-Allow-Origin.
+  map $sent_http_content_type $cors {
+    # Images
+    ~*image/ "*";
+
+    # Web fonts
+    ~*font/                         "*";
+    ~*application/vnd.ms-fontobject "*";
+    ~*application/x-font-ttf        "*";
+    ~*application/font-woff         "*";
+    ~*application/x-font-woff       "*";
+    ~*application/font-woff2        "*";
+  }
+
+	##
+	# Basic Settings
+	##
+
+  sendfile        {{ $.Sendfile }};
+  tcp_nopush      {{ $.TcpNopush }};
+  tcp_nodelay     {{ $.TcpNodelay }};
+	keepalive_timeout {{ $.KeepaliveTimeout }};
+	keepalive_requests {{ $.KeepaliveRequests }};
+	types_hash_max_size 2048;
+	server_tokens {{ $.ServerTokens }};
+
+	{{ if $.ProxyCachePath }}
+      proxy_cache_path {{ $.ProxyCachePath }};
+  {{ end }}
+
+	server_names_hash_bucket_size {{ $.ServerNamesHashBucketSize }};
+	# server_name_in_redirect off;
+  client_max_body_size {{ $.ClientMaxBodySize }};
+
+	include {{ $.MimeFilePath }};
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+
+	access_log {{ $.AccessLog }};
+	error_log  {{ $.ErrorLog }};
+
+	##
+	# Virtual Host Configs
+	##
+
+	include {{ $.ConfPath }}/*.conf;
+	{{ if ne $.ConfPath $.VhostPath }}
+      include {{ $.VhostPath }}/*;
+  {{ end }}
+}
+
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+#
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+#
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+#
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}

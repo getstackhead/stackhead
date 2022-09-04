@@ -113,7 +113,10 @@ func buildServerConfig(project *project.Project, allServices []proxy.PortService
 }
 
 func (Module) Deploy(_modulesSettings interface{}) error {
-	modulesSettings := _modulesSettings.(ModuleSettings)
+	moduleSettings, err := system.UnpackModuleSettings[ModuleSettings](_modulesSettings)
+	if err != nil {
+		return fmt.Errorf("unable to load module settings: " + err.Error())
+	}
 	fmt.Println("Deploy step")
 	paths := getPaths()
 
@@ -153,7 +156,7 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 		"ServerConfig":            serverConfig,
 		"DependentContainers":     strings.Join(DependentContainers, ","),
 		"Paths":                   paths,
-		"CertificatesMailAddress": modulesSettings.CertificatesEmail,
+		"CertificatesMailAddress": moduleSettings.CertificatesEmail,
 	}
 
 	nginxTemplate, err := system.RenderModuleTemplate(
