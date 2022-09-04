@@ -17,7 +17,7 @@ type Data struct {
 	DependentContainers string
 }
 
-func (CaddyProxyModule) Deploy() error {
+func (Module) Deploy(modulesSettings interface{}) error {
 
 	// - name: Include OS-specific variables.
 	//  include_vars: "{{ ansible_os_family }}.yml"

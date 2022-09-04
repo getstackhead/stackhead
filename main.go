@@ -16,7 +16,6 @@ import (
 )
 
 var cfgFile string
-var collectionPath string
 var verbose bool
 
 // rootCmd represents the base command when called without any subcommands
@@ -54,9 +53,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if collectionPath != "" {
-		viper.Set("ansible.collection_path", collectionPath)
-	}
 	if verbose {
 		viper.Set("verbose", verbose)
 		log.SetLevel(log.DebugLevel)

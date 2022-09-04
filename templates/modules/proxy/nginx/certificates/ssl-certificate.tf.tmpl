@@ -4,7 +4,7 @@ resource "tls_private_key" "{{ $.Project.Name }}-private_key" {
 
 resource "acme_registration" "{{ $.Project.Name }}-reg" {
   account_key_pem = tls_private_key.{{ $.Project.Name }}-private_key.private_key_pem
-  email_address   = "certificates-noreply@stackhead.io" // todo: make configurable
+  email_address   = "{{ if $.CertificatesMailAddress }}{{ $.CertificatesMailAddress }}{{ else }}certificates-noreply@stackhead.io{{ end }}"
 }
 
 resource "acme_certificate" "{{ $.Project.Name }}-certificate" {

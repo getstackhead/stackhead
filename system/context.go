@@ -36,6 +36,8 @@ type ContextStruct struct {
 
 	ProxyModule     Module
 	ContainerModule Module
+	DNSModules      []Module
+	PluginModules   []Module
 }
 
 func (c ContextStruct) GetModulesInOrder() []Module {
@@ -66,10 +68,30 @@ func InitializeContext(host string, action string, projectDefinition *project.Pr
 	}
 }
 
-func ContextSetProxyModule(proxyModule Module) {
-	Context.ProxyModule = proxyModule
+func ContextSetProxyModule(module Module) {
+	if module.GetConfig().Type != "proxy" {
+		return
+	}
+	Context.ProxyModule = module
 }
 
-func ContextSetContainerModule(containerModule Module) {
-	Context.ContainerModule = containerModule
+func ContextSetContainerModule(module Module) {
+	if module.GetConfig().Type != "container" {
+		return
+	}
+	Context.ContainerModule = module
+}
+
+func ContextAddDnsModule(module Module) {
+	if module.GetConfig().Type != "dns" {
+		return
+	}
+	Context.DNSModules = append(Context.DNSModules, module)
+}
+
+func ContextAddPluginModule(module Module) {
+	if module.GetConfig().Type != "plugin" {
+		return
+	}
+	Context.PluginModules = append(Context.PluginModules, module)
 }

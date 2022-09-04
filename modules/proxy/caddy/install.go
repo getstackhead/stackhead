@@ -111,6 +111,6 @@ func InstallApt() error {
 	return nil
 }
 
-func (CaddyProxyModule) Install() error {
+func (Module) Install(modulesSettings interface{}) error {
 	return InstallApt()
 }

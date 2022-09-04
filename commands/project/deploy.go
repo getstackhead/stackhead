@@ -89,7 +89,8 @@ var DeployApplication = &cobra.Command{
 						}
 
 						for _, module := range system.Context.GetModulesInOrder() {
-							if err := module.Deploy(); err != nil {
+							moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+							if err := module.Deploy(moduleSettings); err != nil {
 								return err
 							}
 						}

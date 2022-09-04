@@ -35,21 +35,33 @@ In order to interact with projects deployed with StackHead v1, they need to be m
 ---
 modules:
 -  webserver: nginx
-+  proxy: github.com/getstackhead/plugin-proxy-nginx
--  container: docker
-+  container: github.com/getstackhead/plugin-container-docker
--  dns: cloudflare
-+  dns: github.com/getstackhead/plugin-dns-cloudflare
++  proxy: nginx
+   container: docker
+   dns:
+     - cloudflare
 -  plugins:
 -    - watchtower # load getstackhead.stackhead_plugin_watchtower plugin
-+  applications:
-+    - github.com/getstackhead/plugin-application-watchtower # load getstackhead.stackhead_plugin_watchtower plugin
-certificates:
-  register_email: "my-certificates-mail@mydomain.com" # Email address used for creating SSL certificates. Will receive notice when they expire.
+
+-certificates:
+-  register_email: "my-certificates-mail@mydomain.com" # Email address used for creating SSL certificates. Will receive notice when they expire.
+-config:
+-  setup:
+-    github.com/getstackhead/plugin-proxy-nginx: # config settings for Nginx module
+-      server_names_hash_bucket_size: 128
+-      extra_conf_options:
+-        foo: bar
+-      extra_conf_http_options:
+-        foo2: bar2
++ modules_config:
++   nginx:
++     certificates_email: "my-certificates-mail@mydomain.com"
++     config:
++       server_names_hash_bucket_size: 128
++       extra_conf_options:
++         foo: bar
++       extra_conf_http_options:
++         foo2: bar2
+
 terraform:
   update_interval: "*-*-* 4:00:00" # perform Terraform update everyday at 4am, see Unix timer "OnCalendar" setting
-config:
-  setup:
-    github.com/getstackhead/plugin-proxy-nginx: # config settings for Nginx module
-      server_names_hash_bucket_size: 128
 ```

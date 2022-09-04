@@ -227,7 +227,8 @@ var SetupServer = &cobra.Command{
 						"setup.modules.pre-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
 						event.M{"module": module},
 					)
-					if err := module.Install(); err != nil {
+					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+					if err := module.Install(moduleSettings); err != nil {
 						return err
 					}
 					event.MustFire(

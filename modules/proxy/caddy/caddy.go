@@ -2,10 +2,10 @@ package proxy_caddy
 
 import "github.com/getstackhead/stackhead/system"
 
-type CaddyProxyModule struct {
+type Module struct {
 }
 
-func (CaddyProxyModule) GetConfig() system.ModuleConfig {
+func (Module) GetConfig() system.ModuleConfig {
 	return system.ModuleConfig{
 		Name: "caddy",
 		Type: "proxy",
