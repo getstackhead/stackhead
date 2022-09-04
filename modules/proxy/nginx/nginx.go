@@ -6,10 +6,10 @@ import (
 	"github.com/getstackhead/stackhead/system"
 )
 
-type NginxProxyModule struct {
+type Module struct {
 }
 
-func (NginxProxyModule) GetConfig() system.ModuleConfig {
+func (Module) GetConfig() system.ModuleConfig {
 	SnakeoilFullchainPath, SnakeoilPrivkeyPath := GetSnakeoilPaths()
 	return system.ModuleConfig{
 		Name: "nginx",

@@ -2,10 +2,10 @@ package container_docker
 
 import "github.com/getstackhead/stackhead/system"
 
-type DockerContainerModule struct {
+type Module struct {
 }
 
-func (DockerContainerModule) GetConfig() system.ModuleConfig {
+func (Module) GetConfig() system.ModuleConfig {
 	return system.ModuleConfig{
 		Name: "docker",
 		Type: "container",

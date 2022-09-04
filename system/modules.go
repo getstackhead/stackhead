@@ -2,11 +2,13 @@ package system
 
 import (
 	"bytes"
+	"encoding/json"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/hairyhenderson/gomplate/v3"
 	xfs "github.com/saitho/golang-extended-fs"
+	"github.com/spf13/viper"
 	"golang.org/x/exp/maps"
 
 	"github.com/getstackhead/stackhead/project"
@@ -38,8 +40,8 @@ type ModuleTerraformConfig struct {
 }
 
 type Module interface {
-	Install() error
-	Deploy() error
+	Install(moduleSettings interface{}) error
+	Deploy(moduleSettings interface{}) error
 	GetConfig() ModuleConfig
 }
 
@@ -83,4 +85,15 @@ func RenderModuleTemplateText(templateName string, fileContents string, addition
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func GetModuleSettings(moduleName string) interface{} {
+	return viper.GetStringMap("modules_config")[moduleName]
+}
+
+func UnpackModuleSettings[T interface{}](_modulesSettings interface{}) (*T, error) {
+	dbByte, _ := json.Marshal(_modulesSettings.(map[string]interface{}))
+	modulesSettings := new(T)
+	err := json.Unmarshal(dbByte, &modulesSettings)
+	return modulesSettings, err
 }

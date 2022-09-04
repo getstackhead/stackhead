@@ -112,7 +112,8 @@ func buildServerConfig(project *project.Project, allServices []proxy.PortService
 	return ""
 }
 
-func (NginxProxyModule) Deploy() error {
+func (Module) Deploy(_modulesSettings interface{}) error {
+	modulesSettings := _modulesSettings.(ModuleSettings)
 	fmt.Println("Deploy step")
 	paths := getPaths()
 
@@ -148,10 +149,11 @@ func (NginxProxyModule) Deploy() error {
 	serverConfig := buildServerConfig(system.Context.Project, proxy.Context.AllPorts)
 
 	data := map[string]interface{}{
-		"AllPortsTfString":    strings.Join(AllPortsTfStrings, ","),
-		"ServerConfig":        serverConfig,
-		"DependentContainers": strings.Join(DependentContainers, ","),
-		"Paths":               paths,
+		"AllPortsTfString":        strings.Join(AllPortsTfStrings, ","),
+		"ServerConfig":            serverConfig,
+		"DependentContainers":     strings.Join(DependentContainers, ","),
+		"Paths":                   paths,
+		"CertificatesMailAddress": modulesSettings.CertificatesEmail,
 	}
 
 	nginxTemplate, err := system.RenderModuleTemplate(

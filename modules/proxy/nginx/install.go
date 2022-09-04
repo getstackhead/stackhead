@@ -8,7 +8,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-func (NginxProxyModule) Install() error {
+func (Module) Install(modulesSettings interface{}) error {
 	// Ensure stackhead user can reload nginx
 	permissions := "\n%stackhead ALL= NOPASSWD: /bin/systemctl reload nginx\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissions, true); err != nil {

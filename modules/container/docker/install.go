@@ -59,6 +59,6 @@ func InstallApt() error {
 	return nil
 }
 
-func (DockerContainerModule) Install() error {
+func (Module) Install(modulesSettings interface{}) error {
 	return InstallApt()
 }

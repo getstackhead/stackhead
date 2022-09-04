@@ -30,7 +30,7 @@ type RegExSettings struct {
 	Repl    string
 }
 
-func (m DockerContainerModule) Deploy() error {
+func (m Module) Deploy(modulesSettings interface{}) error {
 	project := system.Context.Project
 
 	// Build src folder list

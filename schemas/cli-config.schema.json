@@ -7,21 +7,15 @@
   "properties": {
     "modules": {
       "type": "object",
-      "required": ["webserver", "container"],
+      "required": ["proxy", "container"],
       "properties": {
-        "webserver": {
+        "proxy": {
           "type": "string"
         },
         "container": {
           "type": "string"
         },
         "dns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "plugins": {
           "type": "array",
           "items": {
             "type": "string"
@@ -38,14 +32,8 @@
         }
       }
     },
-    "certificates": {
-      "type": "object",
-      "properties": {
-        "register_email": {
-          "type": "string",
-          "description": "Email address used for registering SSL certificates via Lets Encrypt"
-        }
-      }
+    "modules_config": {
+      "type": "object"
     }
   }
 }
