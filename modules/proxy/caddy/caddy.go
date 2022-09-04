@@ -1,8 +1,19 @@
 package proxy_caddy
 
-import "github.com/getstackhead/stackhead/system"
+import (
+	"embed"
+
+	"github.com/getstackhead/stackhead/system"
+)
 
 type Module struct {
+}
+
+//go:embed templates
+var templates embed.FS
+
+func (Module) GetTemplates() *embed.FS {
+	return &templates
 }
 
 func (Module) GetConfig() system.ModuleConfig {

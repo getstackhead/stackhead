@@ -22,7 +22,7 @@
 {{ if ge (dict_index_str $.root.Expose.ProxyWebsocketLocations $.path) 0 }}
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-{{- end}}
+{{end}}
 {{end}}
 
 {{ define "sslcertificates" -}}

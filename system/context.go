@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/saitho/golang-extended-fs/sftp"
+	"github.com/saitho/golang-extended-fs/v2/sftp"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/project"

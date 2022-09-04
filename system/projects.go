@@ -3,7 +3,7 @@ package system
 import (
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/project"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 )
 
 type DeployedProject struct {

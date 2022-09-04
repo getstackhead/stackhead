@@ -1,6 +1,7 @@
 package project
 
 import (
+	"embed"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -9,7 +10,7 @@ import (
 )
 
 // Validate is a command object for Cobra that provides the validate command
-func Validate() *cobra.Command {
+func Validate(LocalSchemas embed.FS) *cobra.Command {
 	var version, branch string
 	var ignoreSslCertificate bool
 	var command = &cobra.Command{
@@ -20,6 +21,7 @@ func Validate() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			routines.CobraValidationBase(
+				LocalSchemas,
 				"project-definition.schema.json",
 				version,
 				branch,

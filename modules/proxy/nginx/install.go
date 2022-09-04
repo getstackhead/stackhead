@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/structs"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/system"
@@ -41,7 +41,8 @@ func (Module) Install(_modulesSettings interface{}) error {
 
 	// Override /etc/nginx/nginx.conf
 	nginxConfTemplate, err := system.RenderModuleTemplate(
-		"proxy/nginx/nginx.conf.tmpl",
+		templates,
+		"nginx.conf.tmpl",
 		structs.Map(nginxConfig),
 		nil)
 	if err != nil {

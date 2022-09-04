@@ -5,7 +5,7 @@ import (
 	"path"
 
 	"github.com/blang/semver/v4"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"

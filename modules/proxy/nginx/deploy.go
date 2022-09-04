@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/modules/proxy"
@@ -44,8 +44,8 @@ func getPaths() Paths {
 }
 
 func buildSingleServerConfig(templateName string, portIndex int, expose project.DomainExpose, domain project.Domains) string {
-	var files = []string{"pkging:///templates/modules/proxy/nginx/nginx/nginx-base.conf.tmpl"}
-	files = append(files, "pkging:///templates/modules/proxy/nginx/nginx/nginx-"+templateName+".tmpl")
+	var files = []string{"nginx/nginx-base.conf.tmpl"}
+	files = append(files, "nginx/nginx-"+templateName+".tmpl")
 
 	var funcMap = proxy.FuncMap
 	funcMap["dict_index_str"] = func(list []string, str string) int {
@@ -59,14 +59,14 @@ func buildSingleServerConfig(templateName string, portIndex int, expose project.
 
 	var text string
 	for _, file := range files {
-		fsContent, err := xfs.ReadFile(file)
+		fsContent, err := templates.ReadFile("templates/" + file)
 		if err != nil {
 			panic("Unable to read template file \"" + file + "\": " + err.Error())
 		}
-		text += fsContent
+		text += string(fsContent)
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Paths":     getPaths(),
 		"Domain":    domain,
 		"Expose":    expose,
@@ -75,13 +75,14 @@ func buildSingleServerConfig(templateName string, portIndex int, expose project.
 			NginxUseHttps: true,
 		},
 	}
+
 	nginxServerBlock, err := system.RenderModuleTemplateText(
 		"base",
 		text,
 		data,
 		funcMap)
 	if err != nil {
-		return ""
+		panic("Unable to build Nginx proxy template: " + err.Error())
 	}
 	return nginxServerBlock
 }
@@ -160,7 +161,8 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 	}
 
 	nginxTemplate, err := system.RenderModuleTemplate(
-		"proxy/nginx/nginx.tf.tmpl",
+		templates,
+		"nginx.tf.tmpl",
 		data,
 		nil)
 	if err != nil {
@@ -189,7 +191,8 @@ func generateCertificates(data map[string]interface{}) error {
 		},
 	}
 	acmeResolver, err := system.RenderModuleTemplate(
-		"proxy/nginx/certificates/acme_challenge_resolver.sh.tmpl",
+		templates,
+		"certificates/acme_challenge_resolver.sh.tmpl",
 		data,
 		funcMap)
 	if err != nil {
@@ -203,7 +206,13 @@ func generateCertificates(data map[string]interface{}) error {
 		return err
 	}
 
-	sslCertFile, err := system.RenderModuleTemplate("proxy/nginx/certificates/ssl-certificate.tf.tmpl", data, funcMap)
+	sslCertFile, err := system.RenderModuleTemplate(
+		templates,
+		"certificates/ssl-certificate.tf.tmpl",
+		data,
+		funcMap,
+	)
+
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"text/template"
 
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	container_docker_definitions "github.com/getstackhead/stackhead/modules/container/docker/definitions"
 	"github.com/getstackhead/stackhead/system"
@@ -136,7 +136,8 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		"DockerPaths": container_docker_definitions.DockerPaths{},
 	}
 	dockerTf, err := system.RenderModuleTemplate(
-		"container/docker/project.tf.tmpl",
+		templates,
+		"project.tf.tmpl",
 		data,
 		funcMap)
 	if err != nil {

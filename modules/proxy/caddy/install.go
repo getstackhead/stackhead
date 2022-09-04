@@ -2,7 +2,7 @@ package proxy_caddy
 
 import (
 	"fmt"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/system"
@@ -53,7 +53,8 @@ func InstallApt() error {
 
 	// todo: make configurable and supply caddy config as data
 	caddyFile, err := system.RenderModuleTemplate(
-		"proxy/caddy/Caddyfile.tmpl",
+		templates,
+		"Caddyfile.tmpl",
 		nil,
 		nil)
 	if err != nil {

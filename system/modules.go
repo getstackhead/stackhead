@@ -2,12 +2,12 @@ package system
 
 import (
 	"bytes"
+	"embed"
 	"encoding/json"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/hairyhenderson/gomplate/v3"
-	xfs "github.com/saitho/golang-extended-fs"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/maps"
 
@@ -43,21 +43,22 @@ type Module interface {
 	Install(moduleSettings interface{}) error
 	Deploy(moduleSettings interface{}) error
 	GetConfig() ModuleConfig
+	GetTemplates() *embed.FS
 }
 
 type ModuleTemplateData struct {
 	Project *project.Project
 }
 
-func RenderModuleTemplate(fileName string, additionalData map[string]interface{}, additionalFuncs template.FuncMap) (string, error) {
-	fileContents, err := xfs.ReadFile("pkging:///templates/modules/" + fileName)
+func RenderModuleTemplate(templateFolder embed.FS, fileName string, additionalData map[string]any, additionalFuncs template.FuncMap) (string, error) {
+	fileContents, err := templateFolder.ReadFile("templates/" + fileName)
 	if err != nil {
 		return "", err
 	}
-	return RenderModuleTemplateText(fileName, fileContents, additionalData, additionalFuncs)
+	return RenderModuleTemplateText(fileName, string(fileContents), additionalData, additionalFuncs)
 }
 
-func RenderModuleTemplateText(templateName string, fileContents string, additionalData map[string]interface{}, additionalFuncs template.FuncMap) (string, error) {
+func RenderModuleTemplateText(templateName string, fileContents string, additionalData map[string]any, additionalFuncs template.FuncMap) (string, error) {
 	tmpl := template.New(templateName)
 
 	// prepare functions
@@ -67,7 +68,7 @@ func RenderModuleTemplateText(templateName string, fileContents string, addition
 	}
 
 	// prepare data
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Project": Context.Project,
 	}
 	if additionalData != nil {

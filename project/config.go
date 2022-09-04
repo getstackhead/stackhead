@@ -4,7 +4,7 @@ import (
 	"path"
 	"strings"
 
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	"gopkg.in/yaml.v3"
 )
 
