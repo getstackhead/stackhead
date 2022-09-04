@@ -3,7 +3,7 @@ package project
 import (
 	"fmt"
 
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
@@ -77,8 +77,8 @@ var DeployApplication = &cobra.Command{
 						}
 
 						r.PrintLn("Generate project-specific Terraform providers")
-						providers := terraform.CollectProvidersFromModules(system.Context.GetModulesInOrder())
-						fileContents, err := terraform.BuildProviders(providers, terraform.ONLY_PER_PROJECT)
+						modulesWithProviders := terraform.FilterModulesWithProviders(system.Context.GetModulesInOrder())
+						fileContents, err := terraform.BuildProviders(modulesWithProviders, terraform.ONLY_PER_PROJECT)
 						if err != nil {
 							return fmt.Errorf("Unable to generate project-specific Terraform providers: " + err.Error())
 						}

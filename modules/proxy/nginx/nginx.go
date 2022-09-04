@@ -1,12 +1,20 @@
 package proxy_nginx
 
 import (
+	"embed"
 	"text/template"
 
 	"github.com/getstackhead/stackhead/system"
 )
 
 type Module struct {
+}
+
+//go:embed templates templates/**/*
+var templates embed.FS
+
+func (Module) GetTemplates() *embed.FS {
+	return &templates
 }
 
 func (Module) GetConfig() system.ModuleConfig {
@@ -20,7 +28,7 @@ func (Module) GetConfig() system.ModuleConfig {
 				Name:         "nginx",
 				Version:      "1.3.2",
 				ResourceName: "nginx_server_block",
-				Init:         "proxy/nginx/providers.tf.tmpl",
+				Init:         "providers.tf.tmpl",
 				InitFuncMap: template.FuncMap{
 					"SnakeoilFullchainPath": func() string {
 						return SnakeoilFullchainPath

@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/gookit/event"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh"

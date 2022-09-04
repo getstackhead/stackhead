@@ -1,11 +1,10 @@
-//go:generate pkger
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 
-	"github.com/markbates/pkger"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,6 +17,9 @@ import (
 var cfgFile string
 var verbose bool
 
+//go:embed schemas/*.json schemas/**/*.json
+var LocalSchemas embed.FS
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "stackhead-cli",
@@ -29,8 +31,6 @@ to quickly create a Cobra application.`,
 
 // main adds all child commands to the root command and sets flags appropriately.
 func main() {
-	_ = pkger.Include("/schemas")
-	_ = pkger.Include("/templates")
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -46,8 +46,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is ./.stackhead-cli.yaml or $HOME/.stackhead-cli.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show more output")
 
-	rootCmd.AddCommand(project.GetCommands())
-	rootCmd.AddCommand(cli.GetCommands())
+	rootCmd.AddCommand(project.GetCommands(LocalSchemas))
+	rootCmd.AddCommand(cli.GetCommands(LocalSchemas))
 	rootCmd.AddCommand(commands.SetupServer)
 }
 

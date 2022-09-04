@@ -1,8 +1,19 @@
 package container_docker
 
-import "github.com/getstackhead/stackhead/system"
+import (
+	"embed"
+
+	"github.com/getstackhead/stackhead/system"
+)
 
 type Module struct {
+}
+
+//go:embed templates
+var templates embed.FS
+
+func (Module) GetTemplates() *embed.FS {
+	return &templates
 }
 
 func (Module) GetConfig() system.ModuleConfig {
@@ -15,7 +26,7 @@ func (Module) GetConfig() system.ModuleConfig {
 				Name:               "docker",
 				Version:            "2.20.0",
 				ResourceName:       "docker_container",
-				Init:               "container/docker/provider_init.tf.tmpl", // relative to "templates/modules/",
+				Init:               "provider_init.tf.tmpl", // relative to "./templates/",
 				ProviderPerProject: true,
 			},
 		},

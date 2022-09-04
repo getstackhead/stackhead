@@ -2,13 +2,14 @@ package terraform
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"path"
 	"text/template"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/gookit/event"
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"
@@ -17,6 +18,9 @@ import (
 )
 
 var terraformProvidersFile = path.Join(config.RootTerraformDirectory, "terraform-providers.tf")
+
+//go:embed templates
+var terraformTemplates embed.FS
 
 func Setup() error {
 	event.MustFire("setup.terraform.pre-install", event.M{})
@@ -59,22 +63,22 @@ type Data struct {
 	AdditionalContent string
 }
 
-func CollectProvidersFromModules(modules []system.Module) []system.ModuleTerraformConfigProvider {
-	var providers []system.ModuleTerraformConfigProvider
+func FilterModulesWithProviders(modules []system.Module) []system.Module {
+	var modulesWithProviders []system.Module
 	emptyProvider := system.ModuleTerraformConfigProvider{}
 	for _, module := range modules {
 		moduleCfg := module.GetConfig()
 		if cmp.Equal(moduleCfg.Terraform.Provider, emptyProvider) {
 			continue
 		}
-		providers = append(providers, moduleCfg.Terraform.Provider)
+		modulesWithProviders = append(modulesWithProviders, module)
 	}
-	return providers
+	return modulesWithProviders
 }
 
 func BuildAndWriteProviders() error {
-	providers := CollectProvidersFromModules(system.Context.GetModulesInOrder())
-	fileContents, err := BuildProviders(providers, NO_PER_PROJECT)
+	modulesWithProviders := FilterModulesWithProviders(system.Context.GetModulesInOrder())
+	fileContents, err := BuildProviders(modulesWithProviders, NO_PER_PROJECT)
 	if err != nil {
 		return err
 	}
@@ -135,7 +139,12 @@ type BuildProviderMode int
 var ONLY_PER_PROJECT BuildProviderMode = 1
 var NO_PER_PROJECT BuildProviderMode = 2
 
-func BuildProviders(providers []system.ModuleTerraformConfigProvider, mode BuildProviderMode) (bytes.Buffer, error) {
+func BuildProviders(modules []system.Module, mode BuildProviderMode) (bytes.Buffer, error) {
+	var providers []system.ModuleTerraformConfigProvider
+	for _, module := range modules {
+		providers = append(providers, module.GetConfig().Terraform.Provider)
+	}
+
 	data := Data{
 		Providers:         providers,
 		Context:           system.Context,
@@ -144,12 +153,17 @@ func BuildProviders(providers []system.ModuleTerraformConfigProvider, mode Build
 
 	// Additional provider configuration from plugins
 	var suffix string
-	for _, provider := range providers {
+	for _, module := range modules {
+		provider := module.GetConfig().Terraform.Provider
 		if (mode == ONLY_PER_PROJECT && !provider.ProviderPerProject) || (mode == NO_PER_PROJECT && provider.ProviderPerProject) {
 			continue
 		}
 		if provider.Init != "" {
-			providerInitContent, err := buildProvider("pkging:///templates/modules/"+provider.Init, data, provider.InitFuncMap)
+			templateContent, err := module.GetTemplates().ReadFile("templates/" + provider.Init)
+			if err != nil {
+				return bytes.Buffer{}, err
+			}
+			providerInitContent, err := buildProvider(string(templateContent), data, provider.InitFuncMap)
 			if err != nil {
 				return bytes.Buffer{}, fmt.Errorf("Unable to load module init file \"" + provider.Init + "\": " + err.Error())
 			}
@@ -167,23 +181,23 @@ func BuildProviders(providers []system.ModuleTerraformConfigProvider, mode Build
 		returnBuf.WriteString(data.AdditionalContent)
 		return returnBuf, nil
 	}
-	return buildProvider("pkging:///templates/terraform-providers.tf.tmpl", data, nil)
+
+	templateContent, err := terraformTemplates.ReadFile("templates/terraform-providers.tf.tmpl")
+	if err != nil {
+		return bytes.Buffer{}, err
+	}
+	return buildProvider(string(templateContent), data, nil)
 }
 
-func buildProvider(filePath string, data Data, funcMap template.FuncMap) (bytes.Buffer, error) {
-	var buf bytes.Buffer
-	fileContents, err := xfs.ReadFile(filePath)
-	if err != nil {
-		return buf, err
-	}
-
+func buildProvider(templateContent string, data Data, funcMap template.FuncMap) (bytes.Buffer, error) {
 	baseTmpl := template.New("providers")
 
 	if funcMap != nil {
 		baseTmpl.Funcs(funcMap)
 	}
 
-	tmpl, err := baseTmpl.Parse(fileContents)
+	var buf bytes.Buffer
+	tmpl, err := baseTmpl.Parse(templateContent)
 	if err != nil {
 		return buf, err
 	}

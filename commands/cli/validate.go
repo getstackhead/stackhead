@@ -1,12 +1,14 @@
 package cli
 
 import (
+	"embed"
+
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/spf13/cobra"
 )
 
 // Validate is a command object for Cobra that provides the validate command
-func Validate() *cobra.Command {
+func Validate(LocalSchemas embed.FS) *cobra.Command {
 	var version, branch string
 	var ignoreSslCertificate bool
 	var command = &cobra.Command{
@@ -16,6 +18,7 @@ func Validate() *cobra.Command {
 		Long:    `validate is used to make sure your StackHead CLI configuration file meets the required syntax.`,
 		Args:    cobra.ExactArgs(1),
 		Run: routines.CobraValidationBase(
+			LocalSchemas,
 			"cli-config.schema.json",
 			version,
 			branch,

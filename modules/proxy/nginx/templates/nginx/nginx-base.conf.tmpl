@@ -23,7 +23,7 @@ server {
     {{- template "sslcertificates" $ -}}
     {{- template "location" $ -}}
 
-    {{- $locations := (append $.Expose.ProxyWebsocketLocations "/") -}}
+    {{- $locations := (mustAppend $.Expose.ProxyWebsocketLocations "/") -}}
     {{ range $key, $path := $locations }}
     location {{ $path }} {
         {{ template "location_file" (dict "root" $ "path" $path) }}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	xfs "github.com/saitho/golang-extended-fs"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	"github.com/getstackhead/stackhead/modules/proxy"
 	"github.com/getstackhead/stackhead/project"
@@ -61,7 +61,8 @@ func (Module) Deploy(modulesSettings interface{}) error {
 	}
 
 	caddyDirectives, err := system.RenderModuleTemplate(
-		"proxy/caddy/caddy.tf.tmpl",
+		templates,
+		"caddy.tf.tmpl",
 		data,
 		proxy.FuncMap)
 	if err != nil {

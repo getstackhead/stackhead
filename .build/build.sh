@@ -1,6 +1,6 @@
 #!/bin/bash
 
+go version
 go get -d
-pkger
 go generate ./...
 go build -o ./bin/stackhead-cli .
