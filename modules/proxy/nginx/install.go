@@ -2,13 +2,21 @@ package proxy_nginx
 
 import (
 	"fmt"
-	"github.com/getstackhead/stackhead/system"
 
+	"github.com/fatih/structs"
 	xfs "github.com/saitho/golang-extended-fs"
 	logger "github.com/sirupsen/logrus"
+
+	"github.com/getstackhead/stackhead/system"
 )
 
-func (Module) Install(modulesSettings interface{}) error {
+func (Module) Install(_modulesSettings interface{}) error {
+	moduleSettings, err := system.UnpackModuleSettings[ModuleSettings](_modulesSettings)
+	if err != nil {
+		return fmt.Errorf("unable to load module settings: " + err.Error())
+	}
+	moduleSettings.Config.SetDefaults()
+
 	// Ensure stackhead user can reload nginx
 	permissions := "\n%stackhead ALL= NOPASSWD: /bin/systemctl reload nginx\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissions, true); err != nil {
@@ -20,9 +28,6 @@ func (Module) Install(modulesSettings interface{}) error {
 		return fmt.Errorf("unable to validate sudoers file")
 	}
 
-	//- set_fact:
-	//    nginx_conf_template: "{{ module_role_path | default(role_path) }}/templates/nginx/nginx.conf.j2"
-
 	if err := system.InstallPackage([]system.Package{
 		{
 			Name:   "nginx",
@@ -32,17 +37,17 @@ func (Module) Install(modulesSettings interface{}) error {
 		return err
 	}
 
-	//- name: Setup Nginx
-	//  vars:
-	//    nginx_ppa_use: true
-	//    nginx_vhosts: []
-	//    __nginx_user: "stackhead"
-	//    root_group: "stackhead"
-	//    nginx_extra_conf_options: "{{ module.config.extra_conf_options|default({}) }}"
-	//    nginx_extra_conf_http_options: "{{ module.config.extra_conf_http_options|default({}) }}"
-	//    server_names_hash_bucket_size: "{{ module.config.server_names_hash_bucket_size|default(64) }}"
-	//  include_role:
-	//    name: geerlingguy.nginx
+	nginxConfig := moduleSettings.Config
+
+	// Override /etc/nginx/nginx.conf
+	nginxConfTemplate, err := system.RenderModuleTemplate(
+		"proxy/nginx/nginx.conf.tmpl",
+		structs.Map(nginxConfig),
+		nil)
+	if err != nil {
+		return err
+	}
+	err = xfs.WriteFile("ssh:///etc/nginx/nginx.conf", nginxConfTemplate)
 
 	// adjust owner of /var/www directories
 	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/var/www"); err != nil {
