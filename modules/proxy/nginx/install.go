@@ -17,6 +17,11 @@ func (Module) Install(_modulesSettings interface{}) error {
 	}
 	moduleSettings.Config.SetDefaults()
 
+	// Add stackhead user to www-data group
+	if _, _, err := system.RemoteRun("usermod", "-a -G www-data stackhead"); err != nil {
+		return fmt.Errorf("unable to add stackhead user to www-data group")
+	}
+
 	// Ensure stackhead user can reload nginx
 	permissions := "\n%stackhead ALL= NOPASSWD: /bin/systemctl reload nginx\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissions, true); err != nil {
