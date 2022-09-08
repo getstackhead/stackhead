@@ -103,11 +103,6 @@ func userSetup() error {
 		}
 	}
 
-	// Add stackhead user to www-data group
-	if _, _, err := system.RemoteRun("usermod", "-a -G www-data stackhead"); err != nil {
-		return fmt.Errorf("unable to add stackhead user to www-data group")
-	}
-
 	// Set includedir in sudoers
 	sudoersInclude := "\n#includedir /etc/sudoers.d\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
