@@ -70,6 +70,15 @@ func RenderModuleTemplateText(templateName string, fileContents string, addition
 
 	// prepare functions
 	tmpl = tmpl.Funcs(sprig.TxtFuncMap()).Funcs(gomplate.CreateFuncs(nil, nil))
+	tmpl = tmpl.Funcs(map[string]any{
+		"joinMap": func(data map[string]interface{}, joinChar string, wrapChar string) []string {
+			var list []string
+			for key := range data {
+				list = append(list, wrapChar+key+"="+data[key].(string)+wrapChar)
+			}
+			return list
+		},
+	})
 	if additionalFuncs != nil {
 		tmpl = tmpl.Funcs(additionalFuncs)
 	}
