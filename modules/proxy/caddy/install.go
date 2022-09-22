@@ -19,8 +19,11 @@ func InstallApt() error {
 	}
 
 	// Add Caddy apt signing key
-	if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | \nWorkaround; please use this until the docs update is pushed live:\n\ncurl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg"); err != nil {
-		return err
+	hasSourceList, _ := xfs.HasFile("ssh:///etc/apt/sources.list.d/caddy-stable.list")
+	if !hasSourceList {
+		if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg"); err != nil {
+			return err
+		}
 	}
 
 	// Setup Caddy apt repository on Ubuntu
