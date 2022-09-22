@@ -106,7 +106,7 @@ func userSetup() error {
 	// Set includedir in sudoers
 	sudoersInclude := "\n#includedir /etc/sudoers.d\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
-		logger.Debugln(err)
+		logger.Errorln(err)
 		return fmt.Errorf("unable to append to sudoers file")
 	}
 	// Create empty sudoers file for additional permissions of stackhead user

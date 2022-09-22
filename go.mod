@@ -17,7 +17,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/gookit/event v1.0.6
 	github.com/hairyhenderson/gomplate/v3 v3.11.2
-	github.com/saitho/golang-extended-fs/v2 v2.0.0
+	github.com/saitho/golang-extended-fs/v2 v2.0.1
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
@@ -68,6 +68,7 @@ require (
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2 // indirect
+	github.com/go-test/deep v1.0.8 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -126,7 +127,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
-	github.com/saitho/golang-extended-fs v1.0.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
