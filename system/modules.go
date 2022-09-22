@@ -42,6 +42,13 @@ type ModuleTerraformConfig struct {
 type Module interface {
 	Install(moduleSettings interface{}) error
 	Deploy(moduleSettings interface{}) error
+	Init(moduleSettings interface{})
+	GetConfig() ModuleConfig
+	GetTemplates() *embed.FS
+}
+
+type PluginModule interface {
+	Init(moduleSettings interface{})
 	GetConfig() ModuleConfig
 	GetTemplates() *embed.FS
 }

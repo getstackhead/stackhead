@@ -40,6 +40,12 @@ var DeployApplication = &cobra.Command{
 					return fmt.Errorf("Trying to deploy with a newer version of StackHead than used for server setup. Please run a server setup again.")
 				}
 
+				// Init modules
+				for _, module := range system.Context.GetModulesInOrder() {
+					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+					module.Init(moduleSettings)
+				}
+
 				if err := routines.RunTask(routines.Task{
 					Name: "Preparing project structure",
 					Run: func(r routines.RunningTask) error {
@@ -89,6 +95,9 @@ var DeployApplication = &cobra.Command{
 						}
 
 						for _, module := range system.Context.GetModulesInOrder() {
+							if module.GetConfig().Type == "plugin" {
+								continue
+							}
 							moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
 							if err := module.Deploy(moduleSettings); err != nil {
 								return err
