@@ -116,6 +116,14 @@ func Apply(directory string) error {
 	return nil
 }
 
+func Destroy(directory string) error {
+	if _, outErr, err := system.RemoteRun("(cd " + directory + " && " + GetCommand("destroy -auto-approve") + ")"); err != nil {
+		logger.Errorln(outErr.String())
+		return err
+	}
+	return nil
+}
+
 func InstallProviders() error {
 	if err := Init(config.RootTerraformDirectory); err != nil {
 		return err
