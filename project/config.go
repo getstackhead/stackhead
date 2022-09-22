@@ -10,6 +10,7 @@ import (
 
 func LoadProjectDefinition(filepath string) (*Project, error) {
 	p := &Project{}
+	p.ProjectDefinitionFolder = path.Dir(filepath)
 
 	yamlFile, err := xfs.ReadFile(filepath)
 	if err != nil {

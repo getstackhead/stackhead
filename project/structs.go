@@ -1,9 +1,10 @@
 package project
 
 type Project struct {
-	Name      string
-	Domains   []Domains
-	Container Container
+	Name                    string
+	Domains                 []Domains
+	Container               Container
+	ProjectDefinitionFolder string
 }
 
 type DomainExpose struct {
@@ -60,4 +61,5 @@ type ContainerServiceVolume struct {
 	Src  string
 	Dest string
 	User string
+	Mode string
 }

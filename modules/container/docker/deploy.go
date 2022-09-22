@@ -63,12 +63,6 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	srcFolderList := container_docker_definitions.GetSrcFolderList(GetDockerPaths())
 
 	if len(srcFolderList) > 0 {
-		var resolvedGroupId int
-		resolvedGroupId, err := system.ResolveRemoteGroupIntoGid("stackhead")
-		if err != nil {
-			return fmt.Errorf("Unable to resolve group \"stackhead\" into a GID. The StackHead setup seems to be incomplete.")
-		}
-
 		for _, folder := range srcFolderList {
 			// Creating missing project Docker folders
 			if err := xfs.CreateFolder("ssh://" + folder.Path); err != nil {
@@ -80,7 +74,8 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 				if err != nil {
 					return fmt.Errorf("Unable to resolve user \"" + folder.User + "\" into a UID")
 				}
-				if err := xfs.Chown("ssh://"+folder.Path, resolvedUserId, resolvedGroupId); err != nil {
+				// Change user of folder
+				if _, _, err := system.RemoteRun("sudo chown " + strconv.Itoa(resolvedUserId) + ":stackhead " + folder.Path); err != nil {
 					return err
 				}
 			}
@@ -91,6 +86,9 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	if _, _, err := system.RemoteRun("rm -rf " + GetDockerPaths().GetHooksDir()); err != nil {
 		return err
 	}
+	if err := xfs.CreateFolder("ssh://" + GetDockerPaths().GetHooksDir()); err != nil {
+		return err
+	}
 
 	// Collect new hooks
 	var collectedHooks []container_docker_definitions.Hook
@@ -98,13 +96,13 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		if service.Hooks.ExecuteAfterSetup != "" {
 			collectedHooks = append(collectedHooks, container_docker_definitions.Hook{
 				Prefix: "afterSetup",
-				Src:    service.Hooks.ExecuteAfterSetup,
+				Src:    path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteAfterSetup),
 			})
 		}
 		if service.Hooks.ExecuteBeforeDestroy != "" {
 			collectedHooks = append(collectedHooks, container_docker_definitions.Hook{
 				Prefix: "beforeDestroy",
-				Src:    service.Hooks.ExecuteBeforeDestroy,
+				Src:    path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteBeforeDestroy),
 			})
 		}
 	}
@@ -112,7 +110,6 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	// Copy hook files
 	for _, hook := range collectedHooks {
 		hasHook, err := xfs.HasFile(hook.Src)
-		fmt.Println(err)
 		if err != nil {
 			return fmt.Errorf("Unable to validate hook file's existence: " + err.Error())
 		}
@@ -130,8 +127,6 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 			return err
 		}
 	}
-	fmt.Println("Copy hook files")
-	fmt.Println(collectedHooks)
 
 	// Generate Terraform Docker configuration file
 	var funcMap = template.FuncMap{
@@ -153,7 +148,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 
 	data := map[string]interface{}{
 		"Context":     system.Context,
-		"DockerPaths": container_docker_definitions.DockerPaths{},
+		"DockerPaths": GetDockerPaths(),
 	}
 	dockerTf, err := system.RenderModuleTemplate(
 		templates,
