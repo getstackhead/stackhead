@@ -35,10 +35,10 @@ EOF
 {{end}}
 
   provisioner "local-exec" {
-    command = "caddy reload -config /etc/caddy/Caddyfile"
+    command = "caddy reload --config /etc/caddy/Caddyfile"
   }
   provisioner "local-exec" {
     when = destroy
-    command = "caddy reload -config /etc/caddy/Caddyfile"
+    command = "caddy reload --config /etc/caddy/Caddyfile"
   }
 }
