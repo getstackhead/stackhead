@@ -30,6 +30,32 @@ type RegExSettings struct {
 	Repl    string
 }
 
+var userNameCache = map[string]int{}
+
+func resolveUserNameWithCache(userName string) (int, error) {
+	value, ok := userNameCache[userName]
+	if ok {
+		return value, nil
+	}
+
+	var resolvedUserId int
+	var err error
+	if reflect.TypeOf(userName).String() == "string" { // if userId is a string, resolve it to uid
+		resolvedUserId, err = system.ResolveRemoteUserIntoUid(userName)
+		if err != nil {
+			// check if string is a number
+			if userAsInt, err2 := strconv.Atoi(userName); err2 == nil {
+				userNameCache[userName] = userAsInt
+				return userAsInt, nil
+			}
+		}
+	} else {
+		resolvedUserId, err = strconv.Atoi(userName)
+	}
+	userNameCache[userName] = resolvedUserId
+	return resolvedUserId, err
+}
+
 func (m Module) Deploy(modulesSettings interface{}) error {
 	project := system.Context.Project
 
@@ -37,6 +63,12 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	srcFolderList := container_docker_definitions.GetSrcFolderList(GetDockerPaths())
 
 	if len(srcFolderList) > 0 {
+		var resolvedGroupId int
+		resolvedGroupId, err := system.ResolveRemoteGroupIntoGid("stackhead")
+		if err != nil {
+			return fmt.Errorf("Unable to resolve group \"stackhead\" into a GID. The StackHead setup seems to be incomplete.")
+		}
+
 		for _, folder := range srcFolderList {
 			// Creating missing project Docker folders
 			if err := xfs.CreateFolder("ssh://" + folder.Path); err != nil {
@@ -44,21 +76,9 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 			}
 			// Adjust Docker folder permissions
 			if folder.User != "" {
-				var resolvedUserId int
-				var resolvedGroupId int
-				var err error
-				if reflect.TypeOf(folder.User).String() == "string" { // if userId is a string, resolve it to uid
-					resolvedUserId, err = system.ResolveRemoteUserIntoUid(folder.User)
-				} else {
-					resolvedUserId, err = strconv.Atoi(folder.User)
-				}
+				resolvedUserId, err := resolveUserNameWithCache(folder.User)
 				if err != nil {
 					return fmt.Errorf("Unable to resolve user \"" + folder.User + "\" into a UID")
-				}
-
-				resolvedGroupId, err = system.ResolveRemoteGroupIntoGid("stackhead")
-				if err != nil {
-					return fmt.Errorf("Unable to resolve group \"stackhead\" into a GID. The StackHead setup seems to be incomplete.")
 				}
 				if err := xfs.Chown("ssh://"+folder.Path, resolvedUserId, resolvedGroupId); err != nil {
 					return err
