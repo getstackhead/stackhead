@@ -29,7 +29,7 @@ func PrepareContext(host string, action string, projectDefinition *project.Proje
 	}
 
 	// set DNS
-	dnsNames := viper.GetStringMap("modules")["dns"].([]interface{})
+	dnsNames := viper.GetStringMapStringSlice("modules")["dns"]
 	for _, dnsName := range dnsNames {
 		switch dnsName {
 		// todo: add available DNS modules here

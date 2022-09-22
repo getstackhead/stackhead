@@ -1,6 +1,7 @@
 package system
 
 import (
+	logger "github.com/sirupsen/logrus"
 	"net"
 	"os"
 	"path"
@@ -46,6 +47,16 @@ func (c ContextStruct) GetModulesInOrder() []Module {
 
 var Context = ContextStruct{}
 
+type DebugLogger struct {
+}
+
+func (DebugLogger) Debug(obj interface{}) {
+	logger.Debugln(obj)
+}
+func (DebugLogger) Error(obj interface{}) {
+	logger.Errorln(obj)
+}
+
 // InitializeContext will set the context object for the current host, action and project
 //    host = IP address string
 //    action = any of ContextAction* constants
@@ -66,6 +77,7 @@ func InitializeContext(host string, action string, projectDefinition *project.Pr
 		sftp.Config.LoadLocalSigners = false
 		sftp.Config.SshIdentity = Context.Authentication.GetPrivateKeyPath()
 	}
+	sftp.Config.Logger = DebugLogger{}
 }
 
 func ContextSetProxyModule(module Module) {
