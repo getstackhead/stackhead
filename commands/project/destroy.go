@@ -34,6 +34,12 @@ var DestroyApplication = &cobra.Command{
 				options := make(map[string]string)
 				options["project_name"] = strings.TrimSuffix(strings.TrimSuffix(filepath.Base(args[0]), ".stackhead.yml"), ".stackhead.yaml")
 
+				// Init modules
+				for _, module := range system.Context.GetModulesInOrder() {
+					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+					module.Init(moduleSettings)
+				}
+
 				// todo: run destroy
 				r.PrintLn("Destroy not yet implemented.")
 

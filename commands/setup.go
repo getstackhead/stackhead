@@ -153,6 +153,12 @@ var SetupServer = &cobra.Command{
 			Run: func(r routines.RunningTask) error {
 				var err error
 
+				// Init modules
+				for _, module := range system.Context.GetModulesInOrder() {
+					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+					module.Init(moduleSettings)
+				}
+
 				//deployedProjects, err := stackhead.GetDeployedProjects()
 				//if err != nil {
 				//	return err
@@ -218,6 +224,9 @@ var SetupServer = &cobra.Command{
 				modules := system.Context.GetModulesInOrder()
 				event.MustFire("setup.modules.pre-install", event.M{"modules": modules})
 				for _, module := range modules {
+					if module.GetConfig().Type == "plugin" {
+						continue
+					}
 					event.MustFire(
 						"setup.modules.pre-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
 						event.M{"module": module},
