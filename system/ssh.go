@@ -43,15 +43,16 @@ func ResolveRemoteUserIntoUid(username string) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	return strconv.Atoi(fmt.Sprintf("%d", output))
+	return strconv.Atoi(output.String())
 }
 
 func ResolveRemoteGroupIntoGid(groupname string) (int, error) {
-	output, _, err := RemoteRun("cut", "-d: -f3 < <(getent group "+groupname+")")
+	output, _, err := RemoteRun("getent", "group", groupname)
 	if err != nil {
 		return -1, err
 	}
-	return strconv.Atoi(fmt.Sprintf("%d", output))
+	splitOutput := strings.Split(output.String(), ":")
+	return strconv.Atoi(splitOutput[2])
 }
 
 func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
