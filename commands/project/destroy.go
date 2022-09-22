@@ -2,15 +2,15 @@ package project
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
 
+	xfs "github.com/saitho/golang-extended-fs/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/getstackhead/stackhead/commands"
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
+	"github.com/getstackhead/stackhead/terraform"
 )
 
 // DestroyApplication is a command object for Cobra that provides the destroy command
@@ -21,29 +21,42 @@ var DestroyApplication = &cobra.Command{
 	Long:    `destroy will tear down the given project that has been deployed onto the server`,
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		config, err := project.LoadProjectDefinition(args[0])
+		projectDefinition, err := project.LoadProjectDefinition(args[0])
 		if err != nil {
 			panic("unable to load project definition file. " + err.Error())
 		}
-		commands.PrepareContext(args[1], system.ContextActionProjectDestroy, config)
+		commands.PrepareContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
+
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {
-				var err error
-
-				options := make(map[string]string)
-				options["project_name"] = strings.TrimSuffix(strings.TrimSuffix(filepath.Base(args[0]), ".stackhead.yml"), ".stackhead.yaml")
-
 				// Init modules
 				for _, module := range system.Context.GetModulesInOrder() {
 					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
 					module.Init(moduleSettings)
 				}
 
-				// todo: run destroy
-				r.PrintLn("Destroy not yet implemented.")
+				if err := routines.RunTask(routines.Task{
+					Name: "Destroying Terraform plans",
+					Run: func(r routines.RunningTask) error {
+						if err := terraform.Init(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
+							return err
+						}
+						if err := terraform.Destroy(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
+							return err
+						}
+						return nil
+					},
+				}); err != nil {
+					return err
+				}
 
-				return err
+				// Removing project directory
+				if err := xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true); err != nil {
+					return err
+				}
+
+				return nil
 			},
 		})
 	},
