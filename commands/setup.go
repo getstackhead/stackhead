@@ -114,6 +114,13 @@ func userSetup() error {
 		return fmt.Errorf("unable to create empty stackhead sudoers file")
 	}
 
+	// todo: API to add entries to NOPASS_CMNDS
+	permissions := "\nCmnd_Alias STACKHEAD_NOPASS_CMNDS = /bin/chmod, /bin/chown\n%stackhead ALL= NOPASSWD: STACKHEAD_NOPASS_CMNDS\n"
+	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissions, true); err != nil {
+		logger.Debugln(err)
+		return fmt.Errorf("unable to add chown permissions for stackhead user")
+	}
+
 	// Validate sudoers file
 	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")

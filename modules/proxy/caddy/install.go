@@ -74,6 +74,7 @@ func InstallApt() error {
 	}
 
 	// Ensure stackhead user can reload caddy
+	// todo: add to NOPASS_CMNDS
 	permissions := "\n%stackhead ALL= NOPASSWD: /bin/systemctl reload caddy\n"
 	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissions, true); err != nil {
 		logger.Debugln(err)
