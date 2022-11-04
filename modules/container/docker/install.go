@@ -6,17 +6,6 @@ import (
 )
 
 func InstallApt() error {
-	// Install packages to allow apt to use a repository over HTTPS
-	if err := system.InstallPackage([]system.Package{
-		{Name: "apt-transport-https", Vendor: system.PackageVendorApt},
-		{Name: "ca-certificates", Vendor: system.PackageVendorApt},
-		{Name: "curl", Vendor: system.PackageVendorApt},
-		{Name: "gnupg-agent", Vendor: system.PackageVendorApt},
-		{Name: "software-properties-common", Vendor: system.PackageVendorApt},
-	}); err != nil {
-		return err
-	}
-
 	// Add Docker apt signing key
 	if _, _, err := system.RemoteRun("sudo mkdir -p /etc/apt/keyrings"); err != nil {
 		return err

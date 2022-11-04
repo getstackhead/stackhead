@@ -9,15 +9,6 @@ import (
 )
 
 func InstallApt() error {
-	// Install packages to allow apt to use a repository over HTTPS
-	if err := system.InstallPackage([]system.Package{
-		{Name: "apt-transport-https", Vendor: system.PackageVendorApt},
-		{Name: "debian-keyring", Vendor: system.PackageVendorApt},
-		{Name: "debian-archive-keyring", Vendor: system.PackageVendorApt},
-	}); err != nil {
-		return err
-	}
-
 	// Add Caddy apt signing key
 	hasSourceList, _ := xfs.HasFile("ssh:///etc/apt/sources.list.d/caddy-stable.list")
 	if !hasSourceList {
