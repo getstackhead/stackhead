@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/gookit/event"
 	xfs "github.com/saitho/golang-extended-fs/v2"
@@ -19,8 +20,22 @@ import (
 	"github.com/getstackhead/stackhead/terraform"
 )
 
-func basicSetup() {
+func basicSetup() error {
+	// Install packages to allow apt to use a repository over HTTPS
+	if err := system.InstallPackage([]system.Package{
+		{Name: "apt-transport-https", Vendor: system.PackageVendorApt},
+		{Name: "ca-certificates", Vendor: system.PackageVendorApt},
+		{Name: "curl", Vendor: system.PackageVendorApt},
+		{Name: "debian-keyring", Vendor: system.PackageVendorApt},
+		{Name: "debian-archive-keyring", Vendor: system.PackageVendorApt},
+		{Name: "gnupg-agent", Vendor: system.PackageVendorApt},
+		{Name: "software-properties-common", Vendor: system.PackageVendorApt},
+	}); err != nil {
+		return err
+	}
+
 	// Update apt caches
+	return nil
 }
 
 func folderSetup() error {
@@ -104,11 +119,19 @@ func userSetup() error {
 	}
 
 	// Set includedir in sudoers
-	sudoersInclude := "\n#includedir /etc/sudoers.d\n"
-	if err := xfs.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
+	content, err := xfs.ReadFile("ssh:///etc/sudoers")
+	if err != nil {
 		logger.Errorln(err)
-		return fmt.Errorf("unable to append to sudoers file")
+		return fmt.Errorf("unable to read sudoers file")
 	}
+	if !strings.Contains(content, "includedir /etc/sudoers.d\n") {
+		sudoersInclude := "\nincludedir /etc/sudoers.d\n"
+		if err := xfs.AppendToFile("ssh:///etc/sudoers", sudoersInclude, true); err != nil {
+			logger.Errorln(err)
+			return fmt.Errorf("unable to append to sudoers file")
+		}
+	}
+
 	// Create empty sudoers file for additional permissions of stackhead user
 	if err := xfs.WriteFile("ssh:///etc/sudoers.d/stackhead", ""); err != nil {
 		return fmt.Errorf("unable to create empty stackhead sudoers file")
@@ -175,7 +198,11 @@ var SetupServer = &cobra.Command{
 				//
 				//- import_tasks: "../roles/stackhead_setup/tasks/facts-deploy.yml"
 				r.PrintLn("Preparing setup.")
-				basicSetup()
+
+				if err := basicSetup(); err != nil {
+					fmt.Println("\nUnable to prepare setup. (" + err.Error() + ")")
+					os.Exit(1)
+				}
 
 				r.PrintLn("Setting up SSH keys.")
 				if err := setupSshKeys(); err != nil {
