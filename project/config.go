@@ -22,7 +22,7 @@ func LoadProjectDefinition(filepath string) (*Project, error) {
 	}
 
 	// Set project name. Right now we do not want to allow a "name" attribute in project definition file
-	p.Name = strings.TrimRight(path.Base(filepath), ".stackhead.yml")
+	p.Name = strings.TrimSuffix(path.Base(filepath), ".stackhead.yml")
 
 	return p, nil
 }
