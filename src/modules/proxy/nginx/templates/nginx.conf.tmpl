@@ -192,71 +192,71 @@ http {
     ~*application/font-woff2        "*";
   }
 
-	##
-	# Basic Settings
-	##
+  ##
+  # Basic Settings
+  ##
 
   sendfile        {{ $.Sendfile }};
   tcp_nopush      {{ $.TcpNopush }};
   tcp_nodelay     {{ $.TcpNodelay }};
-	keepalive_timeout {{ $.KeepaliveTimeout }};
-	keepalive_requests {{ $.KeepaliveRequests }};
-	types_hash_max_size 2048;
-	server_tokens {{ $.ServerTokens }};
+  keepalive_timeout {{ $.KeepaliveTimeout }};
+  keepalive_requests {{ $.KeepaliveRequests }};
+  types_hash_max_size 2048;
+  server_tokens {{ $.ServerTokens }};
 
-	{{ if $.ProxyCachePath }}
+  {{ if $.ProxyCachePath }}
       proxy_cache_path {{ $.ProxyCachePath }};
   {{ end }}
 
-	server_names_hash_bucket_size {{ $.ServerNamesHashBucketSize }};
-	# server_name_in_redirect off;
+  server_names_hash_bucket_size {{ $.ServerNamesHashBucketSize }};
+  # server_name_in_redirect off;
   client_max_body_size {{ $.ClientMaxBodySize }};
 
-	include {{ $.MimeFilePath }};
-	default_type application/octet-stream;
+  include {{ $.MimeFilePath }};
+  default_type application/octet-stream;
 
-	##
-	# SSL Settings
-	##
+  ##
+  # SSL Settings
+  ##
 
-	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
-	ssl_prefer_server_ciphers on;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+  ssl_prefer_server_ciphers on;
 
-	##
-	# Logging Settings
-	##
+  ##
+  # Logging Settings
+  ##
 
-	access_log {{ $.AccessLog }};
-	error_log  {{ $.ErrorLog }};
+  access_log {{ $.AccessLog }};
+  error_log  {{ $.ErrorLog }};
 
-	##
-	# Virtual Host Configs
-	##
+  ##
+  # Virtual Host Configs
+  ##
 
-	include {{ $.ConfPath }}/*.conf;
-	{{ if ne $.ConfPath $.VhostPath }}
+  include {{ $.ConfPath }}/*.conf;
+  {{ if ne $.ConfPath $.VhostPath }}
       include {{ $.VhostPath }}/*;
   {{ end }}
 }
 
 
 #mail {
-#	# See sample authentication script at:
-#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+#  # See sample authentication script at:
+#  # http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
 #
-#	# auth_http localhost/auth.php;
-#	# pop3_capabilities "TOP" "USER";
-#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+#  # auth_http localhost/auth.php;
+#  # pop3_capabilities "TOP" "USER";
+#  # imap_capabilities "IMAP4rev1" "UIDPLUS";
 #
-#	server {
-#		listen     localhost:110;
-#		protocol   pop3;
-#		proxy      on;
-#	}
+#  server {
+#    listen     localhost:110;
+#    protocol   pop3;
+#    proxy      on;
+#  }
 #
-#	server {
-#		listen     localhost:143;
-#		protocol   imap;
-#		proxy      on;
-#	}
+#  server {
+#    listen     localhost:143;
+#    protocol   imap;
+#    proxy      on;
+#  }
 #}

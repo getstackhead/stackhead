@@ -23,6 +23,7 @@ jobs:
           fetch-depth: 0
       - name: Install Go dependencies
         run: go get -d
+        working-directory: src
       - name: Lint Code Base
         uses: docker://github/super-linter:v4
         env:

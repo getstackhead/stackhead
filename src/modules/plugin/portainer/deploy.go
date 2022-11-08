@@ -82,7 +82,7 @@ func (m Module) Deploy(moduleSettings interface{}) error {
 	{
 		"type": 2,
 		"method": "string",
-	  "endpointId": "123",
+		"endpointId": "123",
 		"body_compose_string": "..."
 	}
 	*/

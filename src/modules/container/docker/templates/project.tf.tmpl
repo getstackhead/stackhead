@@ -109,7 +109,7 @@ resource "docker_volume" "local-{{ $.Context.Project.Name }}-{{ $service.Name }}
 {{ end }}
 
 {{ range $key := keys $globalVolumesDict }}
- {{ $value := get $globalVolumesDict $key }}
+{{ $value := get $globalVolumesDict $key }}
 resource "docker_volume" "global-{{ $.Context.Project.Name }}-{{ $key }}" {
   provider = docker.{{ $.Context.Project.Name }}
   name = "global-{{ $.Context.Project.Name }}-{{ $key }}"
