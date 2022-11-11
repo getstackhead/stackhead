@@ -24,10 +24,6 @@
 * [About modules](stackhead-modules/stackhead-modules.md)
 * [List of modules](stackhead-modules/list-of-modules.md)
 * [Development](stackhead-modules/development/README.md)
-  * [Specification](stackhead-modules/development/specification.md)
-  * [Module configuration file](stackhead-modules/development/module-configuration-file.md)
-  * [Module API](stackhead-modules/development/module-api.md)
-  * [Testing modules](stackhead-modules/development/testing-modules.md)
 
 ## Ansible Collection <a id="ansible-playbooks"></a>
 
