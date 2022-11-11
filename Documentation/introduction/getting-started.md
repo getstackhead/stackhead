@@ -41,8 +41,21 @@ Let's setup our first server. We recommend only doing that with newly created se
 Run the following command to provision your server \(replace `123.456.789.10` with your own server's IP address\)
 
 ```bash
+# IPv4
 stackhead-cli setup 123.456.789.10
+
+# IPv6
+stackhead-cli setup 1234:4567:90ab:cdef::1
 ```
+
+{% hint style="info" %}
+During server setup, a `stackhead` user will be created on the remote server, as well as a SSH keypair which is used for connecting during deployment.
+The keys are stored on the executing machine at `~/.config/getstackhead/stackhead/ssh/remotes/[IP Address]`.
+{% endhint %}
+{% hint style="warning" %}
+If you ran the server setup with a IPv4 address and want to deploy to the IPv6 address (and vice-versa), make sure to symlink the SSH keys as well:
+`ln -s ~/.config/getstackhead/stackhead/ssh/remotes/[IPv4 address] ~/.config/getstackhead/stackhead/ssh/remotes/[IPv6 address]`
+{% endhint %}
 
 ## Deploying the project
 
@@ -51,7 +64,11 @@ Before deploying the project, check your domain's DNS settings. Make sure the A 
 Then deploy the project with:
 
 ```bash
+# IPv4
 stackhead-cli deploy ./stackhead/example_app.yml 123.456.789.10
+
+# IPv6
+stackhead-cli deploy ./stackhead/example_app.yml 1234:4567:90ab:cdef::1
 ```
 
 After deployment, open the domain in your web browser. It should display content and have a valid SSL certificate.
@@ -62,5 +79,8 @@ Now let's remove all configurations we created during deployment. This will remo
 
 ```bash
 stackhead-cli destroy ./stackhead/example_app.yml 123.456.789.10
+
+# IPv6
+stackhead-cli destroy ./stackhead/example_app.yml 1234:4567:90ab:cdef::1
 ```
 
