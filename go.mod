@@ -18,7 +18,7 @@ require (
 	github.com/gookit/event v1.0.6
 	github.com/hairyhenderson/gomplate/v3 v3.11.2
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
-	github.com/saitho/golang-extended-fs/v2 v2.0.1
+	github.com/saitho/golang-extended-fs/v2 v2.0.2
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e

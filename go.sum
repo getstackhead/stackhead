@@ -813,8 +813,8 @@ github.com/ryanuber/columnize v2.1.0+incompatible/go.mod h1:sm1tb6uqfes/u+d4ooFo
 github.com/ryanuber/go-glob v1.0.0 h1:iQh3xXAumdQ+4Ufa5b25cRpC5TYKlno6hsv6Cb3pkBk=
 github.com/ryanuber/go-glob v1.0.0/go.mod h1:807d1WSdnB0XRJzKNil9Om6lcp/3a0v4qIHxIXzX/Yc=
 github.com/ryszard/goskiplist v0.0.0-20150312221310-2dfbae5fcf46 h1:GHRpF1pTW19a8tTFrMLUcfWwyC0pnifVo2ClaLq+hP8=
-github.com/saitho/golang-extended-fs/v2 v2.0.1 h1:/V1y+oeoZ7todiZN2053rdaAlAItb46OPEVrEg58m20=
-github.com/saitho/golang-extended-fs/v2 v2.0.1/go.mod h1:aTmESz9Z7Rwbx80zxGWTeuBmW6MLdzYrBZMJOfXsJVw=
+github.com/saitho/golang-extended-fs/v2 v2.0.2 h1:QWGOIP4wFTaSODIU54qDCuH1IQXWcjL6irLezJiHqOA=
+github.com/saitho/golang-extended-fs/v2 v2.0.2/go.mod h1:aTmESz9Z7Rwbx80zxGWTeuBmW6MLdzYrBZMJOfXsJVw=
 github.com/saitho/jsonschema-validator v1.2.0 h1:bWSvTla54F5cziZsxLBR0mlN3gTw9hjrkFuZU55kO+E=
 github.com/saitho/jsonschema-validator v1.2.0/go.mod h1:W/1Q1xQ+vyYxANlTEpi6hQBEHJPEi4wJmCBkdIehFvQ=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
