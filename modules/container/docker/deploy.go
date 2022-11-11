@@ -8,9 +8,11 @@ import (
 	"strconv"
 	"text/template"
 
+	"github.com/phayes/freeport"
 	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	container_docker_definitions "github.com/getstackhead/stackhead/modules/container/docker/definitions"
+	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
 )
 
@@ -54,6 +56,43 @@ func resolveUserNameWithCache(userName string) (int, error) {
 	}
 	userNameCache[userName] = resolvedUserId
 	return resolvedUserId, err
+}
+
+func getPortMap(project *project.Project) (map[string]int, error) {
+	dockerPortMap := map[string]int{}
+
+	// find ports for running containers
+	for _, service := range project.Container.Services {
+		res, _, err := system.RemoteRun("docker", "port", "stackhead-"+project.Name+"-"+service.Name)
+		if err == nil { // ignore error (container not running)
+			// e.g. 80/tcp -> 0.0.0.0:49155
+			re := regexp.MustCompile(`(?P<Internal>\d+)\/tcp -> 0\.0\.0\.0:(?P<External>\d+)`)
+			matches := re.FindAllStringSubmatch(res.String(), -1)
+			for _, match := range matches {
+				externalPort, _ := strconv.Atoi(match[re.SubexpIndex("External")])
+				dockerPortMap[service.Name+"-"+match[re.SubexpIndex("Internal")]] = externalPort
+			}
+		}
+	}
+
+	// determine ports for missing containers
+	missingPortServices := []string{}
+	for _, domain := range project.Domains {
+		for _, expose := range domain.Expose {
+			mapKey := expose.Service + "-" + strconv.Itoa(expose.InternalPort)
+			if _, ok := dockerPortMap[mapKey]; !ok {
+				missingPortServices = append(missingPortServices, mapKey)
+			}
+		}
+	}
+	ports, err := freeport.GetFreePorts(len(missingPortServices))
+	if err != nil {
+		return nil, fmt.Errorf("unable to determine free ports: " + err.Error())
+	}
+	for i := range missingPortServices {
+		dockerPortMap[missingPortServices[i]] = ports[i]
+	}
+	return dockerPortMap, nil
 }
 
 func (m Module) Deploy(modulesSettings interface{}) error {
@@ -146,9 +185,15 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		},
 	}
 
+	dockerPortMap, err := getPortMap(project)
+	if err != nil {
+		return fmt.Errorf("unable to determine free ports: " + err.Error())
+	}
+
 	data := map[string]interface{}{
-		"Context":     system.Context,
-		"DockerPaths": GetDockerPaths(),
+		"Context":       system.Context,
+		"DockerPaths":   GetDockerPaths(),
+		"DockerPortMap": dockerPortMap,
 	}
 	dockerTf, err := system.RenderModuleTemplate(
 		templates,
@@ -158,5 +203,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	_ = xfs.WriteFile("ssh://"+project.GetTerraformDirectoryPath()+"/docker.tf", dockerTf)
 	return xfs.WriteFile("ssh://"+project.GetTerraformDirectoryPath()+"/docker.tf", dockerTf)
 }

@@ -51,6 +51,7 @@ resource "docker_container" "stackhead-{{ $.Context.Project.Name }}-{{ $service.
     {{ if and $expose.InternalPort (eq $expose.Service $service.Name) }}
     ports {
       internal = {{ $expose.InternalPort }}
+      external = {{ index $.DockerPortMap (printf "%s-%d" $expose.Service $expose.InternalPort) }}
     }
     {{ end }}
   {{- end }}
@@ -109,7 +110,7 @@ resource "docker_volume" "local-{{ $.Context.Project.Name }}-{{ $service.Name }}
 {{ end }}
 
 {{ range $key := keys $globalVolumesDict }}
- {{ $value := get $globalVolumesDict $key }}
+{{ $value := get $globalVolumesDict $key }}
 resource "docker_volume" "global-{{ $.Context.Project.Name }}-{{ $key }}" {
   provider = docker.{{ $.Context.Project.Name }}
   name = "global-{{ $.Context.Project.Name }}-{{ $key }}"
