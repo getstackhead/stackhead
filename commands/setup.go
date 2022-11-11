@@ -22,6 +22,9 @@ import (
 
 func basicSetup() error {
 	// Install packages to allow apt to use a repository over HTTPS
+	if err := system.UpdatePackageList(system.PackageVendorApt); err != nil {
+		return err
+	}
 	if err := system.InstallPackage([]system.Package{
 		{Name: "apt-transport-https", Vendor: system.PackageVendorApt},
 		{Name: "ca-certificates", Vendor: system.PackageVendorApt},
