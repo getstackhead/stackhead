@@ -56,6 +56,17 @@ var DestroyApplication = &cobra.Command{
 					return err
 				}
 
+				// Run destroy scripts from DNS plugins
+				for _, module := range system.Context.DNSModules {
+					if module.GetConfig().Type != "dns" {
+						continue
+					}
+					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+					if err := module.(system.DNSModule).Destroy(moduleSettings); err != nil {
+						return err
+					}
+				}
+
 				return nil
 			},
 		})
