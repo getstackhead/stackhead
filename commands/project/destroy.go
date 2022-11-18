@@ -36,24 +36,30 @@ var DestroyApplication = &cobra.Command{
 					module.Init(moduleSettings)
 				}
 
-				if err := routines.RunTask(routines.Task{
-					Name: "Destroying Terraform plans",
-					Run: func(r routines.RunningTask) error {
-						if err := terraform.Init(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
-							return err
-						}
-						if err := terraform.Destroy(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
-							return err
-						}
-						return nil
-					},
-				}); err != nil {
-					return err
+				hasTerraformDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetTerraformDirectoryPath())
+				if hasTerraformDir {
+					if err := routines.RunTask(routines.Task{
+						Name: "Destroying Terraform plans",
+						Run: func(r routines.RunningTask) error {
+							if err := terraform.Init(projectDefinition.GetTerraformDirectoryPath()); err != nil {
+								return err
+							}
+							if err := terraform.Destroy(projectDefinition.GetTerraformDirectoryPath()); err != nil {
+								return err
+							}
+							return nil
+						},
+					}); err != nil {
+						return err
+					}
 				}
 
-				// Removing project directory
-				if err := xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true); err != nil {
-					return err
+				hasProjectDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetDirectoryPath())
+				if hasProjectDir {
+					// Removing project directory
+					if err := xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true); err != nil {
+						return err
+					}
 				}
 
 				// Run destroy scripts from DNS plugins
