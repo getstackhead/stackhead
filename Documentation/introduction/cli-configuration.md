@@ -7,6 +7,11 @@ This file is used to configure which StackHead modules to use.
 You may define additional module configurations within the `modules_config` key.
 See example below for setting the setting _server_names_hash_bucket_size_ for the Nginx proxy module.
 
+{% hint style="warning" %}
+The `modules`, `modules_config` and `terraform` settings may be overwritten via server configuration.
+The server configuration is located in `/stackhead/config.yml` (if it exists).
+{% endhint %}
+
 ## Full annotated configuration
 
 ```yaml

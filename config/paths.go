@@ -11,6 +11,10 @@ var RootDirectory = "/stackhead"
 var RootTerraformDirectory = RootDirectory + "/terraform"
 var ProjectsRootDirectory = RootDirectory + "/projects"
 
+func GetServerConfigFilePath() string {
+	return path.Join(RootDirectory, "config.yml")
+}
+
 func GetLocalStackHeadConfigDir() string {
 	configDirs := configdir.New("getstackhead", "stackhead")
 	folders := configDirs.QueryFolders(configdir.Global)
