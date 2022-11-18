@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 
 	container_docker "github.com/getstackhead/stackhead/modules/container/docker"
+	dns_cloudflare "github.com/getstackhead/stackhead/modules/dns/cloudflare"
 	plugin_portainer "github.com/getstackhead/stackhead/modules/plugin/portainer"
 	proxy_caddy "github.com/getstackhead/stackhead/modules/proxy/caddy"
 	proxy_nginx "github.com/getstackhead/stackhead/modules/proxy/nginx"
@@ -32,7 +33,8 @@ func PrepareContext(host string, action string, projectDefinition *project.Proje
 	dnsNames := viper.GetStringMapStringSlice("modules")["dns"]
 	for _, dnsName := range dnsNames {
 		switch dnsName {
-		// todo: add available DNS modules here
+		case "cloudflare":
+			system.ContextAddDnsModule(dns_cloudflare.Module{})
 		}
 	}
 
