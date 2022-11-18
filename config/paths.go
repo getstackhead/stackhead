@@ -8,7 +8,6 @@ import (
 )
 
 var RootDirectory = "/stackhead"
-var RootTerraformDirectory = RootDirectory + "/terraform"
 var ProjectsRootDirectory = RootDirectory + "/projects"
 
 func GetServerConfigFilePath() string {

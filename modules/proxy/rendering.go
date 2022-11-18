@@ -2,9 +2,11 @@ package proxy
 
 import (
 	"strconv"
+	"strings"
 	"text/template"
 
 	"github.com/getstackhead/stackhead/project"
+	"github.com/getstackhead/stackhead/system"
 )
 
 type PortService struct {
@@ -35,16 +37,21 @@ var FuncMap = template.FuncMap{
 		}
 		return auths
 	},
-	"getPortIndex": func(service string, internalPort int) int {
-		for _, port := range Context.AllPorts {
-			if port.Expose.Service != service {
+	"getExternalPort": func(service string, internalPort int) string {
+		for _, resource := range system.Context.Resources {
+			if resource.Type != system.TypeContainer {
 				continue
 			}
-			if port.Expose.InternalPort != internalPort {
+			if resource.ServiceName != service {
 				continue
 			}
-			return port.Index
+			for _, port := range resource.Ports {
+				split := strings.SplitN(port, ":", 2)
+				if split[1] == strconv.Itoa(internalPort) {
+					return split[0]
+				}
+			}
 		}
-		return -1
+		return ""
 	},
 }
