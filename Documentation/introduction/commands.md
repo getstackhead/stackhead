@@ -14,5 +14,4 @@ The following commands are available in StackHead CLI:
 | `project destroy [path to project definition] [ip address]` | Remove a deployed project |
 | `project validate [path to project definition]` | Validate a project definition file |
 | `cli validate [path to cli configuration]` | Validate a StackHead CLI configuration file |
-| `module validate [path to module file]` | Validate a StackHead module file |
 

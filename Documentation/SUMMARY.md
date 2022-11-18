@@ -7,29 +7,19 @@
 * [Workflow](introduction/workflow.md)
 * [Project definition](introduction/project-definition.md)
 * [Getting started](introduction/getting-started.md)
+* [CLI configuration](introduction/cli-configuration.md)
+* [Commands](introduction/commands.md)
 
 ## Development
 
 * [Basics](development/basics.md)
 * [Events](development/events.md)
 
-## StackHead CLI
-
-* [Installation](stackhead-cli/installation.md)
-* [Commands](stackhead-cli/commands.md)
-* [Configuration](stackhead-cli/cli-configuration.md)
-
 ## StackHead modules
 
 * [About modules](stackhead-modules/stackhead-modules.md)
 * [List of modules](stackhead-modules/list-of-modules.md)
 * [Development](stackhead-modules/development/README.md)
-
-## Ansible Collection <a id="ansible-playbooks"></a>
-
-* [Installation](ansible-playbooks/installation.md)
-* [Inventory](ansible-playbooks/inventory.md)
-* [Playbooks](ansible-playbooks/playbooks.md)
 
 ## Technical Documentation
 

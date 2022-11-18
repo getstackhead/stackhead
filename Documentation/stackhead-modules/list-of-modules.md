@@ -23,6 +23,14 @@ If no webserver is configured, **Caddy** will be used per default.
 If no container manager is configured, **Docker** will be used per default.
 {% endhint %}
 
+## DNS
+
+* [Docker](https://github.com/getstackhead/stackhead/tree/next/modules/dns/cloudflare)
+
+{% hint style="info" %}
+In order to configure a DNS service for a domain, the DNS provider name needs to be set in the domain settings of project definition as well!
+{% endhint %}
+
 ## Plugins
 
 * [Portainer](https://github.com/getstackhead/stackhead/tree/next/modules/plugin/portainer)

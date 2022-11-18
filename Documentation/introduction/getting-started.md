@@ -8,9 +8,11 @@ description: >-
 
 You will require:
 
-* StackHead CLI \(see [Installation Guide](../stackhead-cli/installation.md)\)
+* StackHead CLI binary \(see [GitHub releases page](https://github.com/getstackhead/stackhead/releases)\)
 * a top level domain
 * a web server with SSH root access
+
+If you wish to change the software used for proxy or containers, please [create a CLI configuration file](cli-configuration.md).
 
 ## Creating a project definition
 

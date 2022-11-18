@@ -1,10 +1,12 @@
 # Workflow
 
-StackHead utilizes Ansible and Terraform to set up your projects.
+StackHead utilizes Terraform to set up your projects.
 
+Outdated process image:
 ![StackHead process](../.gitbook/assets/stackhead-process.png)
 
-The figure above illustrates the general StackHead workflow. StackHead provides custom Ansible playbooks for installing required software on a remote server \(setup\) and configuring your projects \(deployment\).
+The figure above illustrates the general StackHead workflow.
+StackHead provides tooling for installing required software on a remote server \(setup\) and configuring your projects \(deployment\).
 
 The highlighted terms are explained in further detail below.
 
@@ -18,16 +20,17 @@ Based on the project definition file, StackHead will take care setting up the re
 
 ## Server setup
 
-During server setup all software and utilities that are required to set up your projects with StackHead are installed. Such may include Terraform, container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
-
-The server setup is executed by running the respective Ansible playbook.
+During server setup all software and utilities that are required to set up your projects with StackHead are installed.
+Such may include Terraform, container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
 
 ## Project deployment
 
-Setting up a project is called deployment and is done by running the respective Ansible playbook. This will create all project-related resources such as web server configuration, SSL certificates and start up containers.
+Setting up a project is called deployment.
+A deployment will create all project-related resources such as reverse proxy configuration, SSL certificates and it will start up containers.
 
 {% hint style="info" %}
 Only servers that have been set up using the StackHead **server setup** can be deployed onto!
+In the future it will be possible to deploy onto servers not provisioned by StackHead (see https://github.com/getstackhead/stackhead/issues/169).
 {% endhint %}
 
 ## Resource management
