@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	logger "github.com/sirupsen/logrus"
 	"net"
 	"os"
@@ -66,6 +67,9 @@ func (DebugLogger) Error(obj interface{}) {
 //    projectDefinition = project definition object
 func InitializeContext(host string, action string, projectDefinition *project.Project) {
 	Context.TargetHost = net.ParseIP(host)
+	if Context.TargetHost == nil {
+		panic(fmt.Errorf("invalid target host"))
+	}
 	Context.CurrentAction = action
 	Context.Project = projectDefinition
 	Context.IsCI = os.Getenv("CI") != ""
