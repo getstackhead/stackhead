@@ -1,7 +1,5 @@
 # Workflow
 
-StackHead utilizes Terraform to set up your projects.
-
 Outdated process image:
 ![StackHead process](../.gitbook/assets/stackhead-process.png)
 
@@ -21,7 +19,7 @@ Based on the project definition file, StackHead will take care setting up the re
 ## Server setup
 
 During server setup all software and utilities that are required to set up your projects with StackHead are installed.
-Such may include Terraform, container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
+Such may include container management software \(e.g. Docker\) and web server software \(e.g. Nginx\). You'll have to run the server setup before you can deploy projects onto it.
 
 ## Project deployment
 
@@ -32,10 +30,3 @@ A deployment will create all project-related resources such as reverse proxy con
 Only servers that have been set up using the StackHead **server setup** can be deployed onto!
 In the future it will be possible to deploy onto servers not provisioned by StackHead (see https://github.com/getstackhead/stackhead/issues/169).
 {% endhint %}
-
-## Resource management
-
-StackHead uses Terraform for creating resources of any kind. Such include configuration files, SSL certificates and Docker containers.
-
-While understanding how we use Terraform is not required for using StackHead, you can find out more in the [technical documentation](../technical-documentation/terraform.md) if you are interested.
-

@@ -10,7 +10,6 @@ import (
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
-	"github.com/getstackhead/stackhead/terraform"
 )
 
 // DestroyApplication is a command object for Cobra that provides the destroy command
@@ -30,45 +29,29 @@ var DestroyApplication = &cobra.Command{
 		routines.RunTask(routines.Task{
 			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
 			Run: func(r routines.RunningTask) error {
+				modules := system.Context.GetModulesInOrder()
+				for i, j := 0, len(modules)-1; i < j; i, j = i+1, j-1 { // reverse module list
+					modules[i], modules[j] = modules[j], modules[i]
+				}
+
 				// Init modules
-				for _, module := range system.Context.GetModulesInOrder() {
+				for _, module := range modules {
 					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
 					module.Init(moduleSettings)
 				}
 
-				hasTerraformDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetTerraformDirectoryPath())
-				if hasTerraformDir {
-					if err := routines.RunTask(routines.Task{
-						Name: "Destroying Terraform plans",
-						Run: func(r routines.RunningTask) error {
-							if err := terraform.Init(projectDefinition.GetTerraformDirectoryPath()); err != nil {
-								return err
-							}
-							if err := terraform.Destroy(projectDefinition.GetTerraformDirectoryPath()); err != nil {
-								return err
-							}
-							return nil
-						},
-					}); err != nil {
-						return err
-					}
-				}
-
 				hasProjectDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetDirectoryPath())
 				if hasProjectDir {
+					// Run destroy scripts from plugins
+					for _, module := range modules {
+						moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+						if err := module.Destroy(moduleSettings); err != nil {
+							return err
+						}
+					}
+
 					// Removing project directory
 					if err := xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true); err != nil {
-						return err
-					}
-				}
-
-				// Run destroy scripts from DNS plugins
-				for _, module := range system.Context.DNSModules {
-					if module.GetConfig().Type != "dns" {
-						continue
-					}
-					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
-					if err := module.(system.DNSModule).Destroy(moduleSettings); err != nil {
 						return err
 					}
 				}

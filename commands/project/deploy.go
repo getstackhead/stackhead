@@ -11,7 +11,6 @@ import (
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
-	"github.com/getstackhead/stackhead/terraform"
 )
 
 // DeployApplication is a command object for Cobra that provides the deploy command
@@ -56,11 +55,6 @@ var DeployApplication = &cobra.Command{
 							return err
 						}
 
-						r.PrintLn("Prepare Terraform directory")
-						if err := xfs.CreateFolder("ssh://" + projectDefinition.GetTerraformDirectoryPath()); err != nil {
-							return err
-						}
-
 						return err
 					},
 					ErrorAsErrorMessage: true,
@@ -69,29 +63,12 @@ var DeployApplication = &cobra.Command{
 				}
 
 				if err := routines.RunTask(routines.Task{
-					Name: "Generating Terraform files",
+					Name: "Creating resources",
 					Run: func(r routines.RunningTask) error {
 						// Collect exposed services
 						var exposedServices []project.DomainExpose
 						for _, domain := range projectDefinition.Domains {
 							exposedServices = append(exposedServices, domain.Expose...)
-						}
-
-						r.PrintLn("Symlinking Terraform providers")
-						if err := terraform.SymlinkProviders(system.Context.Project); err != nil {
-							return fmt.Errorf("Unable to symlink Terraform providers")
-						}
-
-						r.PrintLn("Generate project-specific Terraform providers")
-						modulesWithProviders := terraform.FilterModulesWithProviders(system.Context.GetModulesInOrder())
-						fileContents, err := terraform.BuildProviders(modulesWithProviders, terraform.ONLY_PER_PROJECT)
-						if err != nil {
-							return fmt.Errorf("Unable to generate project-specific Terraform providers: " + err.Error())
-						}
-						if fileContents.Len() > 0 {
-							if err := xfs.WriteFile("ssh://"+projectDefinition.GetTerraformProjectProvidersFilePath(), fileContents.String()); err != nil {
-								return err
-							}
 						}
 
 						for _, module := range system.Context.GetModulesInOrder() {
@@ -109,30 +86,9 @@ var DeployApplication = &cobra.Command{
 					return err
 				}
 
-				// todo: integrate stackhead_config.terraform.manual_update
-				if err := routines.RunTask(routines.Task{
-					Name: "Applying Terraform plans",
-					Run: func(r routines.RunningTask) error {
-						if err := terraform.Init(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
-							return err
-						}
-						if err := terraform.Apply(system.Context.Project.GetTerraformDirectoryPath()); err != nil {
-							return err
-						}
-						return nil
-					},
-				}); err != nil {
-					return err
-				}
-
-				/**
-				- name: Create project specific crontab
-					include_tasks: "../roles/config_terraform/tasks/setup_crontab.yml"
-					when: ensure == 'present'
-				- name: Remove project specific crontab
-					include_tasks: "../roles/config_terraform/tasks/remove_crontab.yml"
-					when: ensure == 'absent'
-				*/
+				// Todo: APPLY
+				// 1. Create Docker containers, networks, volumes, etc. (Docker-compose?) => Docker module
+				// 2. Setup webserver files (1:1)
 
 				return nil
 			},

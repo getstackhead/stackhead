@@ -17,7 +17,6 @@ import (
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
-	"github.com/getstackhead/stackhead/terraform"
 )
 
 func basicSetup() error {
@@ -225,12 +224,6 @@ var SetupServer = &cobra.Command{
 					os.Exit(1)
 				}
 
-				r.PrintLn("Setting up Terraform.")
-				if err := terraform.Setup(); err != nil {
-					fmt.Println("\nUnable to setup Terraform. (" + err.Error() + ")")
-					os.Exit(1)
-				}
-
 				if err := system.WriteVersion(); err != nil {
 					fmt.Println("\nUnable to write version. (" + err.Error() + ")")
 					os.Exit(1)
@@ -247,16 +240,6 @@ var SetupServer = &cobra.Command{
 			Name: fmt.Sprintf("Setting up StackHead Plugins at \"%s\"", args[0]),
 			Run: func(r routines.RunningTask) error {
 				var err error
-
-				r.PrintLn("Installing Terraform providers for plugins.")
-				if err := terraform.BuildAndWriteProviders(); err != nil {
-					return err
-				}
-
-				r.PrintLn("Installing Terraform providers")
-				if err := terraform.InstallProviders(); err != nil {
-					return err
-				}
 
 				modules := system.Context.GetModulesInOrder()
 				event.MustFire("setup.modules.pre-install", event.M{"modules": modules})

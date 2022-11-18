@@ -23,7 +23,6 @@
 
 ## Technical Documentation
 
-* [Terraform](technical-documentation/terraform.md)
 * [SSL Certificates](technical-documentation/ssl-certificates.md)
 * [Upgrading to StackHead v2](technical-documentation/upgrading.md)
 

@@ -16,7 +16,7 @@ Freshly generated Nginx configurations will have a certificate paths that are sy
 
 ## Project certificates
 
-Project certificates are [generated via Terraform](terraform.md) after the Nginx server configuration is written and active. They are stored inside the `certificates` folder of the project directory \(i.e. `/stackhead/projects/<project_name>/certificates`\).
+Project certificates are generated after the Nginx server configuration is written and active. They are stored inside the `certificates` folder of the project directory \(i.e. `/stackhead/projects/<project_name>/certificates`\).
 
 After creation, the symlinked path to the certificate used by Nginx is switched to the generated certificate \(and private key\) and the Nginx configuration is reloaded.
 

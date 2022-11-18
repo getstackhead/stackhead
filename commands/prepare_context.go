@@ -63,7 +63,6 @@ func PrepareContext(host string, action string, projectDefinition *project.Proje
 		// Enforce remote configurations on viper
 		EnforceSimpleValueOption("modules", cast.ToStringMap(c["modules"]))
 		EnforceNestedValueOption("modules_config", cast.ToStringMap(c["modules_config"]))
-		EnforceSimpleValueOption("terraform", cast.ToStringMap(c["terraform"]))
 	}
 
 	// set proxy

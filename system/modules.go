@@ -15,39 +15,17 @@ import (
 )
 
 type ModuleConfig struct {
-	Name      string
-	Type      string
-	Terraform ModuleTerraformConfig
-}
-
-type ModuleTerraformConfigProvider struct {
-	Vendor             string
-	Name               string
-	NameSuffix         string
-	Version            string
-	ResourceName       string
-	ProviderPerProject bool
-	Init               string
-	InitFuncMap        template.FuncMap
-}
-
-func (a ModuleTerraformConfigProvider) Equal(b ModuleTerraformConfigProvider) bool {
-	return (a.Vendor == b.Vendor) && (a.Name == b.Name) && (a.Version == b.Version)
-}
-
-type ModuleTerraformConfig struct {
-	Provider ModuleTerraformConfigProvider
+	Name string
+	Type string
 }
 
 type Module interface {
 	Install(moduleSettings interface{}) error
 	Deploy(moduleSettings interface{}) error
+	Destroy(moduleSettings interface{}) error
 	Init(moduleSettings interface{})
 	GetConfig() ModuleConfig
 	GetTemplates() *embed.FS
-}
-type DNSModule interface {
-	Destroy(moduleSettings interface{}) error
 }
 
 type PluginModule interface {
