@@ -46,6 +46,9 @@ type Module interface {
 	GetConfig() ModuleConfig
 	GetTemplates() *embed.FS
 }
+type DNSModule interface {
+	Destroy(moduleSettings interface{}) error
+}
 
 type PluginModule interface {
 	Init(moduleSettings interface{})

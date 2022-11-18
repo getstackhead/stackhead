@@ -24,10 +24,15 @@ type DomainSecurity struct {
 	Authentication []DomainSecurityAuthentication `yaml:"authentication,omitempty"`
 }
 
+type DNSSettings struct {
+	Provider string
+}
+
 type Domains struct {
 	Domain   string
 	Expose   []DomainExpose
 	Security DomainSecurity `yaml:"security,omitempty"`
+	DNS      DNSSettings    `yaml:"dns,omitempty"`
 }
 
 type Registries struct {

@@ -261,7 +261,7 @@ var SetupServer = &cobra.Command{
 				modules := system.Context.GetModulesInOrder()
 				event.MustFire("setup.modules.pre-install", event.M{"modules": modules})
 				for _, module := range modules {
-					if module.GetConfig().Type == "plugin" {
+					if module.GetConfig().Type == "plugin" || module.GetConfig().Type == "dns" {
 						continue
 					}
 					event.MustFire(
