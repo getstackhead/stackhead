@@ -12,13 +12,13 @@ func InstallApt() error {
 	// Add Caddy apt signing key
 	hasSourceList, _ := xfs.HasFile("ssh:///etc/apt/sources.list.d/caddy-stable.list")
 	if !hasSourceList {
-		if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg"); err != nil {
+		if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg", system.RemoteRunOpts{}); err != nil {
 			return err
 		}
 	}
 
 	// Setup Caddy apt repository on Ubuntu
-	if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list"); err != nil {
+	if _, _, err := system.RemoteRun("curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list", system.RemoteRunOpts{}); err != nil {
 		return err
 	}
 	if err := system.UpdatePackageList(system.PackageVendorApt); err != nil {
@@ -60,7 +60,7 @@ func InstallApt() error {
 	}
 
 	// Restart caddy
-	if _, _, err := system.RemoteRun("systemctl", "restart", "caddy"); err != nil {
+	if _, _, err := system.RemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"restart", "caddy"}}); err != nil {
 		return err
 	}
 
@@ -72,25 +72,25 @@ func InstallApt() error {
 		return fmt.Errorf("unable to add Caddy reload permissions for stackhead user")
 	}
 	// Validate sudoers file
-	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
+	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers", system.RemoteRunOpts{}); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
 	}
 
 	// Add stackhead user to docker
-	//if _, _, err := system.RemoteRun("usermod", "-a -G docker stackhead"); err != nil {
+	//if _, _, err := system.RemoteRun("usermod", system.RemoteRunOpts{Args: []string{"-a -G docker stackhead"}}); err != nil {
 	//	return fmt.Errorf("unable to add stackhead user to docker group")
 	//}
 
 	// adjust owner of /var/www directories
-	//if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/var/www"); err != nil {
+	//if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/var/www"}}); err != nil {
 	//	return err
 	//}
 	//// adjust owner of /etc/caddy/sites-enabled directories
-	//if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/etc/caddy/sites-enabled"); err != nil {
+	//if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/etc/caddy/sites-enabled"}); err != nil {
 	//	return err
 	//}
 	//// adjust owner of /etc/caddy/sites-available directories
-	//if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/etc/caddy/sites-available"); err != nil {
+	//if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/etc/caddy/sites-available"}); err != nil {
 	//	return err
 	//}
 

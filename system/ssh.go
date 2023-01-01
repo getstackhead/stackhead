@@ -39,7 +39,7 @@ func getRemoteUser() string {
 }
 
 func ResolveRemoteUserIntoUid(username string) (int, error) {
-	output, _, err := RemoteRun("id", "-u "+username)
+	output, _, err := RemoteRun("id", RemoteRunOpts{Args: []string{"-u " + username}})
 	if err != nil {
 		return -1, err
 	}
@@ -47,7 +47,7 @@ func ResolveRemoteUserIntoUid(username string) (int, error) {
 }
 
 func ResolveRemoteGroupIntoGid(groupname string) (int, error) {
-	output, _, err := RemoteRun("getent", "group", groupname)
+	output, _, err := RemoteRun("getent", RemoteRunOpts{Args: []string{"group", groupname}})
 	if err != nil {
 		return -1, err
 	}
@@ -55,10 +55,31 @@ func ResolveRemoteGroupIntoGid(groupname string) (int, error) {
 	return strconv.Atoi(splitOutput[2])
 }
 
-func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
+type RemoteRunOpts struct {
+	Args         []string
+	WorkingDir   string
+	Confidential bool
+	Sudo         bool
+	AllowFail    bool
+	User         string
+}
+
+func RemoteRun(cmd string, opts RemoteRunOpts) (bytes.Buffer, bytes.Buffer, error) {
 	user := getRemoteUser()
-	remoteCmd := fmt.Sprintf("%s %s", cmd, strings.Join(args, " "))
-	log.Debugln(fmt.Sprintf("SSH [%s@%s]: %s", getRemoteUser(), Context.TargetHost, remoteCmd))
+	if opts.User != "" {
+		user = opts.User
+	}
+	remoteCmd := fmt.Sprintf("%s %s", cmd, strings.Join(opts.Args, " "))
+
+	if opts.Confidential {
+		log.Debugln(fmt.Sprintf("SSH [%s@%s]: %s", user, Context.TargetHost, cmd+" <omitted arguments>"))
+	} else {
+		if opts.WorkingDir != "" {
+			log.Debugln(fmt.Sprintf("SSH [%s@%s:%s]: %s", user, Context.TargetHost, opts.WorkingDir, remoteCmd))
+		} else {
+			log.Debugln(fmt.Sprintf("SSH [%s@%s]: %s", user, Context.TargetHost, remoteCmd))
+		}
+	}
 
 	var cmdArgs []string
 	if user == "stackhead" {
@@ -66,6 +87,18 @@ func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
 	}
 
 	cmdArgs = append(cmdArgs, fmt.Sprintf("%s@%s", user, Context.TargetHost))
+
+	if opts.Sudo {
+		remoteCmd = "sudo " + remoteCmd
+	}
+
+	if opts.AllowFail {
+		remoteCmd = "(" + remoteCmd + " || true)"
+	}
+
+	if opts.WorkingDir != "" {
+		remoteCmd = "cd " + opts.WorkingDir + "; " + remoteCmd
+	}
 	cmdArgs = append(cmdArgs, remoteCmd)
 	command := exec.Command("ssh", cmdArgs...)
 	var out, outErr bytes.Buffer
@@ -73,4 +106,15 @@ func RemoteRun(cmd string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
 	command.Stderr = &outErr
 	err := command.Run()
 	return out, outErr, err
+}
+
+func SimpleRemoteRun(cmd string, opts RemoteRunOpts) (string, error) {
+	stdout, stderr, err := RemoteRun(cmd, opts)
+	if err != nil {
+		if stderr.Len() > 0 {
+			return "", fmt.Errorf(stderr.String())
+		}
+		return "", err
+	}
+	return stdout.String(), nil
 }

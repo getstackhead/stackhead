@@ -110,13 +110,13 @@ func setupSshKeys() error {
 func userSetup() error {
 	event.MustFire("setup.users.pre-install", event.M{})
 	// Add stackhead group
-	if _, _, err := system.RemoteRun("groupadd", "--system stackhead --gid 1412 -f"); err != nil {
+	if _, _, err := system.RemoteRun("groupadd", system.RemoteRunOpts{Args: []string{"--system stackhead --gid 1412 -f"}}); err != nil {
 		return fmt.Errorf("unable to add stackhead group")
 	}
 
 	// Add stackhead user if it does not exist
-	if _, _, err := system.RemoteRun("id", "stackhead"); err != nil {
-		if _, _, err := system.RemoteRun("adduser", "--system --shell /bin/sh --uid 1412 --no-create-home --home=/stackhead --gid 1412 stackhead"); err != nil {
+	if _, _, err := system.RemoteRun("id", system.RemoteRunOpts{Args: []string{"stackhead"}}); err != nil {
+		if _, _, err := system.RemoteRun("adduser", system.RemoteRunOpts{Args: []string{"--system --shell /bin/sh --uid 1412 --no-create-home --home=/stackhead --gid 1412 stackhead"}}); err != nil {
 			return fmt.Errorf("unable to add stackhead user")
 		}
 	}
@@ -148,7 +148,7 @@ func userSetup() error {
 	}
 
 	// Validate sudoers file
-	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
+	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers", system.RemoteRunOpts{}); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
 	}
 

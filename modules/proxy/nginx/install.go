@@ -18,7 +18,7 @@ func (Module) Install(_modulesSettings interface{}) error {
 	moduleSettings.Config.SetDefaults()
 
 	// Add stackhead user to www-data group
-	if _, _, err := system.RemoteRun("usermod", "-a -G www-data stackhead"); err != nil {
+	if _, _, err := system.RemoteRun("usermod", system.RemoteRunOpts{Args: []string{"-a -G www-data stackhead"}}); err != nil {
 		return fmt.Errorf("unable to add stackhead user to www-data group")
 	}
 
@@ -29,7 +29,7 @@ func (Module) Install(_modulesSettings interface{}) error {
 		return fmt.Errorf("unable to add Nginx reload permissions for stackhead user")
 	}
 	// Validate sudoers file
-	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers"); err != nil {
+	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers", system.RemoteRunOpts{}); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
 	}
 
@@ -56,15 +56,15 @@ func (Module) Install(_modulesSettings interface{}) error {
 	err = xfs.WriteFile("ssh:///etc/nginx/nginx.conf", nginxConfTemplate)
 
 	// adjust owner of /var/www directories
-	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/var/www"); err != nil {
+	if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/var/www"}}); err != nil {
 		return err
 	}
 	// adjust owner of /etc/nginx/sites-enabled directories
-	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/etc/nginx/sites-enabled"); err != nil {
+	if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/etc/nginx/sites-enabled"}}); err != nil {
 		return err
 	}
 	// adjust owner of /etc/nginx/sites-available directories
-	if _, _, err := system.RemoteRun("chown", "-R", "stackhead:stackhead", "/etc/nginx/sites-available"); err != nil {
+	if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/etc/nginx/sites-available"}}); err != nil {
 		return err
 	}
 
