@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/cloudflare/cloudflare-go"
 	"robpike.io/filter"
@@ -58,11 +59,14 @@ func (m Module) Deploy(_modulesSettings interface{}) error {
 		dnsRecord := constructRecord(domain.Domain)
 		dnsRecord.Proxied = &proxied
 		// API scope: dns_records:edit
-		response, err := api.CreateDNSRecord(ctx, zoneId, dnsRecord)
+		_, err = api.CreateDNSRecord(ctx, zoneId, dnsRecord)
+		// todo: add to created resources
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "Record already exists.") {
+				return nil
+			}
+			return fmt.Errorf("Cloudflare error: " + err.Error())
 		}
-		fmt.Println(response)
 	}
 	return nil
 }
