@@ -11,7 +11,7 @@ import (
 
 func (Module) Init(moduleSettings interface{}) {
 	event.On("setup.modules.post-install-module.container.docker", event.ListenerFunc(func(e event.Event) error {
-		if _, _, err := system.RemoteRun("docker", "volume", "create", "portainer_data"); err != nil {
+		if _, _, err := system.RemoteRun("docker", system.RemoteRunOpts{Args: []string{"volume", "create", "portainer_data"}}); err != nil {
 			return err
 		}
 
@@ -48,16 +48,22 @@ func (Module) Init(moduleSettings interface{}) {
 
 		// Setup Portainer container
 		//var portainerUser plugin_portainer_api.PortainerApiUsersResult
-		result, _, err := system.RemoteRun("docker", "ps", "-a --format {{.Names}} | grep "+portainerConfig.ContainerName+" -w")
+		result, _, err := system.RemoteRun("docker", system.RemoteRunOpts{Args: []string{"ps", "-a --format {{.Names}} | grep " + portainerConfig.ContainerName + " -w"}})
 		if err != nil || result.Len() == 0 {
 			if _, errMsg, err := system.RemoteRun(
-				"docker", "run", "-d",
-				"-p", "8000:8000", "-p", "9443:9443",
-				"--name", portainerConfig.ContainerName,
-				"--restart=always",
-				"-v", "/var/run/docker.sock:/var/run/docker.sock",
-				"-v", "portainer_data:/data",
-				"portainer/portainer-ce:2.11.1"); err != nil {
+				"docker",
+				system.RemoteRunOpts{
+					Args: []string{
+						"run", "-d",
+						"-p", "8000:8000", "-p", "9443:9443",
+						"--name", portainerConfig.ContainerName,
+						"--restart=always",
+						"-v", "/var/run/docker.sock:/var/run/docker.sock",
+						"-v", "portainer_data:/data",
+						"portainer/portainer-ce:2.11.1",
+					},
+				},
+			); err != nil {
 				logger.Errorln(errMsg.String())
 				return err
 			}

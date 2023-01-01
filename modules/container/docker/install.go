@@ -7,15 +7,15 @@ import (
 
 func InstallApt() error {
 	// Add Docker apt signing key
-	if _, _, err := system.RemoteRun("sudo mkdir -p /etc/apt/keyrings"); err != nil {
+	if _, _, err := system.RemoteRun("sudo mkdir -p /etc/apt/keyrings", system.RemoteRunOpts{}); err != nil {
 		return err
 	}
-	if _, _, err := system.RemoteRun("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg"); err != nil {
+	if _, _, err := system.RemoteRun("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg", system.RemoteRunOpts{}); err != nil {
 		return err
 	}
 
 	// Setup Docker apt repository on Ubuntu
-	if _, _, err := system.RemoteRun("echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null"); err != nil {
+	if _, _, err := system.RemoteRun("echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null", system.RemoteRunOpts{}); err != nil {
 		return err
 	}
 	if err := system.UpdatePackageList(system.PackageVendorApt); err != nil {
@@ -41,7 +41,7 @@ func InstallApt() error {
 	}
 
 	// Add stackhead user to docker
-	if _, _, err := system.RemoteRun("usermod", "-a -G docker stackhead"); err != nil {
+	if _, _, err := system.RemoteRun("usermod", system.RemoteRunOpts{Args: []string{"-a -G docker stackhead"}}); err != nil {
 		return fmt.Errorf("unable to add stackhead user to docker group")
 	}
 

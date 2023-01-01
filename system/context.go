@@ -35,6 +35,7 @@ type ContextStruct struct {
 	Project        *project.Project
 	IsCI           bool
 	Authentication ContextAuthenticationStruct
+	Resources      []Resource
 
 	ProxyModule     Module
 	ContainerModule Module
@@ -62,9 +63,10 @@ func (DebugLogger) Error(obj interface{}) {
 }
 
 // InitializeContext will set the context object for the current host, action and project
-//    host = IP address string
-//    action = any of ContextAction* constants
-//    projectDefinition = project definition object
+//
+//	host = IP address string
+//	action = any of ContextAction* constants
+//	projectDefinition = project definition object
 func InitializeContext(host string, action string, projectDefinition *project.Project) {
 	Context.TargetHost = net.ParseIP(host)
 	if Context.TargetHost == nil {
