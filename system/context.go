@@ -44,8 +44,10 @@ type ContextStruct struct {
 }
 
 func (c ContextStruct) GetModulesInOrder() []Module {
-	modules := []Module{c.ContainerModule, c.ProxyModule}
+	modules := []Module{}
+	modules = append(modules, c.ContainerModule)
 	modules = append(modules, c.DNSModules...)
+	modules = append(modules, c.ProxyModule)
 	modules = append(modules, c.PluginModules...)
 	return modules
 }
