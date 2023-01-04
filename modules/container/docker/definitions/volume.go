@@ -9,6 +9,12 @@ type DockerPaths struct {
 	BaseDir string
 }
 
+func GetDockerPaths() DockerPaths {
+	return DockerPaths{
+		BaseDir: system.Context.Project.GetRuntimeDataDirectoryPath() + "/container",
+	}
+}
+
 func (p DockerPaths) GetHooksDir() string {
 	return p.BaseDir + "/hooks"
 }

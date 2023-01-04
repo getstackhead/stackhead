@@ -1,6 +1,7 @@
 package container_docker_definitions
 
 type Hook struct {
-	Src    string
-	Prefix string
+	Src     string
+	Prefix  string
+	Service string
 }
