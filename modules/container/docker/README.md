@@ -6,15 +6,38 @@
 
 This is a module to manage Containers via Docker.
 
+Credentials for private registries are encrypted and securely storaged via [Pass](https://www.passwordstore.org/).
+
+**Important note**: The credentials are grouped per registry and saved per username, so only one password is assigned to the pair (registry, username).
+For example, this means that you can only store one passwort for your GitLab.com account named "ciuser".
+It is recommended to use one username per project. When using GitLab's project-based Access Tokens, the username can be freely set.
+
 ## Resources
 
-This module will create the following Terraform resources (via [`kreuzwerker/docker`](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs)):
+Setting up the server with this plugin will install the following:
 
-* `docker_network`
-* `docker_image`
-* `docker_container`
-* `docker_volume`
+* Docker CE
+* Docker Compose Plugin
+* containerd.io
+* Pass (for registry credential storage)
+* golang-docker-credential-helpers
 
 ## Configuration
 
 None.
+
+## Troubleshooting
+
+### I can not connect to my private Docker Registry
+
+Make sure to configure the private Docker registry credentials in your project definition file.
+
+```yaml
+container:
+  registries:
+    - username: gitlab
+      password: glpat-12345abcdeFGHIJ12345
+      url: https://registry.gitlab.com
+```
+
+**GitLab Note:** Access Tokens require the `read_registry` scope and at least the Reporter role.

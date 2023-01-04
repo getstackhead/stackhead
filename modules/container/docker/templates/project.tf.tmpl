@@ -5,30 +5,7 @@ resource "docker_network" "stackhead-network-{{ $.Context.Project.Name }}" {
   name = "stackhead-network-{{ $.Context.Project.Name }}"
 }
 
-{{ range $index, $service := $.Context.Project.Container.Services }}
-data "docker_registry_image" "stackhead-{{ $.Context.Project.Name }}-{{$service.Name }}" {
-  provider = docker.{{ $.Context.Project.Name }}
-  name = "{{ $service.Image }}"
-}
-
-resource "docker_image" "stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}" {
-  provider = docker.{{ $.Context.Project.Name }}
-  name          = data.docker_registry_image.stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}.name
-  pull_triggers = [data.docker_registry_image.stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}.sha256_digest]
-  keep_locally = true
-}
-
 resource "docker_container" "stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}" {
-  provider = docker.{{ $.Context.Project.Name }}
-  image = docker_image.stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}.latest
-  name  = "stackhead-{{ $.Context.Project.Name }}-{{ $service.Name }}"
-  restart = "unless-stopped"
-
-  labels {
-    label = "stackhead.project"
-    value = "{{ $.Context.Project.Name }}"
-  }
-
 {{- if $service.Hooks }}
   {{- if $service.Hooks.ExecuteAfterSetup }}
     provisioner "local-exec" {
@@ -36,88 +13,5 @@ resource "docker_container" "stackhead-{{ $.Context.Project.Name }}-{{ $service.
     }
   {{- end }}
 {{- end }}
-
-  networks_advanced {
-    name = docker_network.stackhead-network-{{ $.Context.Project.Name }}.name
-    aliases = ["{{ $service.Name }}"]
-  }
-
-{{- if $service.User }}
-  user = "{{ $service.User }}"
-{{- end }}
-
-{{- range $index, $domainConfig := $.Context.Project.Domains }}
-  {{- range $index2, $expose := $domainConfig.Expose }}
-    {{ if and $expose.InternalPort (eq $expose.Service $service.Name) }}
-    ports {
-      internal = {{ $expose.InternalPort }}
-      external = {{ index $.DockerPortMap (printf "%s-%d" $expose.Service $expose.InternalPort) }}
-    }
-    {{ end }}
-  {{- end }}
-{{- end }}
-
-{{- if $service.Environment }}
-  {{ $envList := dict }}
-  {{- range $envName, $envVal := $service.Environment }}
-    {{ $_ := set $envList $envName (TF_replace $envVal $.Context.Project.Name) }}
-  {{- end }}
-  env = [{{ join (joinMap $envList "=" "\"") "," }}]
-{{- end }}
-
-{{- range $index, $volume := $service.Volumes }}
-  volumes {
-  {{- if eq $volume.Type "custom" }}
-    host_path = "{{ $volume.Src }}"
-    container_path = "{{ $volume.Dest }}"
-  {{- else }}
-    {{ $sanitizedSrc := sanitize_volume $volume.Src}}
-    volume_name = docker_volume.{{ $volume.Type }}-{{ $.Context.Project.Name }}{{ if eq $volume.Type "local" }}-{{ $service.Name }}{{ end }}-{{ $sanitizedSrc }}.name
-    container_path = "{{ $volume.Dest }}"
-  {{- end }}
-  {{ if eq $volume.Mode "ro" }}  read_only = true{{ end }}
-  }
-{{- end }}
-
-{{ range $index, $volumesFrom := $service.VolumesFrom }}
-  volumes {
-    from_container = docker_container.stackhead-{{ $.Context.Project.Name }}-{{ trimSuffix ":ro" $volumesFrom }}.name
-    read_only = {{ hasSuffix $volumesFrom ":ro" }}
-  }
-{{ end }}
-  depends_on = [{{ range $key, $serviceA := $service.VolumesFrom }}docker_container.stackhead-{{ $.Context.Project.Name }}-{{ trimSuffix ":ro" $serviceA }}{{ if ne $key 0 }},{{ end }}{{ end }}]
 }
 {{end}}
-
-{{ $globalVolumesDict := dict }}
-{{ range $index, $service := $.Context.Project.Container.Services }}
-  {{ range $index2, $volume := $service.Volumes }}
-    {{ $sanitizedSrc := sanitize_volume $volume.Src}}
-    {{ if eq $volume.Type "local" }}
-resource "docker_volume" "local-{{ $.Context.Project.Name }}-{{ $service.Name }}-{{ $sanitizedSrc }}" {
-  provider = docker.{{ $.Context.Project.Name }}
-  name = "local-{{ $.Context.Project.Name }}-{{ $service.Name }}-{{ $sanitizedSrc }}"
-  driver_opts = {
-    type: "none",
-    device: "{{ ($.DockerPaths.GetServiceDataDir $service $volume) }}",
-    o: "bind"
-  }
-}
-    {{ else if and (eq $volume.Type "global") }}
-      {{ $_ := set $globalVolumesDict $sanitizedSrc ($.DockerPaths.GetGlobalDataDir $volume) }}
-    {{ end }}
-  {{ end }}
-{{ end }}
-
-{{ range $key := keys $globalVolumesDict }}
-{{ $value := get $globalVolumesDict $key }}
-resource "docker_volume" "global-{{ $.Context.Project.Name }}-{{ $key }}" {
-  provider = docker.{{ $.Context.Project.Name }}
-  name = "global-{{ $.Context.Project.Name }}-{{ $key }}"
-  driver_opts = {
-    type: "none",
-    device: "{{ $value }}",
-    o: "bind"
-  }
-}
-{{ end }}

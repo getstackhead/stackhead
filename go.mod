@@ -15,11 +15,11 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudflare/cloudflare-go v0.54.0
 	github.com/fatih/structs v1.1.0
-	github.com/google/go-cmp v0.5.8
 	github.com/gookit/event v1.0.6
 	github.com/hairyhenderson/gomplate/v3 v3.11.2
 	github.com/knadh/koanf v1.4.4
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
+	github.com/saitho/diff-docker-compose v1.1.3
 	github.com/saitho/golang-extended-fs/v2 v2.0.2
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
@@ -77,6 +77,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/google/wire v0.5.0 // indirect
@@ -152,7 +153,7 @@ require (
 	gocloud.dev v0.25.1-0.20220408200107-09b10f7359f7 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401 // indirect
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect

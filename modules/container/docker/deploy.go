@@ -1,26 +1,24 @@
 package container_docker
 
 import (
+	"encoding/json"
 	"fmt"
 	"path"
 	"reflect"
 	"regexp"
 	"strconv"
-	"text/template"
+	"strings"
 
-	"github.com/phayes/freeport"
+	diff_docker_compose "github.com/saitho/diff-docker-compose/lib"
 	xfs "github.com/saitho/golang-extended-fs/v2"
+	logger "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 
 	container_docker_definitions "github.com/getstackhead/stackhead/modules/container/docker/definitions"
-	"github.com/getstackhead/stackhead/project"
+	docker_compose "github.com/getstackhead/stackhead/modules/container/docker/docker-compose"
+	docker_system "github.com/getstackhead/stackhead/modules/container/docker/system"
 	"github.com/getstackhead/stackhead/system"
 )
-
-func GetDockerPaths() container_docker_definitions.DockerPaths {
-	return container_docker_definitions.DockerPaths{
-		BaseDir: system.Context.Project.GetRuntimeDataDirectoryPath() + "/container",
-	}
-}
 
 type Data struct {
 	Context     system.ContextStruct
@@ -58,48 +56,10 @@ func resolveUserNameWithCache(userName string) (int, error) {
 	return resolvedUserId, err
 }
 
-func getPortMap(project *project.Project) (map[string]int, error) {
-	dockerPortMap := map[string]int{}
-
-	// find ports for running containers
-	for _, service := range project.Container.Services {
-		res, _, err := system.RemoteRun("docker", "port", "stackhead-"+project.Name+"-"+service.Name)
-		if err == nil { // ignore error (container not running)
-			// e.g. 80/tcp -> 0.0.0.0:49155
-			re := regexp.MustCompile(`(?P<Internal>\d+)\/tcp -> 0\.0\.0\.0:(?P<External>\d+)`)
-			matches := re.FindAllStringSubmatch(res.String(), -1)
-			for _, match := range matches {
-				externalPort, _ := strconv.Atoi(match[re.SubexpIndex("External")])
-				dockerPortMap[service.Name+"-"+match[re.SubexpIndex("Internal")]] = externalPort
-			}
-		}
-	}
-
-	// determine ports for missing containers
-	missingPortServices := []string{}
-	for _, domain := range project.Domains {
-		for _, expose := range domain.Expose {
-			mapKey := expose.Service + "-" + strconv.Itoa(expose.InternalPort)
-			if _, ok := dockerPortMap[mapKey]; !ok {
-				missingPortServices = append(missingPortServices, mapKey)
-			}
-		}
-	}
-	ports, err := freeport.GetFreePorts(len(missingPortServices))
-	if err != nil {
-		return nil, fmt.Errorf("unable to determine free ports: " + err.Error())
-	}
-	for i := range missingPortServices {
-		dockerPortMap[missingPortServices[i]] = ports[i]
-	}
-	return dockerPortMap, nil
-}
-
 func (m Module) Deploy(modulesSettings interface{}) error {
-	project := system.Context.Project
-
+	dockerPaths := container_docker_definitions.GetDockerPaths()
 	// Build src folder list
-	srcFolderList := container_docker_definitions.GetSrcFolderList(GetDockerPaths())
+	srcFolderList := container_docker_definitions.GetSrcFolderList(dockerPaths)
 
 	if len(srcFolderList) > 0 {
 		for _, folder := range srcFolderList {
@@ -114,7 +74,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 					return fmt.Errorf("Unable to resolve user \"" + folder.User + "\" into a UID")
 				}
 				// Change user of folder
-				if _, _, err := system.RemoteRun("sudo chown " + strconv.Itoa(resolvedUserId) + ":stackhead " + folder.Path); err != nil {
+				if _, _, err := system.RemoteRun("chown "+strconv.Itoa(resolvedUserId)+":stackhead "+folder.Path, system.RemoteRunOpts{Sudo: true}); err != nil {
 					return err
 				}
 			}
@@ -122,10 +82,10 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	}
 
 	// remove old hook files
-	if _, _, err := system.RemoteRun("rm -rf " + GetDockerPaths().GetHooksDir()); err != nil {
+	if _, _, err := system.RemoteRun("rm -rf "+dockerPaths.GetHooksDir(), system.RemoteRunOpts{}); err != nil {
 		return err
 	}
-	if err := xfs.CreateFolder("ssh://" + GetDockerPaths().GetHooksDir()); err != nil {
+	if err := xfs.CreateFolder("ssh://" + dockerPaths.GetHooksDir()); err != nil {
 		return err
 	}
 
@@ -134,14 +94,16 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	for _, service := range system.Context.Project.Container.Services {
 		if service.Hooks.ExecuteAfterSetup != "" {
 			collectedHooks = append(collectedHooks, container_docker_definitions.Hook{
-				Prefix: "afterSetup",
-				Src:    path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteAfterSetup),
+				Prefix:  "afterSetup",
+				Src:     path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteAfterSetup),
+				Service: service.Name,
 			})
 		}
 		if service.Hooks.ExecuteBeforeDestroy != "" {
 			collectedHooks = append(collectedHooks, container_docker_definitions.Hook{
-				Prefix: "beforeDestroy",
-				Src:    path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteBeforeDestroy),
+				Prefix:  "beforeDestroy",
+				Src:     path.Join(system.Context.Project.ProjectDefinitionFolder, service.Hooks.ExecuteBeforeDestroy),
+				Service: service.Name,
 			})
 		}
 	}
@@ -155,55 +117,188 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		if !hasHook {
 			return fmt.Errorf("Missing hook file \"" + hook.Src + "\"")
 		}
-		remoteHookFilePath := "ssh://" + path.Join(GetDockerPaths().GetHooksDir(), hook.Prefix+"_"+path.Base(hook.Src))
+		remoteHookFilePath := path.Join(dockerPaths.GetHooksDir(), hook.Service, hook.Prefix+"_"+path.Base(hook.Src))
+		if err := xfs.CreateFolder("ssh://" + path.Dir(remoteHookFilePath)); err != nil {
+			return err
+		}
 		if err := xfs.CopyFile(
 			hook.Src,
-			remoteHookFilePath,
+			"ssh://"+remoteHookFilePath,
 		); err != nil {
 			return err
 		}
-		if err := xfs.Chmod(remoteHookFilePath, 0755); err != nil {
-			return err
-		}
 	}
 
-	// Generate Terraform Docker configuration file
-	var funcMap = template.FuncMap{
-		"sanitize_volume": func(s string) string {
-			var re = regexp.MustCompile(`[^\w]`)
-			return re.ReplaceAllString(s, "_")
-		},
-		// Container specific
-		"TF_replace": func(input string, projectName string) string {
-			// Replace Docker service name variables
-			// Example: TF_replace "$DOCKER_SERVICE_NAME['0'] - $DOCKER_SERVICE_NAME['1']" "myproject"
-			// Result: ${docker_container.stackhead-myproject-0.name} - ${docker_container.stackhead-myproject-1.name}
-
-			var re = regexp.MustCompile("\\$DOCKER_SERVICE_NAME['(.*)']")
-			resource := m.GetConfig().Terraform.Provider.ResourceName
-			return re.ReplaceAllString(input, "${"+resource+".stackhead-"+projectName+"-\\1.name}")
-		},
-	}
-
-	dockerPortMap, err := getPortMap(project)
+	composeYaml, err := docker_compose.BuildDockerCompose(system.Context.Project)
 	if err != nil {
-		return fmt.Errorf("unable to determine free ports: " + err.Error())
+		return err
 	}
-
-	data := map[string]interface{}{
-		"Context":       system.Context,
-		"DockerPaths":   GetDockerPaths(),
-		"DockerPortMap": dockerPortMap,
-	}
-	dockerTf, err := system.RenderModuleTemplate(
-		templates,
-		"project.tf.tmpl",
-		data,
-		funcMap)
+	composeMap, err := composeYaml.Map()
 	if err != nil {
 		return err
 	}
 
-	_ = xfs.WriteFile("ssh://"+project.GetTerraformDirectoryPath()+"/docker.tf", dockerTf)
-	return xfs.WriteFile("ssh://"+project.GetTerraformDirectoryPath()+"/docker.tf", dockerTf)
+	composeFileRemotePath := "ssh://" + system.Context.Project.GetDirectoryPath() + "/docker-compose.yaml"
+
+	hasRemoteFile, err := xfs.HasFile(composeFileRemotePath)
+	if err != nil && err.Error() == "file does not exist" {
+		hasRemoteFile = false
+	} else if err != nil {
+		return fmt.Errorf("Unable to check state of remote docker-compose.yaml from previous deployment: " + err.Error())
+	}
+
+	var remoteComposeObjMap map[string]interface{}
+	if hasRemoteFile {
+		remoteComposeObj := docker_compose.DockerCompose{}
+		remoteComposeContent, err := xfs.ReadFile(composeFileRemotePath)
+		if err := yaml.Unmarshal([]byte(remoteComposeContent), &remoteComposeObj); err != nil {
+			return fmt.Errorf("unable to read remote docker-compose.yaml file from previous deployment: " + err.Error())
+		}
+		remoteComposeObjMap, err = remoteComposeObj.Map()
+		if err != nil {
+			return fmt.Errorf("unable to process remote docker-compose.yaml file from previous deployment: " + err.Error())
+		}
+	}
+
+	result := diff_docker_compose.DiffYaml(remoteComposeObjMap, composeMap)
+	updateRequired, err := prepareUpdate(result)
+	if err != nil {
+		return err
+	}
+
+	if len(result.Diffs) == 0 && !updateRequired {
+		fmt.Println("No changes to Docker Compose file found and Docker images are up-to-date. No need to update.")
+		return nil
+	}
+	evaluateDiff(result)
+
+	composeFileContent, err := composeYaml.String()
+	if err != nil {
+		return err
+	}
+
+	err = xfs.WriteFile(composeFileRemotePath, composeFileContent)
+	if err != nil {
+		return err
+	}
+
+	// Start Docker Compose
+	// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+	_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+	if err != nil {
+		if stderr.Len() > 0 {
+			return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
+		}
+		return fmt.Errorf("Unable to start Docker containers: " + err.Error())
+	}
+
+	// Execute hooks
+	if err := docker_system.ExecuteHook("afterSetup"); err != nil {
+		return fmt.Errorf("After setup hook %s failed: ", err.Error())
+	}
+
+	// todo: add file to created resources
+	for serviceName, service := range composeYaml.Services {
+		system.Context.Resources = append(system.Context.Resources, system.Resource{
+			Type:        system.TypeContainer,
+			ServiceName: serviceName,
+			Name:        service.ContainerName,
+			Ports:       service.Ports,
+		})
+	}
+
+	return nil
+}
+
+func prepareUpdate(result diff_docker_compose.YamlDiffResult) (bool, error) {
+	for _, registry := range system.Context.Project.Container.Registries {
+		_, err := system.SimpleRemoteRun("docker", system.RemoteRunOpts{Args: []string{"login", "-u " + registry.Username, "-p " + registry.Password, registry.Url}, Confidential: true})
+		if err != nil {
+			return false, err
+		}
+	}
+
+	updatedImages := false
+	changedServices := result.GetStructure([]string{"services"})
+	for _, structure := range changedServices.GetChildren() {
+		// Look for new Docker image
+		if structure.GetDiff().GetType() == diff_docker_compose.Unchanged || structure.GetDiff().GetType() == diff_docker_compose.Added {
+			// Convert ValueNew into services object
+			jsonStr, err := json.Marshal(structure.GetDiff().ValueNew)
+			if err != nil {
+				return false, err
+			}
+			var service docker_compose.Services
+			if err := json.Unmarshal(jsonStr, &service); err != nil {
+				return false, err
+			}
+
+			stdout, stderr, err := system.RemoteRun("docker", system.RemoteRunOpts{Args: []string{"pull", service.Image}})
+			if err != nil {
+				return false, fmt.Errorf("Unable to pull image from registry: " + stderr.String())
+			}
+			output := stdout.String()
+			logger.Debugln(output)
+			if strings.Contains(output, "Downloaded newer image for "+service.Image) {
+				updatedImages = true
+				// Image was downloaded
+				digestMatch := regexp.MustCompile(`(?m)^Digest: (.*)$`).FindStringSubmatch(output)
+				if len(digestMatch) > 1 {
+					logger.Infoln("Downloaded newer image for " + service.Image + " (Digest " + digestMatch[1] + ")")
+				} else {
+					logger.Infoln("Downloaded newer image for " + service.Image)
+				}
+				// todo: log change to system
+			}
+		}
+	}
+	return updatedImages, nil
+}
+
+func evaluateDiff(result diff_docker_compose.YamlDiffResult) {
+	if !result.HasChanged([]string{"services"}) {
+		return
+	}
+	serviceStructure := result.GetStructure([]string{"services"})
+	var addedServices []string
+	var removedServices []string
+	var modifiedServices []string
+
+	for serviceName, service := range serviceStructure.GetChildren() {
+		switch service.GetDiff().GetType() {
+		case diff_docker_compose.Added:
+			addedServices = append(addedServices, serviceName)
+			break
+		case diff_docker_compose.Removed:
+			removedServices = append(removedServices, serviceName)
+			break
+		case diff_docker_compose.Changed:
+			modifiedServices = append(modifiedServices, serviceName)
+			break
+		}
+	}
+
+	if len(removedServices) > 0 {
+		fmt.Println("Services locally removed/disabled:")
+		for _, service := range removedServices {
+			fmt.Println("* " + service)
+		}
+		fmt.Println("")
+	}
+
+	if len(addedServices) > 0 {
+		fmt.Println("Services locally added/enabled:")
+		for _, service := range addedServices {
+			fmt.Println("* " + service)
+		}
+		fmt.Println("")
+	}
+
+	if len(modifiedServices) > 0 {
+		fmt.Println("Services locally modified:")
+		for _, service := range modifiedServices {
+			fmt.Println("* " + service)
+		}
+		fmt.Println("")
+	}
 }
