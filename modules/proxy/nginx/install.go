@@ -28,6 +28,12 @@ func (Module) Install(_modulesSettings interface{}) error {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to add Nginx reload permissions for stackhead user")
 	}
+	// Ensure stackhead user can use certbot
+	permissionsCertbot := "\n%stackhead ALL= NOPASSWD: /usr/bin/certbot\n"
+	if err := xfs.AppendToFile("ssh:///etc/sudoers.d/stackhead", permissionsCertbot, true); err != nil {
+		logger.Debugln(err)
+		return fmt.Errorf("unable to add Certbot permissions for stackhead user")
+	}
 	// Validate sudoers file
 	if _, _, err := system.RemoteRun("/usr/sbin/visudo -cf /etc/sudoers", system.RemoteRunOpts{}); err != nil {
 		return fmt.Errorf("unable to validate sudoers file")
@@ -36,6 +42,10 @@ func (Module) Install(_modulesSettings interface{}) error {
 	if err := system.InstallPackage([]system.Package{
 		{
 			Name:   "nginx",
+			Vendor: system.PackageVendorApt,
+		},
+		{
+			Name:   "certbot",
 			Vendor: system.PackageVendorApt,
 		},
 	}); err != nil {
@@ -60,7 +70,7 @@ func (Module) Install(_modulesSettings interface{}) error {
 		return err
 	}
 	// adjust owner of /etc/nginx/sites-enabled directories
-	if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", "/etc/nginx/sites-enabled"}}); err != nil {
+	if _, _, err := system.RemoteRun("chown", system.RemoteRunOpts{Args: []string{"-R", "stackhead:stackhead", moduleSettings.Config.VhostPath}}); err != nil {
 		return err
 	}
 	// adjust owner of /etc/nginx/sites-available directories
@@ -76,7 +86,36 @@ func (Module) Install(_modulesSettings interface{}) error {
 		return err
 	}
 
+	// Create AcmeChallengesDirectory folder
+	if err := xfs.CreateFolder("ssh://" + AcmeChallengesDirectory); err != nil {
+		return err
+	}
+	if err := xfs.Chown("ssh://"+AcmeChallengesDirectory, 1412, 1412); err != nil {
+		return err
+	}
+
+	// Create self-signed certificates
 	SnakeoilFullchainPath, SnakeoilPrivkeyPath := GetSnakeoilPaths()
+	hasChain, _ := xfs.HasFile("ssh://" + SnakeoilFullchainPath)
+	hasKey, _ := xfs.HasFile("ssh://" + SnakeoilPrivkeyPath)
+	if !hasChain || !hasKey {
+		if _, err := system.SimpleRemoteRun("openssl", system.RemoteRunOpts{
+			Args: []string{
+				"req",
+				"-new",
+				"-newkey rsa:4096",
+				"-x509",
+				"-sha256",
+				"-nodes",
+				"-out " + SnakeoilFullchainPath,
+				"-keyout " + SnakeoilPrivkeyPath,
+				"-subj \"/O=StackHead/CN=stackhead.local/\"",
+			},
+		}); err != nil {
+			return fmt.Errorf("Unable to create Snakeoil certifictes: " + err.Error())
+		}
+	}
+
 	if err := xfs.Chown("ssh://"+SnakeoilFullchainPath, 1412, 1412); err != nil {
 		return err
 	}
@@ -84,14 +123,5 @@ func (Module) Install(_modulesSettings interface{}) error {
 		return err
 	}
 
-	// Check content after provisioning
-	//- name: Check content after provisioning
-	//  uri:
-	//    url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
-	//    return_content: yes
-	//  register: uri_result
-	//  until: '"Welcome to nginx" in uri_result.content'
-	//  retries: 5
-	//  delay: 1
 	return nil
 }

@@ -8,18 +8,14 @@ This module sets up a Nginx webserver on the target server, which will
 then be used to accept web requests and forward/proxy it to the container
 of the actual application behind the domain.
 
-There also is a logic for certificate generation.
+There also is a logic for certificate generation via Certbot.
 
-## Resources
+## Installation
 
-This module will create the following Terraform resources:
+Running `stackhead setup` with this module enabled will install:
 
-* `nginx_server_block`
-* `tls_private_key`
-* `tls_self_signed_cert`
-* `acme_registration`
-* `acme_certificate`
-* `local_file`
+* Nginx
+* Certbot
 
 ## Configuration
 

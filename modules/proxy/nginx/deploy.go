@@ -1,12 +1,9 @@
 package proxy_nginx
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
-	"text/template"
-
 	xfs "github.com/saitho/golang-extended-fs/v2"
+	"path"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/modules/proxy"
@@ -18,7 +15,6 @@ type Paths struct {
 	RootDirectory                string
 	CertificatesProjectDirectory string
 	ProjectCertificatesDirectory string
-	RootTerraformDirectory       string
 	ProjectsRootDirectory        string
 	AcmeChallengesDirectory      string
 	SnakeoilFullchainPath        string
@@ -35,7 +31,6 @@ func getPaths() Paths {
 		RootDirectory:                config.RootDirectory,
 		CertificatesProjectDirectory: GetCertificatesDirectory(system.Context.Project),
 		ProjectCertificatesDirectory: GetCertificateDirectoryPath(system.Context.Project),
-		RootTerraformDirectory:       config.RootTerraformDirectory,
 		ProjectsRootDirectory:        config.ProjectsRootDirectory,
 		AcmeChallengesDirectory:      AcmeChallengesDirectory,
 		SnakeoilFullchainPath:        SnakeoilFullchainPath,
@@ -118,6 +113,8 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 	if err != nil {
 		return fmt.Errorf("unable to load module settings: " + err.Error())
 	}
+	moduleSettings.Config.SetDefaults()
+
 	fmt.Println("Deploy step")
 	paths := getPaths()
 
@@ -128,93 +125,88 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 		return err
 	}
 
-	var DependentContainers []string
-
-	for _, domain := range system.Context.Project.Domains {
-		for i, expose := range domain.Expose {
-			ContainerResourceName := "docker_container.stackhead-" + system.Context.Project.Name + "-" + expose.Service
-			if expose.ExternalPort != 443 {
-				DependentContainers = append(DependentContainers, ContainerResourceName)
-			}
-			//expose.Service
-			proxy.Context.AllPorts = append(proxy.Context.AllPorts, proxy.PortService{
-				Expose:                expose,
-				ContainerResourceName: ContainerResourceName,
-				Index:                 i,
-			})
-		}
-	}
-
-	var AllPortsTfStrings []string
-	for _, port := range proxy.Context.AllPorts {
-		AllPortsTfStrings = append(AllPortsTfStrings, port.GetTfString())
-	}
-
 	serverConfig := buildServerConfig(system.Context.Project, proxy.Context.AllPorts)
-
-	data := map[string]interface{}{
-		"AllPortsTfString":        strings.Join(AllPortsTfStrings, ","),
-		"ServerConfig":            serverConfig,
-		"DependentContainers":     strings.Join(DependentContainers, ","),
-		"Paths":                   paths,
-		"CertificatesMailAddress": moduleSettings.CertificatesEmail,
-	}
-
-	nginxTemplate, err := system.RenderModuleTemplate(
-		templates,
-		"nginx.tf.tmpl",
-		data,
-		nil)
-	if err != nil {
+	nginxProjectLocation := system.Context.Project.GetDirectoryPath() + "/nginx.conf"
+	if err = xfs.WriteFile("ssh://"+nginxProjectLocation, serverConfig); err != nil {
 		return err
 	}
-	err = xfs.WriteFile("ssh://"+system.Context.Project.GetTerraformDirectoryPath()+"/nginx.tf", nginxTemplate)
 
-	return generateCertificates(data)
+	// Symlink project certificate files to snakeoil files after initial creation
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-s " + paths.SnakeoilFullchainPath + " " + paths.CertificatesProjectDirectory + "/fullchain.pem"}, AllowFail: true}); err != nil {
+		return fmt.Errorf("Unable to symlink snakeoil full chain: " + err.Error())
+	}
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-s " + paths.SnakeoilPrivkeyPath + " " + paths.CertificatesProjectDirectory + "/privkey.pem"}, AllowFail: true}); err != nil {
+		return fmt.Errorf("Unable to symlink snakeoil privkey: " + err.Error())
+	}
+
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf " + nginxProjectLocation + " /etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
+		return fmt.Errorf("Unable to symlink project Nginx file: " + err.Error())
+	}
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf /etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf " + moduleSettings.Config.VhostPath + "/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
+		return fmt.Errorf("Unable to enable project Nginx file: " + err.Error())
+	}
+	// first reload so webserver config works for ACME request
+	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
+		return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
+	}
+
+	certMail := "certificates-noreply@stackhead.io"
+	if len(moduleSettings.CertificatesEmail) > 0 {
+		certMail = moduleSettings.CertificatesEmail
+	}
+	if err := generateCertificates(paths, certMail); err != nil {
+		return fmt.Errorf("Unable to generate certificates: " + err.Error())
+	}
+	// reload Nginx again so certificates take effect
+	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
+		return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
+	}
+
+	return nil
 }
 
 /**
  * Create certificate files and remove Nginx configuration for ACME confirmation
  */
-func generateCertificates(data map[string]interface{}) error {
-	funcMap := template.FuncMap{
-		"GetDomainNames": func(domains []project.Domains, start int) string {
-			var names []string
-			for i, domain := range domains {
-				if i < start {
-					continue
-				}
-				names = append(names, domain.Domain)
-			}
-			output, _ := json.Marshal(names)
-			return string(output)
-		},
-	}
-	acmeResolver, err := system.RenderModuleTemplate(
-		templates,
-		"certificates/acme_challenge_resolver.sh.tmpl",
-		data,
-		funcMap)
-	if err != nil {
+func generateCertificates(paths Paths, certMail string) error {
+	// Create AcmeChallengesDirectory folder
+	firstDomain := system.Context.Project.Domains[0].Domain
+	domainChallengeDir := path.Join(AcmeChallengesDirectory, firstDomain)
+	if err := xfs.CreateFolder("ssh://" + domainChallengeDir); err != nil {
 		return err
 	}
-	resolverRemotePath := "ssh://" + system.Context.Project.GetDirectoryPath() + "/acme_challenge_resolver.sh"
-	if err := xfs.WriteFile(resolverRemotePath, acmeResolver); err != nil {
-		return err
-	}
-	if err := xfs.Chmod(resolverRemotePath, 0775); err != nil {
+	if err := xfs.Chown("ssh://"+AcmeChallengesDirectory, 1412, 1412); err != nil {
 		return err
 	}
 
-	sslCertFile, err := system.RenderModuleTemplate(
-		templates,
-		"certificates/ssl-certificate.tf.tmpl",
-		data,
-		funcMap,
-	)
+	args := []string{
+		"certonly",
+		"-m " + certMail,
+		"--no-eff-email",
+		"--agree-tos",
+		"-q",
+		"--webroot",
+		"-w " + domainChallengeDir,
+	}
+	for _, domain := range system.Context.Project.Domains {
+		args = append(args, "-d "+domain.Domain)
+	}
+	if system.Context.IsCI {
+		args = append(args, "--test-cert")
+	}
 
-	if err != nil {
+	if result, err := system.SimpleRemoteRun("certbot", system.RemoteRunOpts{Args: args, Sudo: true}); err != nil {
+		fmt.Println(result)
 		return err
 	}
-	return xfs.WriteFile("ssh://"+system.Context.Project.GetTerraformDirectoryPath()+"/ssl-certificate.tf", sslCertFile)
+
+	// Overwrite symlinked snakeoil certificates
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf /etc/letsencrypt/live/" + firstDomain + "/fullchain.pem " + paths.CertificatesProjectDirectory + "/fullchain.pem"}}); err != nil {
+		return fmt.Errorf("Unable to symlink snakeoil full chain: " + err.Error())
+	}
+	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf /etc/letsencrypt/live/" + firstDomain + "/privkey.pem " + paths.CertificatesProjectDirectory + "/privkey.pem"}}); err != nil {
+		return fmt.Errorf("Unable to symlink snakeoil privkey: " + err.Error())
+	}
+
+	return nil
 }

@@ -5,7 +5,7 @@
 {{end}}
 
 {{define "location_file"}}
-        proxy_pass http://localhost:{~ docker_ports[{{ .root.PortIndex }}] ~};
+        proxy_pass http://localhost:{{ getExternalPort $.root.Expose.Service $.root.Expose.InternalPort }};
         proxy_http_version 1.1;
         proxy_redirect off;
         proxy_set_header X-Scheme $scheme;
