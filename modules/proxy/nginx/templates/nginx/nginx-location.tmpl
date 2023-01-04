@@ -1,6 +1,6 @@
 {{define "location"}}
     location /.well-known/acme-challenge {
-        alias {{$.Paths.RootDirectory}}/acme-challenges/{{ $.Domain.Domain }};
+        alias {{$.Paths.RootDirectory}}/acme-challenges/{{ $.Domain.Domain }}/.well-known/acme-challenge;
         location ~ /.well-known/acme-challenge/(.*) {
             default_type text/plain;
         }
