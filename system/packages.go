@@ -1,6 +1,9 @@
 package system
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type PackageVendor string
 
@@ -30,16 +33,23 @@ func UpdatePackageList(vendors ...PackageVendor) error {
 }
 
 func InstallPackage(packages []Package) error {
+	groupedPackages := map[PackageVendor][]string{}
 	for _, p := range packages {
-		if p.Vendor == PackageVendorApt {
-			if _, _, err := RemoteRun("DEBIAN_FRONTEND=noninteractive apt", RemoteRunOpts{Args: []string{"install -yq " + p.Name}}); err != nil {
+		groupedPackages[p.Vendor] = append(groupedPackages[p.Vendor], p.Name)
+	}
+
+	for vendor, packageNames := range groupedPackages {
+		if vendor == PackageVendorApt {
+			if _, _, err := RemoteRun("DEBIAN_FRONTEND=noninteractive apt", RemoteRunOpts{Args: []string{"install -yq " + strings.Join(packageNames, " ")}}); err != nil {
 				return err
 			}
-		} else if p.Vendor == PackageVendorApk {
-			if _, _, err := RemoteRun("apk", RemoteRunOpts{Args: []string{"add " + p.Name}}); err != nil {
+		}
+		if vendor == PackageVendorApk {
+			if _, _, err := RemoteRun("apk", RemoteRunOpts{Args: []string{"add " + strings.Join(packageNames, " ")}}); err != nil {
 				return err
 			}
 		}
 	}
+
 	return nil
 }
