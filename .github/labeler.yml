@@ -1,14 +1,22 @@
 ---
 deployment:
-  - ansible/roles/stackhead_project/**/*
-  - ansible/roles/config_terraform/**/*
-  - ansible/playbooks/application-*.yml
-module-api:
-  - ansible/roles/stackhead_module_api/**/*
+  - commands/project/deploy.go
+  - commands/project/destroy.go
+system:
+  - system/**/*
+cli:
+  - routines/**/*
+  - config/**/*
+  - main.go
 setup:
-  - ansible/roles/stackhead_setup/**/*
-  - ansible/playbooks/server-*.yml
-dependencies:
-  - ansible/requirements/**/*
+  - commands/setup.go
 documentation:
   - Documentation/**/*.md
+m/container/docker:
+  - modules/container/docker/**/*
+m/dns/cloudflare:
+  - modules/dns/cloudflare/**/*
+m/proxy/caddy:
+  - modules/proxy/caddy/**/*
+m/proxy/nginx:
+  - modules/proxy/nginx/**/*
