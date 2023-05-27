@@ -10,13 +10,13 @@ The figure above shows the organisation of SSL certificates and how they are use
 
 The **snakeoil certificate** is created during server setup. It is a selfsigned certificate that technically expires after 100 years after creation, i.e. never. \(If it really expires simply run the server setup again.\)
 
-The certificate and corresponding private key is stored inside the `/stackhead/certificates` directory.
+The certificate and corresponding private key is stored inside the `/etc/stackhead/certificates` directory.
 
 Freshly generated Nginx configurations will have a certificate paths that are symlinked to these snakeoil files, enabling Nginx to start.
 
 ## Project certificates
 
-Project certificates are generated after the Nginx server configuration is written and active. They are stored inside the `certificates` folder of the project directory \(i.e. `/stackhead/projects/<project_name>/certificates`\).
+Project certificates are generated after the Nginx server configuration is written and active. They are stored inside the `certificates` folder of the project directory \(i.e. `/etc/stackhead/projects/<project_name>/certificates`\).
 
 After creation, the symlinked path to the certificate used by Nginx is switched to the generated certificate \(and private key\) and the Nginx configuration is reloaded.
 

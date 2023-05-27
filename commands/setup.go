@@ -115,7 +115,7 @@ func userSetup() error {
 
 	// Add stackhead user if it does not exist
 	if _, _, err := system.RemoteRun("id", system.RemoteRunOpts{Args: []string{"stackhead"}}); err != nil {
-		if _, _, err := system.RemoteRun("adduser", system.RemoteRunOpts{Args: []string{"--system --shell /bin/sh --uid 1412 --no-create-home --home=/stackhead --gid 1412 stackhead"}}); err != nil {
+		if _, _, err := system.RemoteRun("adduser", system.RemoteRunOpts{Args: []string{"--system --shell /bin/sh --uid 1412 --no-create-home --home=" + config.RootDirectory + " --gid 1412 stackhead"}}); err != nil {
 			return fmt.Errorf("unable to add stackhead user")
 		}
 	}
@@ -157,11 +157,11 @@ func userSetup() error {
 		logger.Debugln(err)
 		return fmt.Errorf("unable to read local stackhead public SSH key")
 	}
-	if err := xfs.CreateFolder("ssh:///stackhead/.ssh"); err != nil {
+	if err := xfs.CreateFolder("ssh://" + config.RootDirectory + "/.ssh"); err != nil {
 		return err
 	}
 	if err := xfs.WriteFile(
-		"ssh:///stackhead/.ssh/authorized_keys",
+		"ssh://"+config.RootDirectory+"/.ssh/authorized_keys",
 		string(publicKeyBytes),
 	); err != nil {
 		return err

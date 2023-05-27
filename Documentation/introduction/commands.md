@@ -20,11 +20,6 @@ and the non-root StackHead user that is used for deploying projects.
 
 This command needs to be executed before projects can be deployed onto the target server.
 
-{% hint style="info" %}
-Right now it is not possible for StackHead to deal with SSH fingerprints. Please connect to the server yourself via SSH
-and accept the fingerprint hashes. Otherwise StackHead CLI is stuck in the connecting phase and can not proceed.
-{% endhint %}
-
 ### Syntax
 
 ```shell
@@ -33,7 +28,7 @@ stackhead-cli setup [IPv4 or IPv6 address]
 
 ### Example
 
-```bash
+```shell
 # IPv4
 stackhead-cli setup 123.45.67.8
 
@@ -64,7 +59,7 @@ stackhead-cli project deploy [path to project definition] [ipv4 address] [--auto
 
 ### Example
 
-```bash
+```shell
 ./bin/stackhead-cli project deploy my_file.stackhead.yml 123.45.67.8
 ```
 
@@ -81,7 +76,7 @@ stackhead-cli project destroy [path to project definition] [ipv4 address]
 
 ### Example
 
-```bash
+```shell
 ./bin/stackhead-cli project destroy my_file.stackhead.yml 123.45.67.8
 ```
 
@@ -91,7 +86,7 @@ There are two commands you can use in order to validate StackHead configuration 
 
 ### Syntax
 
-```
+```shell
 # Validate Project definition file
 ./bin/stackhead-cli project validate [path to project definition]
 
@@ -101,7 +96,7 @@ There are two commands you can use in order to validate StackHead configuration 
 
 ### Example
 
-```bash
+```shell
 # Validate Project definition file
 ./bin/stackhead-cli project validate my_file.stackhead.yml
 

@@ -8,6 +8,10 @@ We recommend setting up the projects from scratch. However it should be possible
 
 ## Breaking Changes
 
+### Change root directory
+
+The root directory was changed from `/stackhead` to `/etc/stackhead`.
+
 ### Removed Terraform
 
 Terraform is nice and great, but it is a software that requires updates. The main software and plugins as well.
