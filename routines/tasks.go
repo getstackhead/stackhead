@@ -69,7 +69,7 @@ func (t *TaskRunner) GetNewSubtaskSpinner(name string) *ysmrr.Spinner {
 	if t.spinnerManager == nil {
 		return nil
 	}
-	spinner := t.spinnerManager.AddSpinner(name)
+	spinner := t.spinnerManager.AddSpinner("  " + name)
 	return spinner
 }
 
