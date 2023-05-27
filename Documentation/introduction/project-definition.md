@@ -72,21 +72,21 @@ container:
 
 ## Settings
 
-### domains.\*.expose
+### `domains.\*.expose`
 
 The web server will proxy all web traffic to the service and port specified in `expose` setting.
 
 In the example above, the web server will proxy web requests to the "app" container's port 80.
 
-#### service
+#### `service`
 
 Name of the Container service to receive the web request.
 
-#### internal\_port
+#### `internal\_port`
 
 Port of the given container service to receive the web request.
 
-#### external\_port
+#### `external\_port`
 
 Port that Nginx listens to.
 
@@ -98,7 +98,7 @@ Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatic
 Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
 {% endhint %}
 
-#### proxy_websocket_locations
+#### `proxy_websocket_locations`
 
 If your service provides WebSocket endpoint, set them here as those need to be proxied with special parameters.
 
@@ -107,20 +107,20 @@ Please do not set `/` or `/.well-known/acme-challenge` as WebSocket locations.
 {% endhint %}
 
 
-### domains.\*.dns
+### `domains.\*.dns`
 
 Configure which DNS service to use for this domain.
 Make sure to install the required module and set the required configurations according to the DNS StackHead module's documentation.
 
-#### provider
+#### `provider`
 
 Fully-qualified name of the provider to use (e.g. `getstackhead.stackhead_dns_cloudflare`).
 
-### domains.\*.security
+### `domains.\*.security`
 
 These options can be used to add further security to your projects.
 
-#### authentication
+#### `authentication`
 
 The authentication setting with `type: basic` will require the user to log in with a name and password. You may specify how many users you like.
 
@@ -143,35 +143,35 @@ domains:
 Right now, removing a single entry from the list and redeploying the project will NOT remove the user settings from the authentication file.
 {% endhint %}
 
-### container.registries
+### `container.registries`
 
 The following configuration options are available inside a registry definition:
 
-#### username
+#### `username`
 
 Username for authentication with the container registry. Required.
 
-#### password
+#### `password`
 
 Password for authentication with the container registry. Required.
 
-#### url
+#### `url`
 
 URL of container registry. If none given, it will try to authenticate with Docker Hub.
 
-### container.services
+### `container.services`
 
 The following configuration options are available inside a service definition:
 
-#### name
+#### `name`
 
 Internal name of your service. Used as service name in generated docker-compose file.
 
-#### image \(required\)
+#### `image` \(required\)
 
 See [docker-compose documentation on image](https://docs.docker.com/compose/compose-file/compose-file-v2/#image)
 
-#### hooks
+#### `hooks`
 
 ```yaml
 services:
@@ -187,7 +187,7 @@ Only the specified file is copied onto the server (and container) during deploym
 Note that you should not use or call any files in the file that are not already on the container!
 {% endhint %}
 
-#### volumes
+#### `volumes`
 
 StackHead saves mounted data in the project directory at project or service level. You can also define a custom location on the server.
 
@@ -240,15 +240,15 @@ services:
 {% endtab %}
 {% endtabs %}
 
-#### volumes\_from
+#### `volumes\_from`
 
 See [docker-compose documentation on volumes\_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
 
-#### environment
+#### `environment`
 
 See [docker-compose documentation on environment](https://docs.docker.com/compose/compose-file/compose-file-v2/#environment).
 
-#### user
+#### `user`
 
 See [docker-compose documentation on user](https://docs.docker.com/compose/compose-file/compose-file-v2/#user).
 
