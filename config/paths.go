@@ -7,7 +7,7 @@ import (
 	"github.com/shibukawa/configdir"
 )
 
-var RootDirectory = "/stackhead"
+var RootDirectory = "/etc/stackhead"
 var ProjectsRootDirectory = RootDirectory + "/projects"
 
 func GetServerConfigFilePath() string {

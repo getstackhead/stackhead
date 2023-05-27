@@ -86,3 +86,9 @@ stackhead-cli destroy ./stackhead/example_app.stackhead.yml 123.456.789.10
 stackhead-cli destroy ./stackhead/example_app.stackhead.yml 1234:4567:90ab:cdef::1
 ```
 
+## Troubleshotting
+
+### Setup fails: `Unable to prepare setup. (ssh: handshake failed: knownhosts: key mismatch)`
+
+Looks like the SSH signature from the target server changed and does not match the value saved in `~/.ssh/stackhead_known_hosts` anymore.
+Remove the entry for the server IP address there and try again.

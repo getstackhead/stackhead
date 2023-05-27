@@ -9,7 +9,7 @@ See example below for setting the setting _server_names_hash_bucket_size_ for th
 
 {% hint style="warning" %}
 The `modules` and `modules_config` settings may be overwritten via server configuration.
-The server configuration is located in `/stackhead/config.yml` (if it exists).
+The server configuration is located in `/etc/stackhead/config.yml` (if it exists).
 {% endhint %}
 
 ## Full annotated configuration
