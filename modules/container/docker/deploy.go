@@ -167,7 +167,8 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	}
 
 	if len(result.Diffs) == 0 && !updateRequired {
-		fmt.Println("No changes to Docker Compose file found and Docker images are up-to-date. No need to update.")
+		// todo: pass to command task output
+		//fmt.Println("No changes to Docker Compose file found and Docker images are up-to-date. No need to update.")
 		return nil
 	}
 	evaluateDiff(result)
@@ -177,25 +178,16 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		return err
 	}
 
-	err = xfs.WriteFile(composeFileRemotePath, composeFileContent)
-	if err != nil {
-		return err
-	}
-
-	// Start Docker Compose
-	// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-	_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
-	if err != nil {
-		if stderr.Len() > 0 {
-			return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
-		}
-		return fmt.Errorf("Unable to start Docker containers: " + err.Error())
-	}
-
-	// Execute hooks
-	if err := docker_system.ExecuteHook("afterSetup"); err != nil {
-		return fmt.Errorf("After setup hook %s failed: ", err.Error())
-	}
+	system.Context.Resources = append(system.Context.Resources, system.Resource{
+		Type: system.TypeFile,
+		Name: composeFileRemotePath,
+		ApplyResourceFunc: func() error {
+			return xfs.WriteFile(composeFileRemotePath, composeFileContent)
+		},
+		RollbackResourceFunc: func() error {
+			return xfs.DeleteFile(composeFileRemotePath)
+		},
+	})
 
 	// todo: add file to created resources
 	for serviceName, service := range composeYaml.Services {
@@ -204,6 +196,35 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 			ServiceName: serviceName,
 			Name:        service.ContainerName,
 			Ports:       service.Ports,
+			ApplyResourceFunc: func() error {
+				// Start Docker Compose
+				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+				_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+				if err != nil {
+					if stderr.Len() > 0 {
+						return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
+					}
+					return fmt.Errorf("Unable to start Docker containers: " + err.Error())
+				}
+
+				// Execute hooks
+				if err := docker_system.ExecuteHook("afterSetup"); err != nil {
+					return fmt.Errorf("After setup hook %s failed: ", err.Error())
+				}
+				return nil
+			},
+			RollbackResourceFunc: func() error {
+				// Stop Docker Compose
+				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+				_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+				if err != nil {
+					if stderr.Len() > 0 {
+						return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
+					}
+					return fmt.Errorf("Unable to stop Docker containers: " + err.Error())
+				}
+				return nil
+			},
 		})
 	}
 

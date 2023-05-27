@@ -5,10 +5,8 @@ import (
 	"path"
 
 	"github.com/blang/semver/v4"
-	xfs "github.com/saitho/golang-extended-fs/v2"
-	logger "github.com/sirupsen/logrus"
-
 	"github.com/getstackhead/stackhead/config"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 )
 
 var currentVersion = "2.0.0"
@@ -18,21 +16,22 @@ func WriteVersion() error {
 	return xfs.WriteFile(remoteVersionFilePath, currentVersion)
 }
 
-func ValidateVersion() (bool, error) {
+func ValidateVersion() (bool, string, error) {
 	remoteVersion, err := xfs.ReadFile(remoteVersionFilePath)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
-	logger.Infoln(fmt.Sprintf("StackHead version used for setup is %s - Current version: %s", remoteVersion, currentVersion))
+	infoText := fmt.Sprintf("StackHead version used for setup is %s - Current version: %s", remoteVersion, currentVersion)
+	//logger.Infoln(infoText)
 
 	v1, err := semver.Make(remoteVersion)
 	if err != nil {
-		return false, err
+		return false, infoText, err
 	}
 	v2, err := semver.Make(currentVersion)
 	if err != nil {
-		return false, err
+		return false, infoText, err
 	}
 
-	return v1.Major == v2.Major, nil
+	return v1.Major == v2.Major, infoText, nil
 }
