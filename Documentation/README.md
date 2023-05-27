@@ -1,5 +1,5 @@
 ---
-description: Open source web server management powered by Ansible
+description: Open source web server management
 ---
 
 # StackHead

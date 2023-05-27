@@ -8,7 +8,7 @@ The figure above shows the organisation of SSL certificates and how they are use
 
 ## Snakeoil certificate
 
-The **snakeoil certificate** is created via Ansible during server setup. It is a selfsigned certificate that technically expires after 100 years after creation, i.e. never. \(If it really expires simply run the server setup again.\)
+The **snakeoil certificate** is created during server setup. It is a selfsigned certificate that technically expires after 100 years after creation, i.e. never. \(If it really expires simply run the server setup again.\)
 
 The certificate and corresponding private key is stored inside the `/stackhead/certificates` directory.
 

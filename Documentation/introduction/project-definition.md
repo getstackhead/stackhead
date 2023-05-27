@@ -8,10 +8,8 @@ description: >-
 
 Project definition files consist of a **domain** and an **application configuration**.
 
-When using the Ansible playbook, the project definition files are expected to be inside `<INVENTORY_PATH>/stackhead`.
-When using the StackHead CLI, you can enter the path to the project definition file in the command.
-
-Applications run in one or multiple Docker containers. While the settings are based on Docker Compose version 2.4, some may require a different syntax. Please have a closer look at the list below.
+Applications run in one or multiple Docker containers. While the settings are based on Docker Compose version 2.4,
+some may require a different syntax. Please have a closer look at the list below.
 
 {% hint style="info" %}
 The file has to end in **.stackhead.yml** or **.stackhead.yaml**.
