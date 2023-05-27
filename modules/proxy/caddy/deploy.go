@@ -3,8 +3,6 @@ package proxy_caddy
 import (
 	"fmt"
 
-	xfs "github.com/saitho/golang-extended-fs/v2"
-
 	"github.com/getstackhead/stackhead/modules/proxy"
 	"github.com/getstackhead/stackhead/system"
 )
@@ -20,17 +18,28 @@ func (Module) Deploy(modulesSettings interface{}) error {
 	}
 
 	projectCaddyLocation := system.Context.Project.GetDirectoryPath() + "/Caddyfile"
-	if err := xfs.WriteFile("ssh://"+projectCaddyLocation, caddyDirectives); err != nil {
-		return err
-	}
 
-	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf " + projectCaddyLocation + " /etc/caddy/conf.d/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
-		return fmt.Errorf("Unable to symlink project Caddyfile: " + err.Error())
-	}
-
-	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "caddy"}, Sudo: true}); err != nil {
-		return fmt.Errorf("Unable to reload Caddy service: " + err.Error())
-	}
+	system.Context.Resources = append(system.Context.Resources, system.Resource{
+		Type:      system.TypeFile,
+		Operation: system.OperationCreate,
+		Name:      projectCaddyLocation,
+		Content:   caddyDirectives,
+		ApplyResourceFunc: func() error {
+			if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf " + projectCaddyLocation + " /etc/caddy/conf.d/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
+				return fmt.Errorf("Unable to symlink project Caddyfile: " + err.Error())
+			}
+			if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "caddy"}, Sudo: true}); err != nil {
+				return fmt.Errorf("Unable to reload Caddy service: " + err.Error())
+			}
+			return nil
+		},
+		RollbackResourceFunc: func() error {
+			if _, err := system.SimpleRemoteRun("rm", system.RemoteRunOpts{Args: []string{"/etc/caddy/conf.d/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
+				return err
+			}
+			return nil
+		},
+	})
 
 	return nil
 }
