@@ -18,7 +18,7 @@ func (m Module) Destroy(modulesSettings interface{}) error {
 	_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
 	if err != nil {
 		if stderr.Len() > 0 {
-			return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
+			return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
 		}
 		return fmt.Errorf("Unable to stop Docker containers: " + err.Error())
 	}

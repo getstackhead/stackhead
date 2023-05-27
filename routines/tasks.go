@@ -3,85 +3,152 @@ package routines
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/chelnak/ysmrr"
+	"github.com/chelnak/ysmrr/pkg/animations"
+	"github.com/chelnak/ysmrr/pkg/colors"
 	"github.com/spf13/viper"
-	"github.com/theckman/yacspin"
 )
 
 type Task struct {
 	Name                string
-	Run                 func(r RunningTask) error
+	Run                 func(r *Task) error
 	ErrorAsErrorMessage bool
+	Spinner             *ysmrr.Spinner
+	TaskRunner          *TaskRunner
+
+	// disabled tasks are skipped silently
+	Disabled bool
+
+	SubTasks                   []Task
+	IgnoreSubtaskErrors        bool
+	RunAllSubTasksDespiteError bool
+
+	IsSubtask bool
 }
 
-type RunningTaskObj struct {
-	Spinner *yacspin.Spinner
-}
-
-func (r *RunningTaskObj) PrintLn(text string) {
+func (r *Task) PrintLn(text string) {
+	text = r.Name + ": " + text
+	if r.IsSubtask {
+		text = "  " + text
+	}
 	if r.Spinner != nil {
-		r.Spinner.Message(text)
+		r.Spinner.UpdateMessage(text)
 	} else {
 		_, _ = fmt.Fprintf(os.Stdout, text+"\n")
 	}
 }
-func (r *RunningTaskObj) SetSuccessMessage(text string) {
+func (r *Task) SetSuccessMessage(text string) {
+	text = r.Name + ": " + text
+	if r.IsSubtask {
+		text = "  " + text
+	}
 	if r.Spinner != nil {
-		r.Spinner.StopMessage(text)
+		r.Spinner.UpdateMessage(text)
+		r.Spinner.Complete()
 	}
 }
-func (r *RunningTaskObj) SetFailMessage(text string) {
+func (r *Task) SetFailMessage(text string) {
+	text = r.Name + ": " + text
+	if r.IsSubtask {
+		text = "  " + text
+	}
 	if r.Spinner != nil {
-		r.Spinner.StopFailMessage(text)
+		r.Spinner.UpdateMessage(text)
+		r.Spinner.Error()
 	}
 }
 
-type RunningTask interface {
-	PrintLn(text string)
-	SetSuccessMessage(text string)
-	SetFailMessage(text string)
+type TaskRunner struct {
+	spinnerManager ysmrr.SpinnerManager
 }
 
-func RunTask(task Task) error {
-	cfg := yacspin.Config{
-		Frequency:         150 * time.Millisecond,
-		CharSet:           yacspin.CharSets[11],
-		Suffix:            " " + task.Name,
-		SuffixAutoColon:   true,
-		Message:           "",
-		StopCharacter:     "✓",
-		StopColors:        []string{"fgGreen"},
-		StopFailCharacter: "✗",
-		StopFailColors:    []string{"fgRed"},
+func (t *TaskRunner) GetNewSubtaskSpinner(name string) *ysmrr.Spinner {
+	if t.spinnerManager == nil {
+		return nil
 	}
+	spinner := t.spinnerManager.AddSpinner(name)
+	return spinner
+}
 
-	var s *yacspin.Spinner
-	if viper.GetBool("verbose") {
+func (t *TaskRunner) RunSubTasks(task Task) error {
+	task.TaskRunner = t
+	var errors []string
+	for _, subTask := range task.SubTasks {
+		subTask.Spinner = t.spinnerManager.AddSpinner(subTask.Name)
+		subTaskError := subTask.Run(&subTask)
+		t.updateSpinnerStatus(subTask, subTaskError)
+		if subTaskError != nil {
+			if !task.RunAllSubTasksDespiteError {
+				return subTaskError
+			} else {
+				errors = append(errors, subTaskError.Error())
+			}
+		}
+	}
+	if len(errors) > 0 {
+		return fmt.Errorf(strings.Join(errors, "\n"))
+	}
+	return nil
+}
+
+func (t *TaskRunner) updateSpinnerStatus(task Task, err error) {
+	if task.Spinner == nil {
+		return
+	}
+	if task.Spinner.IsComplete() || task.Spinner.IsError() {
+		return
+	}
+	if err == nil {
+		task.Spinner.Complete()
+		return
+	}
+	if task.ErrorAsErrorMessage {
+		task.Spinner.UpdateMessage(err.Error())
+	}
+	task.Spinner.Error()
+}
+
+func (t *TaskRunner) RunTask(task Task) error {
+	if task.Disabled {
+		return nil
+	}
+	task.TaskRunner = t
+	useSpinner := !viper.GetBool("verbose")
+	if !useSpinner {
 		_, _ = fmt.Fprintf(os.Stdout, "⌛ %s\n", task.Name)
 	} else {
-		spinner, err := yacspin.New(cfg)
-		s = spinner
-		if err == nil {
-			s.Reverse()
-			s.Start()
-		}
+		t.spinnerManager = ysmrr.NewSpinnerManager(
+			ysmrr.WithAnimation(animations.Dots),
+			ysmrr.WithFrameDuration(150*time.Millisecond),
+			ysmrr.WithSpinnerColor(colors.FgHiGreen),
+			ysmrr.WithCompleteColor(colors.FgHiGreen),
+			ysmrr.WithErrorColor(colors.FgHiRed),
+		)
+		t.spinnerManager.Start()
+		spinner := t.spinnerManager.AddSpinner(task.Name)
+		task.Spinner = spinner
 	}
-	runningTask := &RunningTaskObj{Spinner: s}
-	err := task.Run(runningTask)
-	if err != nil {
-		if s != nil {
-			if task.ErrorAsErrorMessage {
-				s.StopFailMessage(err.Error())
+
+	err := task.Run(&task)
+	if err == nil && len(task.SubTasks) > 0 {
+		subTaskErrors := t.RunSubTasks(task)
+		if subTaskErrors != nil {
+			if !task.IgnoreSubtaskErrors {
+				err = subTaskErrors
 			}
-			s.StopFail()
-		} else {
-			_, _ = fmt.Fprintf(os.Stdout, "✗ %s\n", err.Error())
 		}
-		return err
 	}
-	if s != nil {
-		s.Stop()
+	t.updateSpinnerStatus(task, err)
+
+	if useSpinner {
+		t.spinnerManager.Stop()
+	}
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stdout, "✗ %s\n", err.Error())
+		return err
 	}
 	return nil
 }

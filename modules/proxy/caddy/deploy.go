@@ -19,11 +19,16 @@ func (Module) Deploy(modulesSettings interface{}) error {
 
 	projectCaddyLocation := system.Context.Project.GetDirectoryPath() + "/Caddyfile"
 
-	system.Context.Resources = append(system.Context.Resources, system.Resource{
-		Type:      system.TypeFile,
-		Operation: system.OperationCreate,
-		Name:      projectCaddyLocation,
-		Content:   caddyDirectives,
+	system.Context.Resources = append(system.Context.Resources, system.ResourceGroup{
+		Name: "proxy-caddy-" + system.Context.Project.Name + "-caddyfile",
+		Resources: []system.Resource{
+			{
+				Type:      system.TypeFile,
+				Operation: system.OperationCreate,
+				Name:      projectCaddyLocation,
+				Content:   caddyDirectives,
+			},
+		},
 		ApplyResourceFunc: func() error {
 			if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf " + projectCaddyLocation + " /etc/caddy/conf.d/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
 				return fmt.Errorf("Unable to symlink project Caddyfile: " + err.Error())
