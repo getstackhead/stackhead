@@ -26,38 +26,52 @@ var DestroyApplication = &cobra.Command{
 		}
 		commands.PrepareContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
 
-		routines.RunTask(routines.Task{
+		modules := system.Context.GetModulesInOrder()
+		for i, j := 0, len(modules)-1; i < j; i, j = i+1, j-1 { // reverse module list
+			modules[i], modules[j] = modules[j], modules[i]
+		}
+
+		// Init modules
+		for _, module := range modules {
+			moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+			module.Init(moduleSettings)
+		}
+		taskRunner := routines.TaskRunner{}
+
+		subTasks := []routines.Task{}
+
+		if hasProjectDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetDirectoryPath()); hasProjectDir {
+
+			// Run destroy scripts from plugins
+			for _, module := range modules {
+				moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
+				subTasks = append(subTasks, routines.Task{
+					Name: "Remove module configurations for " + module.GetConfig().Name,
+					Run: func(r *routines.Task) error {
+						return module.Destroy(moduleSettings)
+					},
+					IsSubtask:           true,
+					ErrorAsErrorMessage: true,
+				})
+			}
+
+			subTasks = append(subTasks, routines.Task{
+				Name: "Removing project directory",
+				Run: func(r *routines.Task) error {
+					return xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true)
+				},
+				IsSubtask:           true,
+				ErrorAsErrorMessage: true,
+			})
+		}
+
+		_ = taskRunner.RunTask(routines.Task{
 			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
-			Run: func(r routines.RunningTask) error {
-				modules := system.Context.GetModulesInOrder()
-				for i, j := 0, len(modules)-1; i < j; i, j = i+1, j-1 { // reverse module list
-					modules[i], modules[j] = modules[j], modules[i]
-				}
-
-				// Init modules
-				for _, module := range modules {
-					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
-					module.Init(moduleSettings)
-				}
-
-				hasProjectDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetDirectoryPath())
-				if hasProjectDir {
-					// Run destroy scripts from plugins
-					for _, module := range modules {
-						moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
-						if err := module.Destroy(moduleSettings); err != nil {
-							return err
-						}
-					}
-
-					// Removing project directory
-					if err := xfs.DeleteFolder("ssh://"+projectDefinition.GetDirectoryPath(), true); err != nil {
-						return err
-					}
-				}
-
+			Run: func(r *routines.Task) error {
 				return nil
 			},
+			SubTasks: subTasks,
+			//RunAllSubTasksDespiteError: true,
 		})
 	},
 }

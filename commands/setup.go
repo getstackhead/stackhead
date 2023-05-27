@@ -180,9 +180,10 @@ var SetupServer = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		PrepareContext(args[0], system.ContextActionServerSetup, nil)
 
-		routines.RunTask(routines.Task{
+		taskRunner := routines.TaskRunner{}
+		_ = taskRunner.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up server at IP \"%s\"", args[0]),
-			Run: func(r routines.RunningTask) error {
+			Run: func(r *routines.Task) error {
 				var err error
 
 				// Init modules
@@ -236,9 +237,9 @@ var SetupServer = &cobra.Command{
 			ErrorAsErrorMessage: true,
 		})
 
-		routines.RunTask(routines.Task{
+		_ = taskRunner.RunTask(routines.Task{
 			Name: fmt.Sprintf("Setting up StackHead Plugins at \"%s\"", args[0]),
-			Run: func(r routines.RunningTask) error {
+			Run: func(r *routines.Task) error {
 				var err error
 
 				modules := system.Context.GetModulesInOrder()

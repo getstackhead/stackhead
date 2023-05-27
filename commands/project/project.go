@@ -11,6 +11,6 @@ func GetCommands(LocalSchemas embed.FS) *cobra.Command {
 		Use:   "project",
 		Short: "Project commands",
 	}
-	command.AddCommand(DeployApplication, DestroyApplication, Validate(LocalSchemas)) // nolint:typecheck
+	command.AddCommand(DeployApplication(), DestroyApplication, Validate(LocalSchemas)) // nolint:typecheck
 	return command
 }

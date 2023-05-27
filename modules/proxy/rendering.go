@@ -38,17 +38,19 @@ var FuncMap = template.FuncMap{
 		return auths
 	},
 	"getExternalPort": func(service string, internalPort int) string {
-		for _, resource := range system.Context.Resources {
-			if resource.Type != system.TypeContainer {
-				continue
-			}
-			if resource.ServiceName != service {
-				continue
-			}
-			for _, port := range resource.Ports {
-				split := strings.SplitN(port, ":", 2)
-				if split[1] == strconv.Itoa(internalPort) {
-					return split[0]
+		for _, resourceGroup := range system.Context.Resources {
+			for _, resource := range resourceGroup.Resources {
+				if resource.Type != system.TypeContainer {
+					continue
+				}
+				if resource.ServiceName != service {
+					continue
+				}
+				for _, port := range resource.Ports {
+					split := strings.SplitN(port, ":", 2)
+					if split[1] == strconv.Itoa(internalPort) {
+						return split[0]
+					}
 				}
 			}
 		}

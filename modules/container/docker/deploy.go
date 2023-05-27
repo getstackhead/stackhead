@@ -138,9 +138,9 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		return err
 	}
 
-	composeFileRemotePath := "ssh://" + system.Context.Project.GetDirectoryPath() + "/docker-compose.yaml"
+	composeFileRemotePath := system.Context.Project.GetDirectoryPath() + "/docker-compose.yaml"
 
-	hasRemoteFile, err := xfs.HasFile(composeFileRemotePath)
+	hasRemoteFile, err := xfs.HasFile("ssh://" + composeFileRemotePath)
 	if err != nil && err.Error() == "file does not exist" {
 		hasRemoteFile = false
 	} else if err != nil {
@@ -150,7 +150,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	var remoteComposeObjMap map[string]interface{}
 	if hasRemoteFile {
 		remoteComposeObj := docker_compose.DockerCompose{}
-		remoteComposeContent, err := xfs.ReadFile(composeFileRemotePath)
+		remoteComposeContent, err := xfs.ReadFile("ssh://" + composeFileRemotePath)
 		if err := yaml.Unmarshal([]byte(remoteComposeContent), &remoteComposeObj); err != nil {
 			return fmt.Errorf("unable to read remote docker-compose.yaml file from previous deployment: " + err.Error())
 		}
@@ -168,7 +168,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 
 	if len(result.Diffs) == 0 && !updateRequired {
 		// todo: pass to command task output
-		//fmt.Println("No changes to Docker Compose file found and Docker images are up-to-date. No need to update.")
+		//logger.Infoln("No changes to Docker Compose file found and Docker images are up-to-date. No need to update.")
 		return nil
 	}
 	evaluateDiff(result)
@@ -178,55 +178,63 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		return err
 	}
 
-	system.Context.Resources = append(system.Context.Resources, system.Resource{
-		Type: system.TypeFile,
-		Name: composeFileRemotePath,
-		ApplyResourceFunc: func() error {
-			return xfs.WriteFile(composeFileRemotePath, composeFileContent)
-		},
-		RollbackResourceFunc: func() error {
-			return xfs.DeleteFile(composeFileRemotePath)
+	system.Context.Resources = append(system.Context.Resources, system.ResourceGroup{
+		Name: "container-docker-" + system.Context.Project.Name + "-composefile",
+		Resources: []system.Resource{
+			{
+				Type:      system.TypeFile,
+				Operation: system.OperationCreate,
+				Name:      composeFileRemotePath,
+				Content:   composeFileContent,
+			},
 		},
 	})
 
-	// todo: add file to created resources
+	var containerResources []system.Resource
 	for serviceName, service := range composeYaml.Services {
-		system.Context.Resources = append(system.Context.Resources, system.Resource{
+		containerResources = append(containerResources, system.Resource{
 			Type:        system.TypeContainer,
+			Operation:   system.OperationCreate,
 			ServiceName: serviceName,
 			Name:        service.ContainerName,
+			ImageName:   service.Image,
 			Ports:       service.Ports,
-			ApplyResourceFunc: func() error {
-				// Start Docker Compose
-				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-				_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
-				if err != nil {
-					if stderr.Len() > 0 {
-						return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
-					}
-					return fmt.Errorf("Unable to start Docker containers: " + err.Error())
-				}
-
-				// Execute hooks
-				if err := docker_system.ExecuteHook("afterSetup"); err != nil {
-					return fmt.Errorf("After setup hook %s failed: ", err.Error())
-				}
-				return nil
-			},
-			RollbackResourceFunc: func() error {
-				// Stop Docker Compose
-				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-				_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
-				if err != nil {
-					if stderr.Len() > 0 {
-						return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
-					}
-					return fmt.Errorf("Unable to stop Docker containers: " + err.Error())
-				}
-				return nil
-			},
 		})
 	}
+
+	system.Context.Resources = append(system.Context.Resources, system.ResourceGroup{
+		Name:      "container-docker-" + system.Context.Project.Name + "-containers",
+		Resources: containerResources,
+		ApplyResourceFunc: func() error {
+			// Start Docker Compose
+			// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+			_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+			if err != nil {
+				if stderr.Len() > 0 {
+					return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
+				}
+				return fmt.Errorf("Unable to start Docker containers: " + err.Error())
+			}
+
+			// Execute hooks
+			if err := docker_system.ExecuteHook("afterSetup"); err != nil {
+				return fmt.Errorf("After setup hook %s failed: ", err.Error())
+			}
+			return nil
+		},
+		RollbackResourceFunc: func() error {
+			// Stop Docker Compose
+			// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+			_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+			if err != nil {
+				if stderr.Len() > 0 {
+					return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
+				}
+				return fmt.Errorf("Unable to stop Docker containers: " + err.Error())
+			}
+			return nil
+		},
+	})
 
 	return nil
 }
@@ -300,26 +308,26 @@ func evaluateDiff(result diff_docker_compose.YamlDiffResult) {
 	}
 
 	if len(removedServices) > 0 {
-		fmt.Println("Services locally removed/disabled:")
+		logger.Infoln("Services locally removed/disabled:")
 		for _, service := range removedServices {
-			fmt.Println("* " + service)
+			logger.Infoln("* " + service)
 		}
-		fmt.Println("")
+		logger.Infoln("")
 	}
 
 	if len(addedServices) > 0 {
-		fmt.Println("Services locally added/enabled:")
+		logger.Infoln("Services locally added/enabled:")
 		for _, service := range addedServices {
-			fmt.Println("* " + service)
+			logger.Infoln("* " + service)
 		}
-		fmt.Println("")
+		logger.Infoln("")
 	}
 
 	if len(modifiedServices) > 0 {
-		fmt.Println("Services locally modified:")
+		logger.Infoln("Services locally modified:")
 		for _, service := range modifiedServices {
-			fmt.Println("* " + service)
+			logger.Infoln("* " + service)
 		}
-		fmt.Println("")
+		logger.Infoln("")
 	}
 }

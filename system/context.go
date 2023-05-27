@@ -35,7 +35,7 @@ type ContextStruct struct {
 	Project        *project.Project
 	IsCI           bool
 	Authentication ContextAuthenticationStruct
-	Resources      []Resource
+	Resources      []ResourceGroup
 
 	ProxyModule     Module
 	ContainerModule Module
