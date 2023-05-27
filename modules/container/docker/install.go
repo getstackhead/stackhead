@@ -114,7 +114,7 @@ func PrepareCredentialsStore() error {
 			return fmt.Errorf("unable to lookup GPG key for Docker Credentials Store: " + err.Error())
 		}
 	}
-	fmt.Println("Docker Credentials encryption key is " + key)
+	//fmt.Println("Docker Credentials encryption key is " + key)
 	// todo: log created resource
 
 	_, err = system.SimpleRemoteRun("pass", system.RemoteRunOpts{User: "stackhead", Args: []string{"init", key}})

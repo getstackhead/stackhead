@@ -197,40 +197,75 @@ var SetupServer = &cobra.Command{
 				//	return err
 				//}
 
-				//- import_tasks: "../roles/stackhead_module_api/tasks_internal/load-all-modules-config.yml"
-				//
-				//- import_tasks: "../roles/stackhead_setup/tasks/facts-deploy.yml"
-				r.PrintLn("Preparing setup.")
-
+				prepareSpinner := r.TaskRunner.GetNewSubtaskSpinner("Preparing setup")
 				if err := basicSetup(); err != nil {
-					fmt.Println("\nUnable to prepare setup. (" + err.Error() + ")")
+					if prepareSpinner != nil {
+						prepareSpinner.UpdateMessage("Unable to prepare setup. (" + err.Error() + ")")
+						prepareSpinner.Error()
+					} else {
+						fmt.Println("Unable to prepare setup. (" + err.Error() + ")")
+					}
 					os.Exit(1)
 				}
+				if prepareSpinner != nil {
+					prepareSpinner.Complete()
+				}
 
-				r.PrintLn("Setting up SSH keys.")
+				sshSpinner := r.TaskRunner.GetNewSubtaskSpinner("Setting up SSH keys")
 				if err := setupSshKeys(); err != nil {
-					fmt.Println("\nUnable to setup SSH keys. (" + err.Error() + ")")
+					if sshSpinner != nil {
+						sshSpinner.UpdateMessage("Unable to setup SSH keys. (\" + err.Error() + \")")
+						sshSpinner.Error()
+					} else {
+						fmt.Println("Unable to setup SSH keys. (" + err.Error() + ")")
+					}
 					os.Exit(1)
 				}
+				if sshSpinner != nil {
+					sshSpinner.Complete()
+				}
 
-				r.PrintLn("Setting up users.")
+				userSpinner := r.TaskRunner.GetNewSubtaskSpinner("Setting up users")
 				if err := userSetup(); err != nil {
-					fmt.Println("\nUnable to create StackHead users. (" + err.Error() + ")")
+					if userSpinner != nil {
+						userSpinner.UpdateMessage("Unable to create StackHead users. (" + err.Error() + ")")
+						userSpinner.Error()
+					} else {
+						fmt.Println("Unable to create StackHead users. (" + err.Error() + ")")
+					}
 					os.Exit(1)
 				}
+				if userSpinner != nil {
+					userSpinner.Complete()
+				}
 
-				r.PrintLn("Setting up folders.")
+				folderSpinner := r.TaskRunner.GetNewSubtaskSpinner("Setting up folders")
 				if err := folderSetup(); err != nil {
-					fmt.Println("\nUnable to create folders. (" + err.Error() + ")")
+					if folderSpinner != nil {
+						folderSpinner.UpdateMessage("Unable to create folders. (" + err.Error() + ")")
+						folderSpinner.Error()
+					} else {
+						fmt.Println("Unable to create folders. (" + err.Error() + ")")
+					}
 					os.Exit(1)
 				}
+				if folderSpinner != nil {
+					folderSpinner.Complete()
+				}
 
+				versionSpinner := r.TaskRunner.GetNewSubtaskSpinner("Writing StackHead version")
 				if err := system.WriteVersion(); err != nil {
-					fmt.Println("\nUnable to write version. (" + err.Error() + ")")
+					if versionSpinner != nil {
+						versionSpinner.UpdateMessage("Unable to write version. (" + err.Error() + ")")
+						versionSpinner.Error()
+					} else {
+						fmt.Println("Unable to write version. (" + err.Error() + ")")
+					}
 					os.Exit(1)
 				}
-
-				//- import_tasks: "../roles/stackhead_module_api/tasks_internal/setup.yml"
+				if versionSpinner != nil {
+					versionSpinner.Complete()
+				}
 
 				return err
 			},
@@ -248,13 +283,20 @@ var SetupServer = &cobra.Command{
 					if module.GetConfig().Type == "plugin" || module.GetConfig().Type == "dns" {
 						continue
 					}
+					moduleSpinner := r.TaskRunner.GetNewSubtaskSpinner("Setup " + module.GetConfig().Name)
 					event.MustFire(
 						"setup.modules.pre-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
 						event.M{"module": module},
 					)
 					moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
 					if err := module.Install(moduleSettings); err != nil {
+						if moduleSpinner != nil {
+							moduleSpinner.Error()
+						}
 						return err
+					}
+					if moduleSpinner != nil {
+						moduleSpinner.Complete()
 					}
 					event.MustFire(
 						"setup.modules.post-install-module."+module.GetConfig().Type+"."+module.GetConfig().Name,
