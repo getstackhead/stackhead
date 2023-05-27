@@ -2,11 +2,14 @@ package routines
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/chelnak/ysmrr"
 	xfs "github.com/saitho/golang-extended-fs/v2"
 	logger "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
+	"path"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
@@ -38,6 +41,49 @@ var PrepareProjectTask = func(projectDefinition *project.Project) Task {
 		Run: func(r *Task) error {
 			r.PrintLn("Create project directory if not exists")
 			if err := xfs.CreateFolder("ssh://" + projectDefinition.GetDirectoryPath()); err != nil {
+				return err
+			}
+			if err := xfs.CreateFolder("ssh://" + projectDefinition.GetDeploymentsPath()); err != nil {
+				return err
+			}
+
+			// Find latest deployment
+			files, err := xfs.ListFolders("ssh://" + projectDefinition.GetDeploymentsPath())
+			if err != nil {
+				return err
+			}
+			if files != nil {
+				// newest files at the top
+				sort.Slice(files, func(i, j int) bool {
+					return files[i].ModTime().After(files[j].ModTime())
+				})
+				for _, file := range files {
+					if file.IsDir() && system.MatchDeploymentNaming(file.Name()) {
+						fullPath := path.Join(projectDefinition.GetDeploymentsPath(), file.Name())
+						latestDeployment, err := system.GetDeploymentByPath(fullPath)
+						if err != nil {
+							return err
+						}
+						if !latestDeployment.RolledBack {
+							latestDeployment.Project = system.Context.Project
+							system.Context.LatestDeployment = latestDeployment
+							break
+						}
+					}
+				}
+			}
+			newVersion := 1
+			if system.Context.LatestDeployment != nil {
+				newVersion = system.Context.LatestDeployment.Version + 1
+			}
+			system.Context.CurrentDeployment = system.Deployment{
+				Version:   newVersion,
+				DateStart: time.Now(),
+				Project:   system.Context.Project,
+			}
+
+			// Create folder for new deployment
+			if err := xfs.CreateFolder("ssh://" + system.Context.CurrentDeployment.GetPath()); err != nil {
 				return err
 			}
 			return nil
@@ -88,21 +134,34 @@ var RollbackResources = Task{
 				spinner := r.TaskRunner.GetNewSubtaskSpinner(resource.ToString(true))
 				matched, err := system.RollbackResourceOperation(resource)
 				if !matched || err == nil {
-					spinner.Complete()
+					if spinner != nil {
+						spinner.Complete()
+					}
 				} else if err != nil {
 					errors = append(errors, fmt.Errorf("Rollback error: %s", err))
-					spinner.Error()
+					if spinner != nil {
+						spinner.Error()
+					}
 				}
 			}
 		}
-		if len(errors) == 0 {
-			return nil
-		}
-		errorMessages := []string{"The following errors occurred:"}
+
+		// Mark deployment as rolled back
+		system.Context.CurrentDeployment.RolledBack = true
 		for _, err2 := range errors {
-			errorMessages = append(errorMessages, "- "+err2.Error())
+			system.Context.CurrentDeployment.RollbackErrors = append(system.Context.CurrentDeployment.RollbackErrors, err2.Error())
 		}
-		return fmt.Errorf(strings.Join(errorMessages, "\n"))
+
+		if len(system.Context.CurrentDeployment.RollbackErrors) > 0 {
+			return fmt.Errorf("The following errors occurred:\n" + strings.Join(system.Context.CurrentDeployment.RollbackErrors, "\n"))
+		}
+
+		// Delete deployment version
+		//if err := xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true); err != nil {
+		//	return fmt.Errorf("unable to remove deployment folder: " + err.Error())
+		//}
+
+		return nil
 	},
 }
 
@@ -112,7 +171,7 @@ var CreateResources = Task{
 		var errors []error
 		var uncompletedSpinners []*ysmrr.Spinner
 
-		for _, resourceGroup := range system.Context.Resources {
+		for _, resourceGroup := range system.Context.CurrentDeployment.ResourceGroups {
 			for _, resource := range resourceGroup.Resources {
 				spinner := r.TaskRunner.GetNewSubtaskSpinner(resource.ToString(false))
 				processed, err := system.ApplyResourceOperation(resource)
@@ -163,5 +222,21 @@ var CreateResources = Task{
 			errorMessages = append(errorMessages, "- "+err2.Error())
 		}
 		return fmt.Errorf(strings.Join(errorMessages, "\n"))
+	},
+}
+
+var FinalizeDeployment = Task{
+	Name: "Finalizing deployment",
+	Run: func(r *Task) error {
+		system.Context.CurrentDeployment.DateEnd = time.Now()
+		resourcesPath := path.Join(system.Context.CurrentDeployment.GetPath(), "deployment.yaml")
+		yamlString, err := yaml.Marshal(system.Context.CurrentDeployment)
+		if err != nil {
+			return err
+		}
+		if err = xfs.WriteFile("ssh://"+resourcesPath, string(yamlString)); err != nil {
+			return err
+		}
+		return nil
 	},
 }

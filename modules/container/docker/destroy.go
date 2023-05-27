@@ -15,7 +15,7 @@ func (m Module) Destroy(modulesSettings interface{}) error {
 
 	// Stop and remove containers
 	// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-	_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
+	_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.CurrentDeployment.GetPath()})
 	if err != nil {
 		if stderr.Len() > 0 {
 			return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())

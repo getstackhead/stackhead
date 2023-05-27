@@ -16,7 +16,7 @@ func GetPortMap(project *project.Project) (map[string]int, error) {
 
 	// find ports for running containers
 	for _, service := range project.Container.Services {
-		res, _, err := system.RemoteRun("docker", system.RemoteRunOpts{Args: []string{"port", "stackhead-" + project.Name + "-" + service.Name}})
+		res, _, err := system.RemoteRun("docker", system.RemoteRunOpts{Args: []string{"port", ContainerName(project.Name, service.Name, system.Context.CurrentDeployment)}})
 		if err == nil { // ignore error (container not running)
 			// e.g. 80/tcp -> 0.0.0.0:49155
 			re := regexp.MustCompile(`(?P<Internal>\d+)\/tcp -> 0\.0\.0\.0:(?P<External>\d+)`)

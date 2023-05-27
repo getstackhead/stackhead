@@ -2,8 +2,9 @@ package proxy_nginx
 
 import (
 	"fmt"
-	xfs "github.com/saitho/golang-extended-fs/v2"
 	"path"
+
+	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/modules/proxy"
@@ -14,7 +15,6 @@ import (
 type Paths struct {
 	RootDirectory                string
 	CertificatesProjectDirectory string
-	ProjectCertificatesDirectory string
 	ProjectsRootDirectory        string
 	AcmeChallengesDirectory      string
 	SnakeoilFullchainPath        string
@@ -30,7 +30,6 @@ func getPaths() Paths {
 	return Paths{
 		RootDirectory:                config.RootDirectory,
 		CertificatesProjectDirectory: GetCertificatesDirectory(system.Context.Project),
-		ProjectCertificatesDirectory: GetCertificateDirectoryPath(system.Context.Project),
 		ProjectsRootDirectory:        config.ProjectsRootDirectory,
 		AcmeChallengesDirectory:      AcmeChallengesDirectory,
 		SnakeoilFullchainPath:        SnakeoilFullchainPath,
@@ -118,50 +117,79 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 	fmt.Println("Deploy step")
 	paths := getPaths()
 
-	if err := xfs.CreateFolder("ssh://" + paths.ProjectCertificatesDirectory); err != nil {
-		return err
-	}
 	if err := xfs.CreateFolder("ssh://" + paths.CertificatesProjectDirectory); err != nil {
 		return err
 	}
 
 	serverConfig := buildServerConfig(system.Context.Project, proxy.Context.AllPorts)
-	nginxProjectLocation := system.Context.Project.GetDirectoryPath() + "/nginx.conf"
-	if err = xfs.WriteFile("ssh://"+nginxProjectLocation, serverConfig); err != nil {
-		return err
+	nginxConfigResource := system.Resource{
+		Type:      system.TypeFile,
+		Operation: system.OperationCreate,
+		Name:      "nginx.conf",
+		Content:   serverConfig,
 	}
+	nginxConfigResourcePath, _ := system.Context.CurrentDeployment.GetResourcePath(nginxConfigResource)
+	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
+		Name: "proxy-nginx-" + system.Context.Project.Name,
+		Resources: []system.Resource{
+			system.Resource{
+				Type:      system.TypeFolder,
+				Operation: system.OperationCreate,
+				Name:      "certificates",
+			},
+			nginxConfigResource,
+			// Symlink project certificate files to snakeoil files after initial creation
+			system.Resource{
+				Type:             system.TypeLink,
+				Operation:        system.OperationCreate,
+				Name:             paths.CertificatesProjectDirectory + "/fullchain.pem",
+				ExternalResource: true,
+				LinkSource:       paths.SnakeoilFullchainPath,
+			},
+			system.Resource{
+				Type:             system.TypeLink,
+				Operation:        system.OperationCreate,
+				Name:             paths.CertificatesProjectDirectory + "/privkey.pem",
+				ExternalResource: true,
+				LinkSource:       paths.SnakeoilPrivkeyPath,
+			},
+			system.Resource{
+				Type:             system.TypeLink,
+				Operation:        system.OperationCreate,
+				Name:             "/etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf",
+				ExternalResource: true,
+				LinkSource:       nginxConfigResourcePath,
+				EnforceLink:      true,
+			},
+			system.Resource{
+				Type:             system.TypeLink,
+				Operation:        system.OperationCreate,
+				Name:             moduleSettings.Config.VhostPath + "/stackhead_" + system.Context.Project.Name + ".conf",
+				ExternalResource: true,
+				LinkSource:       "/etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf",
+				EnforceLink:      true,
+			},
+		},
+		ApplyResourceFunc: func() error {
+			// first reload so webserver config works for ACME request
+			if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
+				return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
+			}
 
-	// Symlink project certificate files to snakeoil files after initial creation
-	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-s " + paths.SnakeoilFullchainPath + " " + paths.CertificatesProjectDirectory + "/fullchain.pem"}, AllowFail: true}); err != nil {
-		return fmt.Errorf("Unable to symlink snakeoil full chain: " + err.Error())
-	}
-	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-s " + paths.SnakeoilPrivkeyPath + " " + paths.CertificatesProjectDirectory + "/privkey.pem"}, AllowFail: true}); err != nil {
-		return fmt.Errorf("Unable to symlink snakeoil privkey: " + err.Error())
-	}
-
-	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf " + nginxProjectLocation + " /etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
-		return fmt.Errorf("Unable to symlink project Nginx file: " + err.Error())
-	}
-	if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sf /etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf " + moduleSettings.Config.VhostPath + "/stackhead_" + system.Context.Project.Name + ".conf"}}); err != nil {
-		return fmt.Errorf("Unable to enable project Nginx file: " + err.Error())
-	}
-	// first reload so webserver config works for ACME request
-	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
-		return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
-	}
-
-	certMail := "certificates-noreply@stackhead.io"
-	if len(moduleSettings.CertificatesEmail) > 0 {
-		certMail = moduleSettings.CertificatesEmail
-	}
-	if err := generateCertificates(paths, certMail); err != nil {
-		return fmt.Errorf("Unable to generate certificates: " + err.Error())
-	}
-	// reload Nginx again so certificates take effect
-	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
-		return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
-	}
-
+			certMail := "certificates-noreply@stackhead.io"
+			if len(moduleSettings.CertificatesEmail) > 0 {
+				certMail = moduleSettings.CertificatesEmail
+			}
+			if err := generateCertificates(paths, certMail); err != nil {
+				return fmt.Errorf("Unable to generate certificates: " + err.Error())
+			}
+			// reload Nginx again so certificates take effect
+			if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
+				return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
+			}
+			return nil
+		},
+	})
 	return nil
 }
 

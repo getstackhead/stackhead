@@ -2,12 +2,14 @@ package system
 
 import (
 	"fmt"
-	logger "github.com/sirupsen/logrus"
 	"net"
 	"os"
 	"path"
+	"strconv"
+	"time"
 
 	"github.com/saitho/golang-extended-fs/v2/sftp"
+	logger "github.com/sirupsen/logrus"
 
 	"github.com/getstackhead/stackhead/config"
 	"github.com/getstackhead/stackhead/project"
@@ -29,13 +31,49 @@ func (c ContextAuthenticationStruct) GetPublicKeyPath() string {
 	return path.Join(c.LocalAuthenticationDir, "public_key.pem")
 }
 
+type Deployment struct {
+	Version   int
+	DateStart time.Time
+	DateEnd   time.Time
+	Project   *project.Project `yaml:"-"`
+
+	RolledBack     bool
+	RollbackErrors []string
+
+	ResourceGroups []ResourceGroup
+}
+
+func (d Deployment) GetResourcePath(resource Resource) (string, error) {
+	if resource.Type != TypeFile && resource.Type != TypeFolder && resource.Type != TypeLink {
+		return "", fmt.Errorf("not a file, folder or link resource")
+	}
+	if resource.ExternalResource {
+		if !path.IsAbs(resource.Name) {
+			return "", fmt.Errorf("expected absolute path in Name as ExternalResource is set to true")
+		}
+		return resource.Name, nil
+	}
+	return path.Join(d.GetPath(), resource.Name), nil
+}
+
+func (d Deployment) GetPath() string {
+	return path.Join(d.Project.GetDeploymentsPath(), "v"+strconv.Itoa(d.Version))
+}
+
+func (d Deployment) Serialize() string {
+	return ""
+}
+
 type ContextStruct struct {
-	TargetHost     net.IP
-	CurrentAction  string
+	TargetHost net.IP
+
+	CurrentAction     string
+	LatestDeployment  *Deployment
+	CurrentDeployment Deployment
+
 	Project        *project.Project
 	IsCI           bool
 	Authentication ContextAuthenticationStruct
-	Resources      []ResourceGroup
 
 	ProxyModule     Module
 	ContainerModule Module

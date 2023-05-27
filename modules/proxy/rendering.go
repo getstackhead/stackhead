@@ -38,7 +38,7 @@ var FuncMap = template.FuncMap{
 		return auths
 	},
 	"getExternalPort": func(service string, internalPort int) string {
-		for _, resourceGroup := range system.Context.Resources {
+		for _, resourceGroup := range system.Context.CurrentDeployment.ResourceGroups {
 			for _, resource := range resourceGroup.Resources {
 				if resource.Type != system.TypeContainer {
 					continue
