@@ -54,28 +54,22 @@ func backupResource(resource *Resource) (string, error) {
 	backupFilePath := resourceFilePath + ".bak"
 	xfsFilePath := "ssh://" + resourceFilePath
 	switch resource.Type {
-	case TypeFile:
-		hasFile, err := xfs.HasFile(xfsFilePath)
-		if err != nil {
-			return "", fmt.Errorf("unable to check status of file %s: %s", resourceFilePath, err)
+	case TypeFile, TypeLink:
+		var fileFound bool
+		var err error
+		if resource.Type == TypeFile {
+			fileFound, err = xfs.HasFile(xfsFilePath)
+		} else {
+			fileFound, err = xfs.HasLink(xfsFilePath)
 		}
-		if !hasFile {
+		if err != nil {
+			return "", fmt.Errorf("unable to check status of %s %s: %s", resource.Type, resourceFilePath, err)
+		}
+		if !fileFound {
 			return "", nil
 		}
 		if _, err = SimpleRemoteRun("cp", RemoteRunOpts{Args: []string{resourceFilePath, backupFilePath}}); err != nil {
-			return backupFilePath, fmt.Errorf("unable to backup file %s: %s", resourceFilePath, err)
-		}
-		return backupFilePath, nil
-	case TypeLink:
-		hasFile, err := xfs.HasLink(xfsFilePath)
-		if err != nil {
-			return "", fmt.Errorf("unable to check status of link %s: %s", resourceFilePath, err)
-		}
-		if !hasFile {
-			return "", nil
-		}
-		if _, err = SimpleRemoteRun("cp", RemoteRunOpts{Args: []string{resourceFilePath, backupFilePath}}); err != nil {
-			return backupFilePath, fmt.Errorf("unable to backup link %s: %s", resourceFilePath, err)
+			return backupFilePath, fmt.Errorf("unable to backup %s %s: %s", resource.Type, resourceFilePath, err)
 		}
 		return backupFilePath, nil
 	case TypeFolder:
