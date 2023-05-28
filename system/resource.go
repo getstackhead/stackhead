@@ -35,8 +35,9 @@ type ResourceGroup struct {
 }
 
 type Resource struct {
-	Type      Type
-	Operation Operation `yaml:"-"`
+	Type           Type
+	Operation      Operation `yaml:"-"`
+	BackupFilePath string    `yaml:"-"`
 
 	// if set the Name refers to an external resource. for files an absolute path is expected
 	ExternalResource bool `yaml:"externalResource,omitempty"`

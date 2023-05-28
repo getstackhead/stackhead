@@ -124,7 +124,7 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 		Name:      "nginx.conf",
 		Content:   serverConfig,
 	}
-	nginxConfigResourcePath, _ := system.Context.CurrentDeployment.GetResourcePath(nginxConfigResource)
+	nginxConfigResourcePath, _ := system.Context.CurrentDeployment.GetResourcePath(&nginxConfigResource)
 	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
 		Name: "proxy-nginx-" + system.Context.Project.Name,
 		Resources: []system.Resource{

@@ -147,9 +147,9 @@ func processResourceGroup(taskRunner *TaskRunner, resourceGroup system.ResourceG
 		var err error
 		var processed bool
 		if isRollbackMode {
-			processed, err = system.RollbackResourceOperation(resource, ignoreBackup)
+			processed, err = system.RollbackResourceOperation(&resource, ignoreBackup)
 		} else {
-			processed, err = system.ApplyResourceOperation(resource, ignoreBackup)
+			processed, err = system.ApplyResourceOperation(&resource, ignoreBackup)
 		}
 		if err != nil {
 			if spinner != nil {
@@ -260,8 +260,15 @@ var FinalizeDeployment = Task{
 			return err
 		}
 
-		// update current symlink if deployment was successful
 		if !system.Context.CurrentDeployment.RolledBack {
+			// Remove external backups
+			for _, resourceGroup := range system.Context.CurrentDeployment.ResourceGroups {
+				for _, resource := range resourceGroup.Resources {
+					fmt.Println(resource.BackupFilePath) // todo: remove
+				}
+			}
+
+			// update current symlink if deployment was successful
 			if _, err := system.SimpleRemoteRun("ln", system.RemoteRunOpts{Args: []string{"-sfn " + system.Context.CurrentDeployment.GetPath() + " " + path.Join(system.Context.CurrentDeployment.Project.GetDeploymentsPath(), "current")}}); err != nil {
 				return fmt.Errorf("Unable to symlink current deployment: " + err.Error())
 			}

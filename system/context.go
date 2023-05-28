@@ -43,9 +43,9 @@ type Deployment struct {
 	ResourceGroups []ResourceGroup
 }
 
-func (d Deployment) GetResourcePath(resource Resource) (string, error) {
+func (d Deployment) GetResourcePath(resource *Resource) (string, error) {
 	if resource.Type != TypeFile && resource.Type != TypeFolder && resource.Type != TypeLink {
-		return "", fmt.Errorf("not a file, folder or link resource")
+		return "", fmt.Errorf("unsupported resouce type \"%s\". expected file, folder or link", resource.Type)
 	}
 	if resource.ExternalResource {
 		if !path.IsAbs(resource.Name) {

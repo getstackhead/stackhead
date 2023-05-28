@@ -147,7 +147,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	oldComposeFilePath := ""
 	var remoteComposeObjMap map[string]interface{}
 	if system.Context.LatestDeployment != nil {
-		dockerComposeFilePathOld, err := system.Context.LatestDeployment.GetResourcePath(dockerComposeResource)
+		dockerComposeFilePathOld, err := system.Context.LatestDeployment.GetResourcePath(&dockerComposeResource)
 		if err != nil {
 			return err
 		}
@@ -166,7 +166,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 			if err != nil {
 				return fmt.Errorf("unable to process remote docker-compose.yaml file from previous deployment: " + err.Error())
 			}
-		} else if err != nil && err.Error() != "file does not exist" {
+		} else if err != nil {
 			return fmt.Errorf("Unable to check state of remote docker-compose.yaml from previous deployment: " + err.Error())
 		}
 	}
@@ -190,7 +190,7 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	}
 	dockerComposeResource.Content = composeFileContent
 
-	dockerComposeFilePathNew, _ := system.Context.CurrentDeployment.GetResourcePath(dockerComposeResource)
+	dockerComposeFilePathNew, _ := system.Context.CurrentDeployment.GetResourcePath(&dockerComposeResource)
 
 	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
 		Name:      "container-docker-" + system.Context.Project.Name + "-composefile",

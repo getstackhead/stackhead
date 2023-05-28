@@ -24,7 +24,7 @@ func (Module) Deploy(modulesSettings interface{}) error {
 		Content:   caddyDirectives,
 	}
 
-	caddyFilePath, err := system.Context.CurrentDeployment.GetResourcePath(caddyFileResource)
+	caddyFilePath, err := system.Context.CurrentDeployment.GetResourcePath(&caddyFileResource)
 	if err != nil {
 		return err
 	}
