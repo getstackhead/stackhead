@@ -20,6 +20,7 @@ type Operation string
 
 const (
 	OperationCreate Operation = "create"
+	OperationDelete Operation = "delete"
 )
 
 type ApplyResourceFuncType func() error
@@ -70,6 +71,8 @@ func (r Resource) GetOperationLabel(invertOperation bool) string {
 				operation = "UPDATE"
 			}
 		}
+	} else if r.Operation == OperationDelete {
+		operation = "DELETE"
 	}
 
 	if invertOperation {

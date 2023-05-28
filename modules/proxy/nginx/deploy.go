@@ -117,10 +117,6 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 	fmt.Println("Deploy step")
 	paths := getPaths()
 
-	if err := xfs.CreateFolder("ssh://" + paths.CertificatesProjectDirectory); err != nil {
-		return err
-	}
-
 	serverConfig := buildServerConfig(system.Context.Project, proxy.Context.AllPorts)
 	nginxConfigResource := system.Resource{
 		Type:      system.TypeFile,
@@ -132,28 +128,34 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
 		Name: "proxy-nginx-" + system.Context.Project.Name,
 		Resources: []system.Resource{
-			system.Resource{
+			{
+				Type:             system.TypeFolder,
+				Operation:        system.OperationCreate,
+				Name:             paths.CertificatesProjectDirectory,
+				ExternalResource: true,
+			},
+			{
 				Type:      system.TypeFolder,
 				Operation: system.OperationCreate,
 				Name:      "certificates",
 			},
 			nginxConfigResource,
 			// Symlink project certificate files to snakeoil files after initial creation
-			system.Resource{
+			{
 				Type:             system.TypeLink,
 				Operation:        system.OperationCreate,
 				Name:             paths.CertificatesProjectDirectory + "/fullchain.pem",
 				ExternalResource: true,
 				LinkSource:       paths.SnakeoilFullchainPath,
 			},
-			system.Resource{
+			{
 				Type:             system.TypeLink,
 				Operation:        system.OperationCreate,
 				Name:             paths.CertificatesProjectDirectory + "/privkey.pem",
 				ExternalResource: true,
 				LinkSource:       paths.SnakeoilPrivkeyPath,
 			},
-			system.Resource{
+			{
 				Type:             system.TypeLink,
 				Operation:        system.OperationCreate,
 				Name:             "/etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf",
@@ -161,7 +163,7 @@ func (Module) Deploy(_modulesSettings interface{}) error {
 				LinkSource:       nginxConfigResourcePath,
 				EnforceLink:      true,
 			},
-			system.Resource{
+			{
 				Type:             system.TypeLink,
 				Operation:        system.OperationCreate,
 				Name:             moduleSettings.Config.VhostPath + "/stackhead_" + system.Context.Project.Name + ".conf",

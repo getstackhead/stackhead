@@ -43,10 +43,14 @@ var DeployApplication = func() *cobra.Command {
 
 			err = taskRunner.RunTask(routines.PrepareProjectTask(projectDefinition))
 			if err != nil {
+				if system.Context.CurrentDeployment.Version > 0 {
+					_ = xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true)
+				}
 				return
 			}
 			err = taskRunner.RunTask(routines.CollectResourcesTask(projectDefinition))
 			if err != nil {
+				_ = xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true)
 				return
 			}
 

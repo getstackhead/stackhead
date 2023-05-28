@@ -1,8 +1,6 @@
 package project
 
 import (
-	"fmt"
-
 	xfs "github.com/saitho/golang-extended-fs/v2"
 	"github.com/spf13/cobra"
 
@@ -11,6 +9,12 @@ import (
 	"github.com/getstackhead/stackhead/routines"
 	"github.com/getstackhead/stackhead/system"
 )
+
+func reverse[S ~[]E, E any](s S) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+}
 
 // DestroyApplication is a command object for Cobra that provides the destroy command
 var DestroyApplication = &cobra.Command{
@@ -26,22 +30,28 @@ var DestroyApplication = &cobra.Command{
 		}
 		commands.PrepareContext(args[1], system.ContextActionProjectDeploy, projectDefinition)
 
-		modules := system.Context.GetModulesInOrder()
-		for i, j := 0, len(modules)-1; i < j; i, j = i+1, j-1 { // reverse module list
-			modules[i], modules[j] = modules[j], modules[i]
+		latestDeployment, err := system.GetLatestDeployment(projectDefinition)
+		if err != nil {
+			panic("unable to load latest deployment" + err.Error())
 		}
+		system.Context.CurrentDeployment = *latestDeployment
 
-		// Init modules
+		modules := system.Context.GetModulesInOrder()
+		reverse(modules)
+
+		// Run modules destroy steps
 		for _, module := range modules {
 			moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
 			module.Init(moduleSettings)
 		}
 		taskRunner := routines.TaskRunner{}
 
-		subTasks := []routines.Task{}
+		subTasks := []routines.Task{
+			// Remove resources from deployment
+			routines.RemoveResources(latestDeployment),
+		}
 
 		if hasProjectDir, _ := xfs.HasFolder("ssh://" + projectDefinition.GetDirectoryPath()); hasProjectDir {
-
 			// Run destroy scripts from plugins
 			for _, module := range modules {
 				moduleSettings := system.GetModuleSettings(module.GetConfig().Name)
@@ -65,13 +75,10 @@ var DestroyApplication = &cobra.Command{
 			})
 		}
 
-		_ = taskRunner.RunTask(routines.Task{
-			Name: fmt.Sprintf("Destroying project \"%s\" on server with IP \"%s\"", args[0], args[1]),
-			Run: func(r *routines.Task) error {
-				return nil
-			},
-			SubTasks: subTasks,
-			//RunAllSubTasksDespiteError: true,
-		})
+		for _, task := range subTasks {
+			if err = taskRunner.RunTask(task); err != nil {
+				panic(err)
+			}
+		}
 	},
 }
