@@ -138,25 +138,36 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		return err
 	}
 
-	composeFileRemotePath := system.Context.Project.GetDirectoryPath() + "/docker-compose.yaml"
-
-	hasRemoteFile, err := xfs.HasFile("ssh://" + composeFileRemotePath)
-	if err != nil && err.Error() == "file does not exist" {
-		hasRemoteFile = false
-	} else if err != nil {
-		return fmt.Errorf("Unable to check state of remote docker-compose.yaml from previous deployment: " + err.Error())
+	dockerComposeResource := system.Resource{
+		Type:      system.TypeFile,
+		Operation: system.OperationCreate,
+		Name:      "docker-compose.yaml",
 	}
 
+	oldComposeFilePath := ""
 	var remoteComposeObjMap map[string]interface{}
-	if hasRemoteFile {
-		remoteComposeObj := docker_compose.DockerCompose{}
-		remoteComposeContent, err := xfs.ReadFile("ssh://" + composeFileRemotePath)
-		if err := yaml.Unmarshal([]byte(remoteComposeContent), &remoteComposeObj); err != nil {
-			return fmt.Errorf("unable to read remote docker-compose.yaml file from previous deployment: " + err.Error())
-		}
-		remoteComposeObjMap, err = remoteComposeObj.Map()
+	if system.Context.LatestDeployment != nil {
+		dockerComposeFilePathOld, err := system.Context.LatestDeployment.GetResourcePath(&dockerComposeResource)
 		if err != nil {
-			return fmt.Errorf("unable to process remote docker-compose.yaml file from previous deployment: " + err.Error())
+			return err
+		}
+		oldComposeFilePath = dockerComposeFilePathOld
+		hasRemoteFile, err := xfs.HasFile("ssh://" + oldComposeFilePath)
+		if err != nil && hasRemoteFile {
+			remoteComposeContent, err := xfs.ReadFile("ssh://" + oldComposeFilePath)
+			if err != nil {
+				return fmt.Errorf("unable to read remote docker-compose.yaml file from previous deployment: " + err.Error())
+			}
+			remoteComposeObj := docker_compose.DockerCompose{}
+			if err := yaml.Unmarshal([]byte(remoteComposeContent), &remoteComposeObj); err != nil {
+				return fmt.Errorf("unable to read remote docker-compose.yaml file from previous deployment: " + err.Error())
+			}
+			remoteComposeObjMap, err = remoteComposeObj.Map()
+			if err != nil {
+				return fmt.Errorf("unable to process remote docker-compose.yaml file from previous deployment: " + err.Error())
+			}
+		} else if err != nil {
+			return fmt.Errorf("Unable to check state of remote docker-compose.yaml from previous deployment: " + err.Error())
 		}
 	}
 
@@ -177,17 +188,13 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 	if err != nil {
 		return err
 	}
+	dockerComposeResource.Content = composeFileContent
 
-	system.Context.Resources = append(system.Context.Resources, system.ResourceGroup{
-		Name: "container-docker-" + system.Context.Project.Name + "-composefile",
-		Resources: []system.Resource{
-			{
-				Type:      system.TypeFile,
-				Operation: system.OperationCreate,
-				Name:      composeFileRemotePath,
-				Content:   composeFileContent,
-			},
-		},
+	dockerComposeFilePathNew, _ := system.Context.CurrentDeployment.GetResourcePath(&dockerComposeResource)
+
+	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
+		Name:      "container-docker-" + system.Context.Project.Name + "-composefile",
+		Resources: []system.Resource{dockerComposeResource},
 	})
 
 	var containerResources []system.Resource
@@ -202,14 +209,24 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 		})
 	}
 
-	system.Context.Resources = append(system.Context.Resources, system.ResourceGroup{
+	system.Context.CurrentDeployment.ResourceGroups = append(system.Context.CurrentDeployment.ResourceGroups, system.ResourceGroup{
 		Name:      "container-docker-" + system.Context.Project.Name + "-containers",
 		Resources: containerResources,
 		ApplyResourceFunc: func() error {
+			if oldComposeFilePath != "" {
+				// Stop old Docker Compose containers
+				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+				if _, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: path.Dir(oldComposeFilePath)}); err != nil {
+					if stderr.Len() > 0 {
+						return fmt.Errorf("Unable to stop old Docker containers: " + stderr.String())
+					}
+					return fmt.Errorf("Unable to stop old Docker containers: " + err.Error())
+				}
+			}
+
 			// Start Docker Compose
 			// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-			_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
-			if err != nil {
+			if _, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: path.Dir(dockerComposeFilePathNew)}); err != nil {
 				if stderr.Len() > 0 {
 					return fmt.Errorf("Unable to start Docker containers: " + stderr.String())
 				}
@@ -223,14 +240,24 @@ func (m Module) Deploy(modulesSettings interface{}) error {
 			return nil
 		},
 		RollbackResourceFunc: func() error {
+			// Start old containers again
+			if oldComposeFilePath != "" {
+				// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
+				if _, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"up", "-d"}, WorkingDir: path.Dir(oldComposeFilePath)}); err != nil {
+					if stderr.Len() > 0 {
+						return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
+					}
+					return fmt.Errorf("Unable to start old Docker containers: " + err.Error())
+				}
+			}
+
 			// Stop Docker Compose
 			// todo: allow using either docker-compose or "docker compose" whichever is available (prefer "docker compose")
-			_, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: system.Context.Project.GetDirectoryPath()})
-			if err != nil {
+			if _, stderr, err := system.RemoteRun("docker compose", system.RemoteRunOpts{Args: []string{"down"}, WorkingDir: path.Dir(dockerComposeFilePathNew)}); err != nil {
 				if stderr.Len() > 0 {
 					return fmt.Errorf("Unable to stop Docker containers: " + stderr.String())
 				}
-				return fmt.Errorf("Unable to stop Docker containers: " + err.Error())
+				return fmt.Errorf("Unable to stop new Docker containers: " + err.Error())
 			}
 			return nil
 		},
@@ -246,6 +273,13 @@ func prepareUpdate(result diff_docker_compose.YamlDiffResult) (bool, error) {
 			return false, err
 		}
 	}
+	// Logout to clear credentials, as multiple credentials for the same registry cause issues...
+	// todo: find a better way to solve that issue
+	defer func() {
+		for _, registry := range system.Context.Project.Container.Registries {
+			_, _ = system.SimpleRemoteRun("docker", system.RemoteRunOpts{Args: []string{"logout", registry.Url}})
+		}
+	}()
 
 	updatedImages := false
 	changedServices := result.GetStructure([]string{"services"})

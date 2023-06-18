@@ -28,16 +28,6 @@ func (m Module) Destroy(_modulesSettings interface{}) error {
 		return fmt.Errorf("Unable to remove ACME challenge directory: " + err.Error())
 	}
 
-	if err := xfs.DeleteFile("ssh:///etc/nginx/sites-available/stackhead_" + system.Context.Project.Name + ".conf"); err != nil {
-		return fmt.Errorf("Unable to remove Nginx symlink: " + err.Error())
-	}
-	if err := xfs.DeleteFile("ssh://" + moduleSettings.Config.VhostPath + "/stackhead_" + system.Context.Project.Name + ".conf"); err != nil {
-		return fmt.Errorf("Unable to remove Nginx symlink: " + err.Error())
-	}
-	if err := xfs.DeleteFolder("ssh://"+CertificatesDirectory+"/"+system.Context.Project.Name, true); err != nil {
-		return fmt.Errorf("Unable to remove certificates directory: " + err.Error())
-	}
-
 	if _, err := system.SimpleRemoteRun("systemctl", system.RemoteRunOpts{Args: []string{"reload", "nginx"}, Sudo: true}); err != nil {
 		return fmt.Errorf("Unable to reload Nginx service: " + err.Error())
 	}

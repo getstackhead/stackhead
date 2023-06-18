@@ -3,24 +3,27 @@ package container_docker_definitions
 import (
 	"github.com/getstackhead/stackhead/project"
 	"github.com/getstackhead/stackhead/system"
+	"path"
 )
 
 type DockerPaths struct {
-	BaseDir string
+	DataDir       string
+	DeploymentDir string
 }
 
 func GetDockerPaths() DockerPaths {
 	return DockerPaths{
-		BaseDir: system.Context.Project.GetRuntimeDataDirectoryPath() + "/container",
+		DataDir:       path.Join(system.Context.Project.GetRuntimeDataDirectoryPath(), "container"),
+		DeploymentDir: path.Join(system.Context.CurrentDeployment.GetPath(), "container"),
 	}
 }
 
 func (p DockerPaths) GetHooksDir() string {
-	return p.BaseDir + "/hooks"
+	return path.Join(p.DeploymentDir, "hooks")
 }
 
 func (p DockerPaths) getDataDir() string {
-	return p.BaseDir + "/data"
+	return path.Join(p.DataDir, "data")
 }
 
 func (p DockerPaths) GetServiceDataDir(service project.ContainerService, volume project.ContainerServiceVolume) string {

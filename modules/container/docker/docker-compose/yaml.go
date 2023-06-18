@@ -17,7 +17,7 @@ func BuildDockerCompose(project *project.Project) (DockerCompose, error) {
 	dockerPaths := container_docker_definitions.GetDockerPaths()
 	compose := DockerCompose{
 		Version:  "2.4",
-		Networks: map[string]Network{"stackhead-network-" + project.Name: {}},
+		Networks: map[string]Network{docker_system.NetworkName(project.Name, system.Context.CurrentDeployment): {}},
 		Services: map[string]Services{},
 		Volumes:  map[string]Volume{},
 	}
@@ -36,7 +36,6 @@ func BuildDockerCompose(project *project.Project) (DockerCompose, error) {
 				continue
 			}
 			vol := Volume{}
-			serviceName := service.Name
 			vol.DriverOpts.Type = "none"
 			vol.DriverOpts.O = "bind"
 			if volume.Type == "local" {
@@ -46,7 +45,7 @@ func BuildDockerCompose(project *project.Project) (DockerCompose, error) {
 			} else if volume.Type == "custom" {
 				vol.DriverOpts.Device = volume.Src
 			}
-			compose.Volumes[GetVolumeSrcKey(project.Name, serviceName, volume)] = vol
+			compose.Volumes[GetVolumeSrcKey(project.Name, service.Name, volume)] = vol
 		}
 	}
 
@@ -89,12 +88,12 @@ func addService(compose *DockerCompose, project *project.Project, service projec
 	}
 
 	compose.Services[service.Name] = Services{
-		ContainerName: docker_system.ContainerName(project.Name, service.Name),
+		ContainerName: docker_system.ContainerName(project.Name, service.Name, system.Context.CurrentDeployment),
 		Image:         service.Image,
 		Restart:       "unless-stopped",
 		Labels:        map[string]string{"stackhead.project": project.Name},
 		User:          service.User,
-		Networks:      map[string]ServiceNetwork{"stackhead-network-" + project.Name: {Aliases: []string{service.Name}}},
+		Networks:      map[string]ServiceNetwork{docker_system.NetworkName(project.Name, system.Context.CurrentDeployment): {Aliases: []string{service.Name}}},
 		Volumes:       volumes,
 		Ports:         ports,
 		Environment:   service.Environment,

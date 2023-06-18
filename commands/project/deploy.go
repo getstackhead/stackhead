@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	xfs "github.com/saitho/golang-extended-fs/v2"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
@@ -42,19 +43,23 @@ var DeployApplication = func() *cobra.Command {
 
 			err = taskRunner.RunTask(routines.PrepareProjectTask(projectDefinition))
 			if err != nil {
+				if system.Context.CurrentDeployment.Version > 0 {
+					_ = xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true)
+				}
 				return
 			}
 			err = taskRunner.RunTask(routines.CollectResourcesTask(projectDefinition))
 			if err != nil {
+				_ = xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true)
 				return
 			}
 
 			if autoConfirm {
-				_ = taskRunner.RunTask(routines.CreateResources)
+				err = taskRunner.RunTask(routines.CreateResources)
 			} else {
 				// Confirm resource creation
 				fmt.Println("\nStackHead will try to create or update the following resources:")
-				for _, resourceGroup := range system.Context.Resources {
+				for _, resourceGroup := range system.Context.CurrentDeployment.ResourceGroups {
 					for _, resource := range resourceGroup.Resources {
 						fmt.Println(fmt.Sprintf("- %s", resource.ToString(false)))
 					}
@@ -62,14 +67,28 @@ var DeployApplication = func() *cobra.Command {
 				fmt.Println("")
 				fmt.Print("Please confirm with \"y\" or \"yes\": ")
 				if askForConfirmation() {
-					_ = taskRunner.RunTask(routines.CreateResources)
+					err = taskRunner.RunTask(routines.CreateResources)
+				} else {
+					// Abort deployment -> delete
+					if err := xfs.DeleteFolder("ssh://"+system.Context.CurrentDeployment.GetPath(), true); err != nil {
+						fmt.Print("Unable to remove deployment directory.")
+						return
+					}
+					fmt.Print("Deployment aborted.")
+					return
 				}
+			}
+
+			if err != nil {
+				// ensure rollback is performed due to errors caused by StackHead module Run scripts not resource creation
+				routines.RollbackResources.Disabled = false
 			}
 
 			if !noRollback {
 				// Rollback may be skipped if CreateResources does not trigger a rollback
 				_ = taskRunner.RunTask(routines.RollbackResources)
 			}
+			_ = taskRunner.RunTask(routines.FinalizeDeployment)
 		},
 	}
 	command.PersistentFlags().BoolVar(&autoConfirm, "autoconfirm", false, "Whether to auto-confirm resource changes")

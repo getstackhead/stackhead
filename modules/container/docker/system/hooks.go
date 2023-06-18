@@ -45,14 +45,14 @@ func ExecuteHook(hookName string) error {
 
 		// copy file onto container and run it.....
 		containerLocation := path.Join("/", file.File)
-		containerName := ContainerName(system.Context.Project.Name, file.Service)
+		containerName := ContainerName(system.Context.Project.Name, file.Service, system.Context.CurrentDeployment)
 		_, err := system.SimpleRemoteRun("docker", system.RemoteRunOpts{
 			Args: []string{
 				"cp",
 				filePath,
 				containerName + ":" + containerLocation,
 			},
-			WorkingDir: system.Context.Project.GetDirectoryPath(),
+			WorkingDir: system.Context.CurrentDeployment.GetPath(),
 		})
 		if err != nil {
 			return fmt.Errorf("Unable to copy file %s to container %s: \"%s\"", file.File, containerName, err.Error())
@@ -64,7 +64,7 @@ func ExecuteHook(hookName string) error {
 				containerName,
 				"chmod +x " + containerLocation,
 			},
-			WorkingDir: system.Context.Project.GetDirectoryPath(),
+			WorkingDir: system.Context.CurrentDeployment.GetPath(),
 		})
 		if err != nil {
 			return fmt.Errorf("Unable to copy file %s to container %s: \"%s\"", file.File, containerName, err.Error())
@@ -76,10 +76,10 @@ func ExecuteHook(hookName string) error {
 				containerName,
 				containerLocation,
 			},
-			WorkingDir: system.Context.Project.GetDirectoryPath(),
+			WorkingDir: system.Context.CurrentDeployment.GetPath(),
 		})
 		if err != nil {
-			return fmt.Errorf("Unable to run %s on container %s: \"%s\"", file, containerName, err.Error())
+			return fmt.Errorf("Unable to run %s on container %s: \"%s\"", containerLocation, containerName, err.Error())
 		}
 	}
 

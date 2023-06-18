@@ -11,6 +11,8 @@ type Type string
 
 const (
 	TypeFile      Type = "file"
+	TypeFolder    Type = "folder"
+	TypeLink      Type = "link"
 	TypeContainer Type = "container"
 )
 
@@ -18,6 +20,7 @@ type Operation string
 
 const (
 	OperationCreate Operation = "create"
+	OperationDelete Operation = "delete"
 )
 
 type ApplyResourceFuncType func() error
@@ -27,26 +30,35 @@ type ResourceGroup struct {
 	Name      string
 	Resources []Resource
 
-	ApplyResourceFunc    ApplyResourceFuncType
-	RollbackResourceFunc RollbackResourceFuncType
+	ApplyResourceFunc    ApplyResourceFuncType    `yaml:"-"`
+	RollbackResourceFunc RollbackResourceFuncType `yaml:"-"`
 }
 
 type Resource struct {
-	Type      Type
-	Operation Operation
+	Type           Type
+	Operation      Operation `yaml:"-"`
+	BackupFilePath string    `yaml:"-"`
+
+	// if set the Name refers to an external resource. for files an absolute path is expected
+	ExternalResource bool `yaml:"externalResource,omitempty"`
 
 	// name of the resource (e.g. file name, container name)
 	Name string
 
 	// contents of resource, if any
-	Content string
+	Content string `yaml:"-"`
 
 	// name of the associated service
-	ServiceName string
+	ServiceName string `yaml:"serviceName,omitempty"`
 
 	// for container resources
-	Ports     []string
-	ImageName string
+	Ports     []string `yaml:"ports,omitempty"`
+	ImageName string   `yaml:"imageName,omitempty"`
+
+	// for link resources
+	LinkSource string `yaml:"linkSource,omitempty"`
+	// EnforceLink is true, then symlink is created with force and will not ignore errors
+	EnforceLink bool `yaml:"-"`
 }
 
 func (r Resource) GetOperationLabel(invertOperation bool) string {
@@ -60,6 +72,8 @@ func (r Resource) GetOperationLabel(invertOperation bool) string {
 				operation = "UPDATE"
 			}
 		}
+	} else if r.Operation == OperationDelete {
+		operation = "DELETE"
 	}
 
 	if invertOperation {

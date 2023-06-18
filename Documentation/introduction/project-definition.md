@@ -72,7 +72,7 @@ container:
 
 ## Settings
 
-### `domains.\*.expose`
+### `domains.[*].expose`
 
 The web server will proxy all web traffic to the service and port specified in `expose` setting.
 
@@ -82,20 +82,20 @@ In the example above, the web server will proxy web requests to the "app" contai
 
 Name of the Container service to receive the web request.
 
-#### `internal\_port`
+#### `internal_port`
 
 Port of the given container service to receive the web request.
 
-#### `external\_port`
+#### `external_port`
 
 Port that Nginx listens to.
 
 {% hint style="danger" %}
-Setting _external\_port_ to 443 is not allowed, as HTTPS forwarding is automatically enabled for exposes with `external_port=80`.
+Setting _external_port_ to 443 is not allowed, as HTTPS forwarding is automatically enabled for exposes with `external_port=80`.
 {% endhint %}
 
 {% hint style="warning" %}
-Make sure to define the different _external\_port_ within one project definition, so that each port is only used once!
+Make sure to define the different _external_port_ within one project definition, so that each port is only used once!
 {% endhint %}
 
 #### `proxy_websocket_locations`
@@ -107,7 +107,7 @@ Please do not set `/` or `/.well-known/acme-challenge` as WebSocket locations.
 {% endhint %}
 
 
-### `domains.\*.dns`
+### `domains.[*].dns`
 
 Configure which DNS service to use for this domain.
 Make sure to install the required module and set the required configurations according to the DNS StackHead module's documentation.
@@ -116,7 +116,7 @@ Make sure to install the required module and set the required configurations acc
 
 Fully-qualified name of the provider to use (e.g. `getstackhead.stackhead_dns_cloudflare`).
 
-### `domains.\*.security`
+### `domains.[*].security`
 
 These options can be used to add further security to your projects.
 
@@ -205,7 +205,7 @@ Below you can see a comparison of the project definition \(left\) and the equiva
 
 {% tabs %}
 {% tab title="StackHead" %}
-{% code title="example\_project.yml" %}
+{% code title="example_project.stackhead.yml" %}
 ```yaml
 services:
   - name: nginx
@@ -240,9 +240,9 @@ services:
 {% endtab %}
 {% endtabs %}
 
-#### `volumes\_from`
+#### `volumes_from`
 
-See [docker-compose documentation on volumes\_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
+See [docker-compose documentation on volumes_from](https://docs.docker.com/compose/compose-file/compose-file-v2/#volumes_from).
 
 #### `environment`
 

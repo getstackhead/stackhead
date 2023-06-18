@@ -20,7 +20,7 @@ require (
 	github.com/knadh/koanf v1.4.4
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
 	github.com/saitho/diff-docker-compose v1.1.3
-	github.com/saitho/golang-extended-fs/v2 v2.0.2
+	github.com/saitho/golang-extended-fs/v2 v2.1.0
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.9.2
 	github.com/spf13/cast v1.3.1
