@@ -273,6 +273,13 @@ func prepareUpdate(result diff_docker_compose.YamlDiffResult) (bool, error) {
 			return false, err
 		}
 	}
+	// Logout to clear credentials, as multiple credentials for the same registry cause issues...
+	// todo: find a better way to solve that issue
+	defer func() {
+		for _, registry := range system.Context.Project.Container.Registries {
+			_, _ = system.SimpleRemoteRun("docker", system.RemoteRunOpts{Args: []string{"logout", registry.Url}})
+		}
+	}()
 
 	updatedImages := false
 	changedServices := result.GetStructure([]string{"services"})

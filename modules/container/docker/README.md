@@ -20,6 +20,7 @@ Setting up the server with this plugin will install the following:
 * Docker Compose Plugin
 * containerd.io
 * Pass (for registry credential storage)
+  * **Note:** Right now defining multiple credentials for the same registry results in authentication issues. That is why the registry credentials are only available during deployment and not persisted on the target server.
 * golang-docker-credential-helpers
 
 ## Configuration

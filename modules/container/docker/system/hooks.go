@@ -79,7 +79,7 @@ func ExecuteHook(hookName string) error {
 			WorkingDir: system.Context.CurrentDeployment.GetPath(),
 		})
 		if err != nil {
-			return fmt.Errorf("Unable to run %s on container %s: \"%s\"", file, containerName, err.Error())
+			return fmt.Errorf("Unable to run %s on container %s: \"%s\"", containerLocation, containerName, err.Error())
 		}
 	}
 
