@@ -19,7 +19,6 @@
 
 * [About modules](stackhead-modules/stackhead-modules.md)
 * [List of modules](stackhead-modules/list-of-modules.md)
-* [Development](stackhead-modules/development/README.md)
 
 ## Technical Documentation
 

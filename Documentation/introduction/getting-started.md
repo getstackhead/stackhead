@@ -16,7 +16,7 @@ If you wish to change the software used for proxy or containers, please [create 
 
 ## Creating a project definition
 
-Create a new project definitions file at `./stackhead/example_app.yml` and the following content:
+Create a new project definitions file at `./stackhead/example_app.stackhead.yml` and the following content:
 
 ```yaml
 ---
